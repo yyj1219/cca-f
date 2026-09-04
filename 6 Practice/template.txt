@@ -4,6 +4,3 @@
 
 **문제 구분 포인트, 어려운 표현**:
 
-- the flaws: 결함들
-- occurrence: 발생
-- target occurrence: 목표 항목
