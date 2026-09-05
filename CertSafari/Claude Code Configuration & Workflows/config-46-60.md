@@ -1,0 +1,2397 @@
+# 46번 문제
+
+**1. 문제 원문**
+
+A `deploy_service` MCP tool requires an API token scoped to the `deploy` role. An agent calls it using a token scoped only to `read`. The server returns `isError: true` with generic text "Operation failed." Under a structured error design, how should this failure be categorized and handled differently from a network timeout on the same tool?
+
+A) As `errorCategory: "business"` with `isRetryable: false`, since restricting deploy access is functionally the same kind of policy rule as a refund window
+
+B) As `errorCategory: "permission"` with `isRetryable: false`, since resubmitting with the same token will fail identically until the caller's scope changes
+
+C) As `errorCategory: "transient"` with `isRetryable: true`, since both permission failures and timeouts stem from the deploy service being temporarily unreachable
+
+D) As `errorCategory: "validation"` with `isRetryable: true`, since the token itself is a malformed input field that a retry with backoff can resolve
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A `deploy_service` MCP tool**
+`deploy_service` MCP 도구는
+
+**requires an API token**
+API 토큰을 필요로 합니다
+
+**scoped to the `deploy` role.**
+`deploy` 역할로 권한 범위가 지정된.
+
+**An agent calls it**
+에이전트가 이를 호출합니다
+
+**using a token**
+토큰을 사용하여
+
+**scoped only to `read`.**
+`read` 역할로만 권한 범위가 지정된.
+
+**The server returns `isError: true`**
+서버는 `isError: true`를 반환합니다
+
+**with generic text "Operation failed."**
+"Operation failed."라는 일반적인 텍스트와 함께.
+
+**Under a structured error design,**
+구조화된 에러 설계 하에서,
+
+**how should this failure be categorized**
+이 실패는 어떻게 분류되어야 하며
+
+**and handled differently**
+어떻게 다르게 처리되어야 합니까
+
+**from a network timeout on the same tool?**
+동일한 도구에서의 네트워크 타임아웃과?
+
+---
+
+**Options:**
+
+**A)**
+**As `errorCategory: "business"`**
+`errorCategory: "business"`로
+
+**with `isRetryable: false`,**
+`isRetryable: false`와 함께,
+
+**since restricting deploy access**
+배포 접근을 제한하는 것은
+
+**is functionally the same kind of policy rule**
+기능적으로 동일한 종류의 정책 규칙이기 때문에
+
+**as a refund window**
+환불 가능 기간과
+
+---
+
+**B)**
+**As `errorCategory: "permission"`**
+`errorCategory: "permission"`으로
+
+**with `isRetryable: false`,**
+`isRetryable: false`와 함께,
+
+**since resubmitting with the same token**
+동일한 토큰으로 다시 제출하는 것은
+
+**will fail identically**
+동일하게 실패할 것이기 때문에
+
+**until the caller's scope changes**
+호출자의 권한 범위(scope)가 변경될 때까지
+
+---
+
+**C)**
+**As `errorCategory: "transient"`**
+`errorCategory: "transient"`로
+
+**with `isRetryable: true`,**
+`isRetryable: true`와 함께,
+
+**since both permission failures and timeouts**
+권한 실패와 타임아웃 모두
+
+**stem from the deploy service**
+배포 서비스로부터 발생하기 때문에
+
+**being temporarily unreachable**
+일시적으로 접근 불가능하여
+
+---
+
+**D)**
+**As `errorCategory: "validation"`**
+`errorCategory: "validation"`으로
+
+**with `isRetryable: true`,**
+`isRetryable: true`와 함께,
+
+**since the token itself**
+토큰 자체가
+
+**is a malformed input field**
+형식이 잘못된 입력 필드이기 때문에
+
+**that a retry with backoff can resolve**
+지연 후 재시도로 해결할 수 있는
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**B번**: As `errorCategory: "permission"` with `isRetryable: false`, since resubmitting with the same token will fail identically until the caller's scope changes
+
+**정답 및 해설:**
+**핵심 개념**: 에러의 구조화(Structured Error Design) 및 재시도 가능 여부(Retryability)
+시스템 및 API 설계에서 에러는 실패 원인에 따라 카테고리화됩니다. 권한 부족(Permission/Authorization) 실패는 클라이언트의 권한(Scope)이 변경되지 않는 한 동일한 요청을 반복해도 무조건 실패하므로 `isRetryable: false`로 설정해야 합니다. 반면 네트워크 타임아웃 등 일시적 문제(Transient Error)는 재시도(`isRetryable: true`)가 가능합니다.
+
+**문제 상황 분석:**
+- `deploy_service` 도구는 `deploy` 권한(scope)을 가진 API 토큰이 필요함
+- 에이전트는 `read` 권한만 가진 토큰으로 요청하여 서버에서 실패를 반환받음
+- 권한 범위가 부족하여 발생한 실패를 네트워크 타임아웃과 구분하여 적절히 분류 및 처리해야 함
+
+**B번이 정답인 이유:**
+요청 실패의 근본 원인은 토큰의 권한 부족(`read` vs `deploy`)입니다. 따라서 에러 범주는 `permission`이 맞습니다. 또한, 권한 범위(Scope)를 수정하지 않고 동일한 토큰으로 요청을 다시 보낸다고 해서 성공할 가능성은 0%이므로, 재시도가 불가능함(`isRetryable: false`)을 명시하여 불필요한 네트워크 재요청을 방지해야 합니다.
+
+**오답 분석:**
+- **Option A (오답)**: 비즈니스 로직 정책(예: 환불 기간 초과)과 접근 권한(Authorization/IAM)은 명확히 다릅니다. 이 문제는 비즈니스 규칙이 아닌 IAM 권한 범주의 문제입니다.
+- **Option C (오답)**: 권한 부족은 일시적 문제(`transient`)가 아니며, 서버가 접근 불가 상태인 것도 아닙니다. 똑같이 재시도한다고 해서 해결되지 않으므로 `isRetryable: true` 설정은 잘못되었습니다.
+- **Option D (오답)**: 토큰의 형식이 깨진(malformed) 입력 검증 오류(`validation`)가 아니라 권한 부족 오류입니다. 또한 지연 후 재시도(backoff retry)로 해결될 수 있는 문제가 아닙니다.
+
+---
+
+# 47번 문제
+
+**1. 문제 원문**
+
+A tool intended only for retrieving publicly available stock prices is described as "Gets financial data." Occasionally, the model calls it hoping to retrieve a user's private account balance, which it cannot do. What description change best sets the correct boundary?
+
+A) State explicitly that the tool returns public market data only and cannot access private account or user-specific information.
+
+B) Add a `private` boolean parameter to the input schema without altering any of the existing description text.
+
+C) Rename the tool to `get_financial_data_v2` so the model recognizes it as an updated, more capable version.
+
+D) Remove all wording from the description and rely solely on the tool's name to communicate its scope to the model.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A tool intended only**
+단지 ~만을 목적으로 하는 도구가
+
+**for retrieving publicly available stock prices**
+공개적으로 이용 가능한 주가를 조회하는 것을
+
+**is described as**
+~라고 설명되어 있습니다
+
+**"Gets financial data."**
+"금융 데이터를 가져옵니다."라고.
+
+**Occasionally, the model calls it**
+때때로, 모델이 이 도구를 호출합니다
+
+**hoping to retrieve**
+~를 조회하기를 기대하며
+
+**a user's private account balance,**
+사용자의 개인 계좌 잔액을,
+
+**which it cannot do.**
+하지만 이 도구는 그것을 할 수 없습니다.
+
+**What description change**
+어떠한 설명 수정이
+
+**best sets the correct boundary?**
+올바른 경계를 가장 잘 설정합니까?
+
+---
+
+**Options:**
+
+**A)**
+**State explicitly**
+명시적으로 서술합니다
+
+**that the tool returns**
+이 도구가 반환함을
+
+**public market data only**
+공개 시장 데이터만을
+
+**and cannot access**
+그리고 접근할 수 없음을
+
+**private account or user-specific information.**
+개인 계좌나 사용자 특정 정보에는.
+
+---
+
+**B)**
+**Add a `private` boolean parameter**
+`private` 불리언 매개변수를 추가합니다
+
+**to the input schema**
+입력 스키마에
+
+**without altering any**
+어떠한 것도 변경하지 않고
+
+**of the existing description text.**
+기존 설명 텍스트 중에서.
+
+---
+
+**C)**
+**Rename the tool**
+도구의 이름을 변경합니다
+
+**to `get_financial_data_v2`**
+`get_financial_data_v2`로
+
+**so the model recognizes it**
+모델이 이를 인식하도록
+
+**as an updated, more capable version.**
+업데이트되고 더 기능이 향상된 버전으로.
+
+---
+
+**D)**
+**Remove all wording**
+모든 문구를 제거합니다
+
+**from the description**
+설명에서
+
+**and rely solely**
+그리고 오직 의존합니다
+
+**on the tool's name**
+도구의 이름에만
+
+**to communicate its scope to the model.**
+모델에게 그 범위를 전달하기 위해.
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**A번**: State explicitly that the tool returns public market data only and cannot access private account or user-specific information.
+
+**정답 및 해설:**
+**핵심 개념**: 도구 설명 정의(Tool Description Design) 및 프롬프트 엔지니어링
+LLM 기반 에이전트 도구(Tool/Function Calling)에서 도구의 `description`(설명)은 모델이 언제, 어떤 목적으로 도구를 호출해야 할지 결정하는 핵심 지침입니다. 범주가 너무 광범위하거나 모호하면 모델이 환각(Hallucination) 또는 오용을 일으키므로, 허용되는 기능과 불가능한 기능을 명확히(Negative Constraint) 지정해야 합니다.
+
+**문제 상황 분석:**
+- 기존 도구 설명("Gets financial data")이 너무 모호하고 광범위함
+- 모델이 '개인 계좌 잔액 조회'도 이 도구로 가능할 것이라 오인하여 잘못 호출함
+- 도구의 실제 기능 한계(공개 주가 정보만 가능, 개인 계좌 접근 불가)를 모델에게 명확히 전달할 명확한 설명 수정이 필요함
+
+**A번이 정답인 이유:**
+모델의 오용을 막는 가장 확실한 방법은 도구 설명란에 도구가 제공하는 정보의 범위(공개 시장 데이터 전용)와 불가능한 작업(개인 계좌 및 사용자 정보 접근 불가)을 명시적(Explicit)으로 서술하는 것입니다. 명확한 경계(Boundary) 설정은 모델의 환각 호출을 방지합니다.
+
+**오답 분석:**
+- **Option B (오답)**: 설명 텍스트를 수정하지 않고 입력 스키마에 `private` 매개변수만 추가하는 것은 모델의 오해를 해결해주지 못하며, 오히려 개인 데이터를 조회할 수 있다는 착각을 강화할 수 있습니다.
+- **Option C (오답)**: 도구 이름을 버전업 형태(`v2`)로 바꾸는 것은 모델에게 '더 강력한 기능이 추가되었다'는 오해를 불러일으켜 개인 정보 조회를 더 자주 시도하게 만들 수 있습니다.
+- **Option D (오답)**: 설명 문구를 모두 제거하고 이름에만 의존하는 것은 모델에게 제공되는 맥락을 완전히 없애는 것이므로 오호출 위험성을 극대화합니다.
+
+---
+
+# 48번 문제
+
+**1. 문제 원문**
+
+A developer wants Claude Code to update a deprecated log statement `logger.warn("legacy-path")` that appears twice in the same file, in two different functions, where only one of the two occurrences should change. Claude issues an Edit call with old_string set to exactly that log statement and the call fails. What is the correct next step?
+
+A) Call Write with only the new log line as content, expecting Write to merge that single line into the correct spot in the existing file
+
+B) Set replace_all to true on the same Edit call so both occurrences update identically, then manually revert whichever one should have stayed
+
+C) Switch to Grep with the multiline flag to rewrite the matching line directly, since Grep can modify file contents once a match is found
+
+D) Widen old_string to include enough surrounding context to uniquely identify the intended occurrence, then retry Edit with that string
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A developer wants Claude Code**
+한 개발자가 Claude Code가 ~하기를 원합니다
+
+**to update a deprecated log statement**
+더 이상 사용되지 않는(deprecated) 로그 구문을 업데이트하도록
+
+**`logger.warn("legacy-path")`**
+`logger.warn("legacy-path")`라는
+
+**that appears twice in the same file,**
+동일한 파일 내에 두 번 나타나는,
+
+**in two different functions,**
+서로 다른 두 개의 함수에서,
+
+**where only one of the two occurrences**
+두 번의 출현 중 하나만
+
+**should change.**
+변경되어야 하는 상황입니다.
+
+**Claude issues an Edit call**
+Claude가 Edit 호출을 실행합니다
+
+**with old_string set to**
+old_string을 ~로 설정하여
+
+**exactly that log statement**
+정확히 해당 로그 구문으로
+
+**and the call fails.**
+그리고 그 호출은 실패합니다.
+
+**What is the correct next step?**
+올바른 다음 단계는 무엇입니까?
+
+---
+
+**Options:**
+
+**A)**
+**Call Write**
+Write 도구를 호출합니다
+
+**with only the new log line**
+새로운 로그 줄만 가지고
+
+**as content,**
+내용(content)으로,
+
+**expecting Write to merge**
+Write가 병합할 것을 기대하면서
+
+**that single line**
+그 단일 줄을
+
+**into the correct spot**
+올바른 위치로
+
+**in the existing file**
+기존 파일 내의
+
+---
+
+**B)**
+**Set replace_all to true**
+replace_all을 true로 설정합니다
+
+**on the same Edit call**
+동일한 Edit 호출에서
+
+**so both occurrences update identically,**
+두 출현 모두 동일하게 업데이트되도록,
+
+**then manually revert**
+그런 다음 수동으로 되돌립니다
+
+**whichever one should have stayed**
+유지되었어야 할 하나를
+
+---
+
+**C)**
+**Switch to Grep**
+Grep으로 전환합니다
+
+**with the multiline flag**
+multiline 플래그와 함께
+
+**to rewrite the matching line directly,**
+매칭되는 줄을 직접 다시 쓰기 위해,
+
+**since Grep can modify**
+Grep이 수정할 수 있으므로
+
+**file contents**
+파일 내용을
+
+**once a match is found**
+일치하는 항목이 발견되면
+
+---
+
+**D)**
+**Widen old_string**
+old_string의 범위를 넓힙니다
+
+**to include enough surrounding context**
+주변 맥락(context)을 충분히 포함하도록
+
+**to uniquely identify**
+고유하게 식별하기 위해
+
+**the intended occurrence,**
+의도한 출현 위치를,
+
+**then retry Edit**
+그런 다음 Edit을 재시도합니다
+
+**with that string**
+해당 문자열로
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**D번**: Widen old_string to include enough surrounding context to uniquely identify the intended occurrence, then retry Edit with that string
+
+**정답 및 해설:**
+**핵심 개념**: Claude Code의 Edit 도구 동작 원리 (Uniqueness & Context Matching)
+Claude Code의 `Edit` 도구는 파일 내에서 교체하고자 하는 대상 문자열(`old_string`)이 **단 하나만 존재(Unique)**할 때 안전하게 치환을 수행합니다. 만약 동일한 문자열이 파일 내에 여러 번 등장하는데 어떤 것을 바꿀지 고유하게 식별되지 않으면, 오작동을 방지하기 위해 Edit 호출이 실패합니다.
+
+**문제 상황 분석:**
+- `logger.warn("legacy-path")` 구문이 동일 파일 내에 2번 존재함
+- 두 위치 중 단 1곳만 변경해야 하는 상황임
+- Claude가 정확히 해당 로그 구문만 `old_string`으로 전달하여 중복으로 인해 Edit 도구가 실패함
+
+**D번이 정답인 이유:**
+동일한 문자열이 여러 곳에 존재하여 구분이 불가능할 때는, 변경하고자 하는 위치 주변의 코드(함수 선언부, 이전/다음 줄의 코드 등)를 `old_string`에 함께 포함시켜(**Widen**) 파일 내에서 대상 문자열이 유일(Unique)하게 식별되도록 context를 확장한 뒤 Edit을 재시도해야 합니다.
+
+**오답 분석:**
+- **Option A (오답)**: `Write` 도구는 파일 전체를 덮어쓰는 도구입니다. 단일 줄만 전달한다고 해서 기존 파일의 특정 위치에 자동으로 병합(Merge)해주지 않으며 파일 전체가 손상될 수 있습니다.
+- **Option B (오답)**: 문제가 의도한 바는 2개 중 1개만 변경하는 것인데, `replace_all: true`로 두 곳 모두 바꾼 뒤 수동으로 되돌리는 방식은 비효율적이고 비정상적인 우회 방법입니다.
+- **Option C (오답)**: `Grep`은 파일 내용을 검색(Search)하기 위한 도구일 뿐, 파일의 내용을 직접 수정(Modify)할 수 있는 기능을 가지고 있지 않습니다.
+
+---
+
+# 49번 문제
+
+**1. 문제 원문**
+
+A legal-document analysis agent has a single `retrieve_clause` tool that can pull arbitrary text ranges from any uploaded file by byte offset, which the model frequently misuses to grab unrelated or malformed spans. The team wants to replace it with a constrained alternative that only ever returns whole, well-defined clauses. Which redesign best follows the pattern of replacing a generic tool with a constrained one?
+
+A) Keep `retrieve_clause` unchanged and add a second agent whose only job is to double-check the byte ranges after retrieval
+
+B) Keep `retrieve_clause` but double the number of example byte-offset calls in its description so the model learns better offsets
+
+C) Replace `retrieve_clause` with a `get_clause_by_id` tool that only accepts a validated clause identifier from a pre-parsed clause index
+
+D) Give the agent broader access by also adding a `raw_file_read` tool so it can cross-check offsets against the full document
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A legal-document analysis agent**
+법률 문서 분석 에이전트는
+
+**has a single `retrieve_clause` tool**
+단일 `retrieve_clause` 도구를 가지고 있습니다
+
+**that can pull arbitrary text ranges**
+임의의 텍스트 범위를 추출할 수 있는
+
+**from any uploaded file**
+업로드된 모든 파일로부터
+
+**by byte offset,**
+바이트 오프셋을 통해,
+
+**which the model frequently misuses**
+하지만 모델이 이를 자주 오용합니다
+
+**to grab unrelated or malformed spans.**
+무관하거나 깨진 텍스트 구간을 가져오는 데.
+
+**The team wants to replace it**
+팀은 이를 교체하고자 합니다
+
+**with a constrained alternative**
+제약이 있는 대안으로
+
+**that only ever returns**
+오직 반환하기만 하는
+
+**whole, well-defined clauses.**
+완전하고 잘 정의된 조항만을.
+
+**Which redesign best follows the pattern**
+어떤 재설계가 이 패턴을 가장 잘 따릅니까
+
+**of replacing a generic tool**
+범용 도구를 교체하는
+
+**with a constrained one?**
+제약된 도구로?
+
+---
+
+**Options:**
+
+**A)**
+**Keep `retrieve_clause` unchanged**
+`retrieve_clause`를 변경 없이 유지하고
+
+**and add a second agent**
+두 번째 에이전트를 추가합니다
+
+**whose only job is to double-check**
+단일 역할이 재확인하는 것인
+
+**the byte ranges after retrieval**
+조회 후의 바이트 범위를
+
+---
+
+**B)**
+**Keep `retrieve_clause`**
+`retrieve_clause`를 유지하되
+
+**but double the number**
+개수를 두 배로 늘립니다
+
+**of example byte-offset calls**
+예시 바이트 오프셋 호출의
+
+**in its description**
+설명란에 있는
+
+**so the model learns better offsets**
+모델이 더 나은 오프셋을 학습하도록
+
+---
+
+**C)**
+**Replace `retrieve_clause` with**
+`retrieve_clause`를 ~로 교체합니다
+
+**a `get_clause_by_id` tool**
+`get_clause_by_id` 도구로
+
+**that only accepts**
+오직 수용하기만 하는
+
+**a validated clause identifier**
+검증된 조항 식별자만을
+
+**from a pre-parsed clause index**
+사전 파싱된 조항 인덱스로부터의
+
+---
+
+**D)**
+**Give the agent broader access**
+에이전트에게 더 넓은 접근 권한을 줍니다
+
+**by also adding a `raw_file_read` tool**
+`raw_file_read` 도구도 함께 추가함으로써
+
+**so it can cross-check offsets**
+오프셋을 교차 검증할 수 있도록
+
+**against the full document**
+전체 문서와 대조하여
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**C번**: Replace `retrieve_clause` with a `get_clause_by_id` tool that only accepts a validated clause identifier from a pre-parsed clause index
+
+**정답 및 해설:**
+**핵심 개념**: 제약된 도구 인터페이스 설계 (Constrained Tool Design)
+LLM 기반 에이전트 시스템에서 임의의 인자(예: 임의의 바이트 범위, 자유 형식 SQL 문 등)를 받는 범용적이고 유연한(Generic) 도구는 모델의 예측 불가능한 오용 및 환각을 유발하기 쉽습니다. 이를 미리 정의되고 검증된 구조(구조화된 식별자, 사전 처리된 인덱스)만 허용하는 제약된(Constrained) 도구로 교체하는 것은 에이전트의 신뢰성을 극대화하는 핵심 아키텍처 패턴입니다.
+
+**문제 상황 분석:**
+- 기존 `retrieve_clause` 도구는 바이트 오프셋 기반으로 임의의 텍스트 범위를 잘라오도록 되어 있어 generic함
+- LLM이 오프셋 계산을 실수하여 무관하거나 자려진 텍스트 구간(malformed spans)을 가져오는 오용이 빈번함
+- 이를 방지하기 위해 완전하고 검증된 조항(clause)만을 안전하게 가져올 수 있는 constrained 형태의 도구 재설계가 필요함
+
+**C번이 정답인 이유:**
+바이트 오프셋 지정과 같은 임의의 파라미터 입력을 제거하고, 문서 파싱 단계에서 미리 정제된 조항 인덱스(pre-parsed index)의 유효한 ID만을 입력받는 `get_clause_by_id` 도구로 교체하는 것이 가장 확실하고 구조적인 제약(Constraint)을 거는 방법입니다. 이를 통해 모델은 잘못된 오프셋 계산을 할 여지 자체가 차단됩니다.
+
+**오답 분석:**
+- **Option A (오답)**: 문제가 있는 범용 도구를 그대로 둔 채 교체 검증용 2차 에이전트를 추가하는 것은 시스템 복잡도와 토큰 비용만 증가시킬 뿐, 근본적인 도구 인터페이스의 결함을 해결하지 못합니다.
+- **Option B (오답)**: 도구 설명란에 프롬프트 예시(Few-shot)만 늘리는 방식은 LLM의 바이트 오프셋 실수라는 근본적 한계를 완벽히 통제할 수 없으며, 제약된 도구로의 교체 패턴이 아닙니다.
+- **Option D (오답)**: 원시 파일 읽기 도구(`raw_file_read`)를 추가하여 에이전트에게 더 넓은 권한을 주는 것은 문제의 의도인 '도구 제약(Constrained Tooling)'과 완전히 반대되는 접근입니다.
+
+---
+
+# 50번 문제
+
+**1. 문제 원문**
+
+An agent has both `translate_text` and `localize_content`, where the latter also adjusts currency, dates, and cultural references beyond direct translation. Both descriptions currently read "Converts text between languages." Which fix best restores reliable routing?
+
+A) Revise `localize_content`'s description to mention currency and culture, and state `translate_text` does direct translation only.
+
+B) Rename `translate_text` to `localize_content_v1` so the model treats it as a deprecated but still valid alternative.
+
+C) Merge both tools into one and let the model pass a boolean localization flag, keeping the merged description as short as possible.
+
+D) Remove `translate_text` from the toolset entirely so only `localize_content` remains for any language task at all.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**An agent has**
+에이전트가 갖고 있습니다
+
+**both `translate_text`**
+`translate_text`와
+
+**and `localize_content`,**
+`localize_content` 둘 다를,
+
+**where the latter**
+후자(`localize_content`)는
+
+**also adjusts currency, dates,**
+통화, 날짜도 함께 조정합니다
+
+**and cultural references**
+그리고 문화적 맥락(참조)을
+
+**beyond direct translation.**
+직접적인 번역을 넘어서.
+
+**Both descriptions currently read**
+두 도구의 설명은 현재 모두 다음과 같습니다
+
+**"Converts text between languages."**
+"언어 간에 텍스트를 변환합니다."
+
+**Which fix best restores**
+어떤 수선 방식이 가장 잘 복원합니까
+
+**reliable routing?**
+신뢰할 수 있는 라우팅(도구 선택)을?
+
+---
+
+**Options:**
+
+**A)**
+**Revise `localize_content`'s description**
+`localize_content`의 설명을 수정합니다
+
+**to mention currency and culture,**
+통화와 문화를 언급하도록,
+
+**and state `translate_text`**
+그리고 `translate_text`에는 명시합니다
+
+**does direct translation only.**
+직접적인 번역만 수행함을.
+
+---
+
+**B)**
+**Rename `translate_text`**
+`translate_text` 이름을 변경합니다
+
+**to `localize_content_v1`**
+`localize_content_v1`로
+
+**so the model treats it**
+모델이 이를 처리하도록
+
+**as a deprecated**
+더 이상 사용되지 않지만(deprecated)
+
+**but still valid alternative.**
+여전히 유효한 대안으로.
+
+---
+
+**C)**
+**Merge both tools into one**
+두 도구를 하나로 통합합니다
+
+**and let the model pass**
+그리고 모델이 전달하도록 합니다
+
+**a boolean localization flag,**
+불리언 현지화 플래그를,
+
+**keeping the merged description**
+통합된 설명을 유지하면서
+
+**as short as possible.**
+가능한 한 짧게.
+
+---
+
+**D)**
+**Remove `translate_text`**
+`translate_text`를 제거합니다
+
+**from the toolset entirely**
+도구 세트에서 완전히
+
+**so only `localize_content` remains**
+`localize_content`만 남도록
+
+**for any language task at all.**
+어떠한 언어 작업이든 간에.
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**A번**: Revise `localize_content`'s description to mention currency and culture, and state `translate_text` does direct translation only.
+
+**정답 및 해설:**
+**핵심 개념**: 도구 서묘(Tool Description) 차별화 및 명확한 도구 라우팅(Tool Routing)
+LLM 에이전트가 여러 도구 중 적절한 도구를 선택(Routing)할 때 가장 중요한 기준은 각 도구의 `description`(설명)입니다. 서로 다른 역할을 수행하는 두 도구의 설명이 동일하다면, 모델은 어떤 도구를 호출해야 할지 구분하지 못해 혼란(Ambiguity)을 겪습니다. 각 도구의 고유 기능과 한계를 명시적으로 구분하여 작성해야 신뢰성 높은 라우팅이 가능해집니다.
+
+**문제 상황 분석:**
+- `translate_text`는 단순 직역 도구이고, `localize_content`는 통화·날짜·문화적 표현까지 변환하는 현지화 도구임
+- 두 도구의 기능적 차이가 분명함에도, 설명문이 동일하게 "Converts text between languages."로 등록되어 있음
+- 설명의 중복으로 인해 LLM이 요청 맥락에 맞는 적절한 도구를 라우팅하지 못하는 문제가 발생함
+
+**A번이 정답인 이유:**
+`localize_content` 설명에 통화 및 문화적 차이 조율 기능(Currency and Culture)을 명시하고, `translate_text` 설명에는 단순 직역 전용(Direct translation only)임을 명확히 서술함으로써 두 도구 간의 경계를 뚜렷하게 분리할 수 있습니다. 이를 통해 모델은 사용자 요청에 따라 정확한 도구를 라우팅하게 됩니다.
+
+**오답 분석:**
+- **Option B (오답)**: 이름을 `v1`로 변경하는 것은 도구의 구체적인 역할 차이를 설명해주지 못하며, 모델이 오래된 버전으로 오인하게 만들어 불필요한 혼란을 초래합니다.
+- **Option C (오답)**: 도구를 통합하고 설명을 최대로 줄이는 것은 플래그 전달 실패나 설명 부족으로 인한 오작동 위험을 높이며, 라우팅을 명확히 개선하는 방법이 아닙니다.
+- **Option D (오답)**: 단순 번역만 필요한 작업과 문화적 현지화가 필요한 작업은 처리 비용이나 목적이 다를 수 있는데, 단순 번역 도구를 무작정 삭제하는 것은 올바른 해결책이 아닙니다.
+
+---
+
+# 51번 문제
+
+**1. 문제 원문**
+
+A synthesis agent frequently needs to confirm a single numeric claim (e.g. a statistic cited in a source) before including it in a final answer, but it is not equipped to resolve deeper factual disputes between conflicting sources. Following the guidance on scoped cross-role tools for high-frequency needs, how should the team design this?
+
+A) Give the synthesis agent no verification tools at all, and require every numeric claim to be manually checked by the coordinator before inclusion in the final answer, regardless of complexity.
+
+B) Give the synthesis agent a narrow verify_fact tool for quick single-claim checks, and have it refer cases with conflicting sources to the coordinator for deeper resolution.
+
+C) Give the synthesis agent the full research agent tool set, enabling it to independently verify any numeric claim and resolve source discrepancies without coordinator intervention.
+
+D) Give the coordinator agent a verify_fact tool but not the synthesis agent, so that the synthesis agent must send every numeric claim to the coordinator for verification and wait for the result.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A synthesis agent**  
+종합(synthesis) 에이전트는  
+
+**frequently needs to confirm**  
+자주 확인해야 합니다  
+
+**a single numeric claim**  
+단일 숫자 주장(주장된 통계치)을  
+
+**(e.g. a statistic cited in a source)**  
+(예: 출처에서 인용된 통계)  
+
+**before including it**  
+이를 포함하기 전에  
+
+**in a final answer,**  
+최종 답변에,  
+
+**but it is not equipped**  
+하지만 그것은 갖추어져 있지 않습니다  
+
+**to resolve deeper factual disputes**  
+더 깊은 사실적 분쟁을 해결하도록  
+
+**between conflicting sources.**  
+충돌하는 출처들 간의.  
+
+**Following the guidance**  
+지침을 따라서  
+
+**on scoped cross-role tools**  
+범위가 제한된 역활 간 공유 도구(scoped cross-role tools)에 관한  
+
+**for high-frequency needs,**  
+빈도가 높은 요구사항을 위한,  
+
+**how should the team design this?**  
+팀은 이를 어떻게 설계해야 합니까?  
+
+---
+
+**Options:**
+
+**A)**
+**Give the synthesis agent**  
+종합 에이전트에 주지 않고  
+
+**no verification tools at all,**  
+어떠한 검증 도구도 전혀,  
+
+**and require every numeric claim**  
+모든 숫자 주장이 ~되도록 요구합니다  
+
+**to be manually checked**  
+수동으로 검토되도록  
+
+**by the coordinator**  
+조정자(coordinator)에 의해  
+
+**before inclusion in the final answer,**  
+최종 답변에 포함되기 전에,  
+
+**regardless of complexity.**  
+복잡성에 관계없이.  
+
+---
+
+**B)**
+**Give the synthesis agent**  
+종합 에이전트에 주고  
+
+**a narrow verify_fact tool**  
+좁은 범위의 `verify_fact` 도구를  
+
+**for quick single-claim checks,**  
+빠른 단일 주장 검증을 위한,  
+
+**and have it refer cases**  
+그리고 사례들을 전달하도록 합니다  
+
+**with conflicting sources**  
+충돌하는 출처가 있는  
+
+**to the coordinator**  
+조정자에게  
+
+**for deeper resolution.**  
+더 깊은 해결을 위해.  
+
+---
+
+**C)**
+**Give the synthesis agent**  
+종합 에이전트에 주고  
+
+**the full research agent tool set,**  
+전체 리서치 에이전트 도구 세트를,  
+
+**enabling it to independently verify**  
+독립적으로 검증할 수 있게 합니다  
+
+**any numeric claim**  
+어떠한 숫자 주장이든  
+
+**and resolve source discrepancies**  
+그리고 출처 간의 불일치를 해결할 수 있게  
+
+**without coordinator intervention.**  
+조정자의 개입 없이.  
+
+---
+
+**D)**
+**Give the coordinator agent**  
+조정자 에이전트에 주고  
+
+**a verify_fact tool**  
+`verify_fact` 도구를  
+
+**but not the synthesis agent,**  
+종합 에이전트에는 주지 않고,  
+
+**so that the synthesis agent**  
+종합 에이전트가 ~하도록 합니다  
+
+**must send every numeric claim**  
+모든 숫자 주장을 보내야만 하도록  
+
+**to the coordinator for verification**  
+검증을 위해 조정자에게  
+
+**and wait for the result.**  
+그리고 결과를 기다리도록.  
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**B번**: Give the synthesis agent a narrow verify_fact tool for quick single-claim checks, and have it refer cases with conflicting sources to the coordinator for deeper resolution.
+
+**정답 및 해설:**
+**핵심 개념**: 역할 분담 및 범위 제한 도구(Scoped Cross-Role Tools) 설계  
+멀티 에이전트 아키텍처에서 특정 역할의 에이전트가 다른 역할의 기능 일부를 **자주(High-frequency)** 수행해야 하는 경우, 전체 도구 세트 권한을 부여하지 않고 **필요에 맞게 범위가 제한된(Scoped/Narrow) 도구**만 제공하는 것이 권장됩니다. 복잡하거나 충돌이 발생하는 깊은 조율 작업은 원래 담당 에이전트(Coordinator/Research Agent)에게 위임하도록 설계합니다.
+
+**문제 상황 분석:**
+- 종합 에이전트(Synthesis agent)는 출처의 단일 숫자 통계치를 확인하는 작업을 매우 자주(Frequently) 수행해야 함
+- 그러나 종합 에이전트는 출처 간 충돌이나 복잡한 사실 관계 분쟁을 해결할 수 있는 기능 및 역량이 없음
+- 빈번한 단일 검증 요구사항을 처리하면서도 에이전트의 역할 범위를 초과하지 않도록 도구를 디자인해야 함
+
+**B번이 정답인 이유:**
+종합 에이전트에 단순하고 빠른 단일 수치 확인만을 수행하는 제한된 `verify_fact` 도구만 부여하고, 출처 간 정보가 충돌하는 복잡한 케이스만 조정자(Coordinator)에게 에스컬레이션(Refer)하도록 설계하는 것이 '범위 제한 cross-role 도구'의 올바른 적용 원칙입니다.
+
+**오답 분석:**
+- **Option A (오답)**: 복잡성에 상관없이 단순 수치 확인까지 매번 조정자가 수동으로 검토하게 만드는 것은 병목 현상을 일으키며 자주 발생하는 요구사항(High-frequency)을 효율적으로 처리하지 못합니다.
+- **Option C (오답)**: 전체 리서치 도구 세트(Full tool set)를 모두 주는 것은 단일 역할 원칙(Principle of Least Privilege/Scoped Tooling)에 위배되며, 에이전트의 복잡도를 불필요하게 높입니다.
+- **Option D (오답)**: 단순 검증조차 종합 에이전트가 직접 수행하지 못하고 매번 조정자에게 보내야 하므로 불필요한 에이전트 간 통신 비용과 지연(Latency)이 발생합니다.
+
+---
+
+# 52번 문제
+
+**1. 문제 원문**
+
+Claude Code is asked to rename an environment variable from `API_TIMEOUT_MS` to `REQUEST_TIMEOUT_MS` everywhere it is referenced across a codebase of several hundred files, with each occurrence sitting in different surrounding code. Which approach best discovers the full scope of the change before applying it?
+
+A) Run Grep with output mode content and a glob scope to list every file and line referencing API_TIMEOUT_MS, then review that list before editing
+
+B) Run Bash to open every file in an interactive editor, since a variable rename of this kind must be reviewed visually rather than located programmatically
+
+C) Run Write on the project's environment configuration file first, then rely on Claude to infer other affected files from that one change afterward
+
+D) Run Glob with the pattern **/API_TIMEOUT_MS to locate files whose names contain the variable, then edit only those matching files
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**Claude Code is asked**
+Claude Code가 요청을 받습니다
+
+**to rename an environment variable**
+환경 변수 이름을 변경하도록
+
+**from `API_TIMEOUT_MS`**
+`API_TIMEOUT_MS`에서
+
+**to `REQUEST_TIMEOUT_MS`**
+`REQUEST_TIMEOUT_MS`로
+
+**everywhere it is referenced**
+참조되는 모든 곳에서
+
+**across a codebase**
+코드베이스 전체에 걸쳐
+
+**of several hundred files,**
+수백 개의 파일로 이루어진,
+
+**with each occurrence sitting**
+각 출현 위치가 존재하면서
+
+**in different surrounding code.**
+서로 다른 주변 코드 내에.
+
+**Which approach best discovers**
+어떤 접근 방식이 가장 잘 발견합니까
+
+**the full scope of the change**
+변경 사항의 전체 범위를
+
+**before applying it?**
+이를 적용하기 전에?
+
+---
+
+**Options:**
+
+**A)**
+**Run Grep**
+Grep을 실행합니다
+
+**with output mode content**
+출력 모드를 content로 하고
+
+**and a glob scope**
+glob 범위를 지정하여
+
+**to list every file and line**
+모든 파일과 줄의 목록을 생성하도록
+
+**referencing API_TIMEOUT_MS,**
+API_TIMEOUT_MS를 참조하는,
+
+**then review that list**
+그런 다음 해당 목록을 검토합니다
+
+**before editing**
+수정하기 전에
+
+---
+
+**B)**
+**Run Bash**
+Bash를 실행합니다
+
+**to open every file**
+모든 파일을 열기 위해
+
+**in an interactive editor,**
+대화형 에디터에서,
+
+**since a variable rename of this kind**
+이러한 종류의 변수 이름 변경은
+
+**must be reviewed visually**
+시각적으로 검토되어야 하므로
+
+**rather than located programmatically**
+프로그램 방식으로 위치를 찾는 대신
+
+---
+
+**C)**
+**Run Write**
+Write를 실행합니다
+
+**on the project's environment configuration file first,**
+프로젝트의 환경 설정 파일에 먼저,
+
+**then rely on Claude**
+그런 다음 Claude에 의존합니다
+
+**to infer other affected files**
+영향을 받는 다른 파일들을 추론하도록
+
+**from that one change afterward**
+그 하나의 변경 사항으로부터 나중에
+
+---
+
+**D)**
+**Run Glob**
+Glob을 실행합니다
+
+**with the pattern `**/API_TIMEOUT_MS`**
+`**/API_TIMEOUT_MS` 패턴으로
+
+**to locate files**
+파일을 찾기 위해
+
+**whose names contain the variable,**
+이름에 해당 변수가 포함된,
+
+**then edit only those matching files**
+그런 다음 매칭되는 해당 파일들만 수정합니다
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**A번**: Run Grep with output mode content and a glob scope to list every file and line referencing API_TIMEOUT_MS, then review that list before editing
+
+**정답 및 해설:**
+**핵심 개념**: 코드베이스 검색 및 탐색 도구(Grep vs Glob)의 역할 분담  
+Claude Code 도구 생태계에서 `Grep`은 파일 **내부 텍스트 내용(Content)**을 패턴으로 검색할 때 사용하며, `Glob`은 **파일 경로/이름(Filename/Path)** 패턴으로 파일 목록을 찾을 때 사용합니다. 코드 전체에서 특정 변수명이 언급된 위치를 탐색할 때는 `Grep`을 사용하여 영향 범위를 사전에 파악하는 것이 표준적인 접근법입니다.
+
+**문제 상황 분석:**
+- 수백 개의 파일에 걸쳐 환경 변수 `API_TIMEOUT_MS`가 참조되고 있음
+- 각 참조 지점의 주변 코드가 서로 다름
+- 변경 작업(Edit)을 적용하기 전에 영향받는 전체 범위(파일 및 정확한 줄 위치)를 완벽히 파악해야 함
+
+**A번이 정답인 이유:**
+`Grep` 도구에 검색 대상 패턴(`API_TIMEOUT_MS`)과 출력 모드(`content`)를 지정하여 실행하면, 코드베이스 전체에서 해당 변수를 참조하는 모든 파일과 해당 줄(Line) 번호/내용을 수집할 수 있습니다. 이를 통해 변경을 적용하기 전 영향 범위를 명확히 검토(Review)할 수 있으므로 최선의 접근법입니다.
+
+**오답 분석:**
+- **Option B (오답)**: Bash로 대화형 에디터를 여는 것은 에이전트 환경에서 비효율적일 뿐만 아니라 자동화 및 정확한 검색 목적에 맞지 않습니다.
+- **Option C (오답)**: 하나의 파일만 먼저 수정한 뒤 모델의 '추론'에만 의존해 나머지 파일을 찾는 방식은 수백 개 파일 중 일부 참조를 누락(Missing reference)시키는 치명적인 결과를 가져올 수 있습니다.
+- **Option D (오답)**: `Glob`은 **파일 이름** 패턴을 일치시키는 도구입니다. 변수명이 파일 이름에 포함되어 있지 않고 파일 내용 속에 포함되어 있는 일반적인 상황에서는 `Glob`으로 참조 위치를 찾을 수 없습니다.
+
+---
+
+# 53번 문제
+
+**1. 문제 원문**
+
+A team is building an agent that uses manual extended thinking (`thinking: {"type": "enabled"}`) to reason before acting, and they want to force it to always call a tool rather than answer directly. They set `tool_choice` to `{"type": "any"}` while manual extended thinking is enabled, and the request fails. What is the correct explanation and recommended remedy?
+
+A) The request failed because extended thinking disables all `tool_choice` options; to fix this, remove all tools from the request and let the model output its reasoning steps as text before acting.
+
+B) The request failed because `{"type": "any"}` requires at least two tools to be defined; adding a second tool, such as a calculator, resolves the incompatibility with extended thinking.
+
+C) The request failed because `{"type": "any"}` is deprecated; replace it with `{"type": "forced"}` and specify a tool name like `search` to satisfy the forced tool choice requirement.
+
+D) When manual extended thinking is enabled, the `tool_choice` values `{"type": "any"}` and `{"type": "tool", ...}` are not supported; set it to `{"type": "auto"}` or `{"type": "none"}` instead. To force a tool call while still using thinking, migrate to adaptive thinking (supported on newer models), or disable manual extended thinking.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A team is building an agent**  
+한 팀이 에이전트를 구축하고 있습니다  
+
+**that uses manual extended thinking**  
+수동 확장 사고(manual extended thinking)를 사용하는  
+
+**(`thinking: {"type": "enabled"}`)**  
+(`thinking: {"type": "enabled"}`)  
+
+**to reason before acting,**  
+행동하기 전에 추론하기 위해,  
+
+**and they want to force it**  
+그리고 그들은 강제하고자 합니다  
+
+**to always call a tool**  
+항상 도구를 호출하도록  
+
+**rather than answer directly.**  
+직접 답변하는 대신.  
+
+**They set `tool_choice` to `{"type": "any"}`**  
+그들은 `tool_choice`를 `{"type": "any"}`로 설정했습니다  
+
+**while manual extended thinking is enabled,**  
+수동 확장 사고가 활성화된 상태에서,  
+
+**and the request fails.**  
+그리고 그 요청은 실패합니다.  
+
+**What is the correct explanation**  
+올바른 설명과  
+
+**and recommended remedy?**  
+권장하는 해결책은 무엇입니까?  
+
+---
+
+**Options:**
+
+**A)**
+**The request failed**  
+요청이 실패했습니다  
+
+**because extended thinking disables**  
+확장 사고가 비활성화하기 때문에  
+
+**all `tool_choice` options;**  
+모든 `tool_choice` 옵션을;  
+
+**to fix this,**  
+이를 해결하려면,  
+
+**remove all tools from the request**  
+요청에서 모든 도구를 제거하고  
+
+**and let the model output**  
+모델이 출력하도록 하십시오  
+
+**its reasoning steps as text**  
+그 추론 단계를 텍스트로  
+
+**before acting.**  
+행동하기 전에.  
+
+---
+
+**B)**
+**The request failed**  
+요청이 실패했습니다  
+
+**because `{"type": "any"}` requires**  
+`{"type": "any"}`가 요구하기 때문에  
+
+**at least two tools to be defined;**  
+최소 두 개의 도구가 정의되는 것을;  
+
+**adding a second tool,**  
+두 번째 도구를 추가하는 것이,  
+
+**such as a calculator,**  
+계산기와 같은,  
+
+**resolves the incompatibility**  
+비호환성을 해결합니다  
+
+**with extended thinking.**  
+확장 사고와의.  
+
+---
+
+**C)**
+**The request failed**  
+요청이 실패했습니다  
+
+**because `{"type": "any"}` is deprecated;**  
+`{"type": "any"}`가 더 이상 사용되지 않기(deprecated) 때문에;  
+
+**replace it with `{"type": "forced"}`**  
+이를 `{"type": "forced"}`로 교체하고  
+
+**and specify a tool name**  
+도구 이름을 지정하십시오  
+
+**like `search`**  
+`search`와 같은  
+
+**to satisfy the forced tool choice requirement.**  
+강제 도구 선택 요구사항을 충족하기 위해.  
+
+---
+
+**D)**
+**When manual extended thinking is enabled,**  
+수동 확장 사고가 활성화되었을 때,  
+
+**the `tool_choice` values `{"type": "any"}` and `{"type": "tool", ...}`**  
+`tool_choice` 값인 `{"type": "any"}` 및 `{"type": "tool", ...}`는  
+
+**are not supported;**  
+지원되지 않습니다;  
+
+**set it to `{"type": "auto"}` or `{"type": "none"}` instead.**  
+대신 `{"type": "auto"}` 또는 `{"type": "none"}`으로 설정하십시오.  
+
+**To force a tool call**  
+도구 호출을 강제하면서  
+
+**while still using thinking,**  
+여전히 사고(thinking) 기능을 사용하려면,  
+
+**migrate to adaptive thinking**  
+적응형 사고(adaptive thinking)로 전환하거나  
+
+**(supported on newer models),**  
+(더 새로운 모델에서 지원됨),  
+
+**or disable manual extended thinking.**  
+수동 확장 사고를 비활성화하십시오.  
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**D번**: When manual extended thinking is enabled, the `tool_choice` values `{"type": "any"}` and `{"type": "tool", ...}` are not supported; set it to `{"type": "auto"}` or `{"type": "none"}` instead. To force a tool call while still using thinking, migrate to adaptive thinking (supported on newer models), or disable manual extended thinking.
+
+**정답 및 해설:**
+**핵심 개념**: Anthropic Claude API의 Extended Thinking과 Tool Choice 제한사항  
+Anthropic API에서 수동 확장 사고(Manual Extended Thinking, `thinking: {"type": "enabled"}`) 기능을 사용할 때, 도구 호출을 강제하는 `tool_choice: {"type": "any"}` 또는 특정 도구를 지정하는 `tool_choice: {"type": "tool", "name": "..."}` 옵션은 서로 비호환되어 API 레벨에서 에러를 반환합니다. 수동 사고 모드에서는 `auto` 또는 `none`만 지원됩니다.
+
+**문제 상황 분석:**
+- 개발팀이 사고 과정(Extended Thinking)을 거친 후 반드시 도구를 호출하도록 `tool_choice: {"type": "any"}` 설정
+- 수동 확장 사고(`type: "enabled"`)가 활성화된 상태에서 도구 강제 제약조건(`any` / `tool`)을 함께 적용함
+- 두 파라미터 간의 제약조건 충돌로 인해 API 요청 실패 발생
+
+**D번이 정답인 이유:**
+수동 확장 사고(Manual Extended Thinking)를 사용할 때 Anthropic API 사상 `tool_choice`는 `auto` 및 `none`만 허용됩니다. 따라서 강제 도구 호출(`any`, `tool`)을 적용하면 안 되며, 만약 사고 과정과 도구 강제 호출을 함께 사용해야 한다면 지원하는 적응형 사고(Adaptive Thinking) 모드로 전환하거나 수동 확장 사고 기능을 비활성화해야 합니다.
+
+**오답 분석:**
+- **Option A (오답)**: 확장 사고가 모든 `tool_choice` 옵션을 비활성화하는 것은 아닙니다. `auto` 및 `none` 설정은 정상 지원됩니다.
+- **Option B (오답)**: `{"type": "any"}`는 단 1개의 도구만 정의되어 있어도 올바르게 동작하는 옵션이며, 도구 개수의 문제가 아닙니다.
+- **Option C (오답)**: Anthropic API에서 `{"type": "any"}`는 정상적인 파라미터이며, `{"type": "forced"}`라는 값은 존재하지 않습니다.
+
+---
+
+# 54번 문제
+
+**1. 문제 원문**
+
+An agent working against a large issue tracker keeps issuing many exploratory search-tool calls just to figure out which issues exist before it can act on any of them. The team wants to cut down on this exploratory overhead. What MCP capability addresses this directly?
+
+A) Add several more search-related tools to the server so the agent can use targeted queries to find relevant issues directly and avoid unnecessary exploratory searches.
+
+B) Increase the tool-call timeout on the issue tracker server so that each search call retrieves more issues and the agent gets a complete view with fewer queries.
+
+C) Switch the issue tracker server's transport from stdio to HTTP so that each query completes faster, and the agent can gather all necessary information with fewer calls.
+
+D) Have the MCP server expose an issue-summary catalog as an MCP resource, so the agent can see available issues up front without needing any repeated searches.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**An agent working**  
+작업하는 에이전트가  
+
+**against a large issue tracker**  
+대규모 이슈 트래커를 대상으로  
+
+**keeps issuing**  
+계속해서 호출합니다  
+
+**many exploratory search-tool calls**  
+수많은 탐색적 검색 도구 호출을  
+
+**just to figure out**  
+단지 파악하기 위해  
+
+**which issues exist**  
+어떤 이슈들이 존재하는지  
+
+**before it can act**  
+조치를 취하기 전에  
+
+**on any of them.**  
+그 중 어느 것에든.  
+
+**The team wants to cut down**  
+팀은 줄이고 싶어 합니다  
+
+**on this exploratory overhead.**  
+이러한 탐색 오버헤드를.  
+
+**What MCP capability**  
+어떤 MCP 기능이  
+
+**addresses this directly?**  
+이를 직접적으로 해결합니까?  
+
+---
+
+**Options:**
+
+**A)**
+**Add several more**  
+몇 개를 더 추가합니다  
+
+**search-related tools to the server**  
+검색 관련 도구들을 서버에  
+
+**so the agent can use**  
+에이전트가 사용할 수 있도록  
+
+**targeted queries**  
+조준된 쿼리를  
+
+**to find relevant issues directly**  
+관련 이슈를 직접 찾기 위해  
+
+**and avoid unnecessary exploratory searches.**  
+그리고 불필요한 탐색적 검색을 피하기 위해.  
+
+---
+
+**B)**
+**Increase the tool-call timeout**  
+도구 호출 타임아웃을 늘립니다  
+
+**on the issue tracker server**  
+이슈 트래커 서버의  
+
+**so that each search call**  
+각 검색 호출이 ~하도록  
+
+**retrieves more issues**  
+더 많은 이슈를 가져오고  
+
+**and the agent gets a complete view**  
+에이전트가 전체적인 뷰를 얻도록  
+
+**with fewer queries.**  
+더 적은 쿼리로.  
+
+---
+
+**C)**
+**Switch the issue tracker server's transport**  
+이슈 트래커 서버의 전송 방식을 전환합니다  
+
+**from stdio to HTTP**  
+stdio에서 HTTP로  
+
+**so that each query completes faster,**  
+각 쿼리가 더 빠르게 완료되도록,  
+
+**and the agent can gather**  
+그리고 에이전트가 수집할 수 있도록  
+
+**all necessary information**  
+모든 필요한 정보를  
+
+**with fewer calls.**  
+더 적은 호출로.  
+
+---
+
+**D)**
+**Have the MCP server expose**  
+MCP 서버가 노출하도록 합니다  
+
+**an issue-summary catalog**  
+이슈 요약 카탈로그를  
+
+**as an MCP resource,**  
+MCP 리소스(resource)로,  
+
+**so the agent can see**  
+에이전트가 볼 수 있도록  
+
+**available issues up front**  
+이용 가능한 이슈들을 사전에  
+
+**without needing any repeated searches.**  
+어떠한 반복적인 검색도 필요 없이.  
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**D번**: Have the MCP server expose an issue-summary catalog as an MCP resource, so the agent can see available issues up front without needing any repeated searches.
+
+**정답 및 해설:**
+**핵심 개념**: MCP 리소스(Resource) vs 도구(Tool)
+Model Context Protocol(MCP)에서 **Tool**은 상태를 변경하거나 동적인 탐색/연산을 수행하는 행동 기반 기능인 반면, **Resource**는 컨텍스트나 읽기 전용 데이터(문서, 목록, 상태 요약 등)를 모델에 사전에 제공하는 메커니즘입니다. 에이전트가 무슨 데이터가 있는지 파악하기 위해 반복적으로 검색 도구를 호출하는 오버헤드를 줄이려면, 해당 목록 데이터를 MCP 리소스로 노출하여 프롬프트 컨텍스트에 즉시 주입해 주는 것이 올바른 설계 패턴입니다.
+
+**문제 상황 분석:**
+- 에이전트가 어떤 이슈가 있는지 파악(전체 현황 확인)하기 위해 반복적으로 검색 도구(`search-tool`)를 실행함
+- 반복적인 도구 호출로 인해 탐색 오버헤드(토큰 소모, 지연 시간)가 과도하게 발생함
+- 검색 도구를 여러 번 실행하지 않고도 이용 가능한 전체 이슈 목록/요약을 사전에 파악할 수 있는 MCP 기본 역량이 필요함
+
+**D번이 정답인 이유:**
+MCP의 **Resource** 사상을 활용하여 이슈 요약 카탈로그를 리소스로 노출하면, 에이전트는 반복적인 검색 도구 호출 없이도 초기 컨텍스트 상에서 존재하는 이슈 목록을 즉시 파악(up front)할 수 있습니다. 이는 탐색적 도구 호출 오버헤드를 직접적으로 제거하는 가장 효과적인 방법입니다.
+
+**오답 분석:**
+- **Option A (오답)**: 검색 관련 도구를 더 추가하는 것은 여전히 도구 호출을 통한 탐색 방식에 의존하므로 탐색 오버헤드를 근본적으로 해결하지 못하며 오히려 모델의 도구 선택 혼란만 야기합니다.
+- **Option B (오답)**: 타임아웃 시간을 늘리는 것은 단일 호출의 대기 시간을 늘릴 뿐, 에이전트가 사전에 전체 목록을 파악하여 탐색 호출 횟수를 줄이는 것과는 직접적인 관련이 없습니다.
+- **Option C (오답)**: 전송 계층(Transport)을 stdio에서 HTTP로 바꾸는 것은 통신 방식의 차이일 뿐, 호출 단위의 응답 속도가 약간 빨라질 수는 있어도 반복적인 탐색 호출 구조 자체를 없애주지 못합니다.
+
+---
+
+# 55번 문제
+
+**1. 문제 원문**
+
+Claude needs to reorganize a file by moving several scattered `export` statements into one grouped block near the top. Which tool sequence should Claude use?
+
+A) Issue one `Edit` call per export statement, each targeting a short unique snippet, relying on the accumulated edits to produce the new grouped layout.
+
+B) Call `Glob` for the file's own path to confirm it exists, then call `Edit` with `old_string` set to the whole file's text and `new_string` as the new version.
+
+C) Read the file to load its full contents, then call `Write` with the complete restructured file content back over that same path.
+
+D) Call `Grep` with output mode `content` to retrieve the matching export lines, treating the returned text as already written back to the file.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**Claude needs to reorganize**  
+Claude가 재구성해야 합니다  
+
+**a file**  
+하나의 파일을  
+
+**by moving several scattered**  
+흩어져 있는 여러 개의  
+
+**`export` statements**  
+`export` 구문들을 이동시킴으로써  
+
+**into one grouped block**  
+하나의 그룹화된 블록으로  
+
+**near the top.**  
+상단 근처의.  
+
+**Which tool sequence**  
+어떤 도구 순서를  
+
+**should Claude use?**  
+Claude가 사용해야 합니까?  
+
+---
+
+**Options:**
+
+**A)**
+**Issue one `Edit` call**  
+하나의 `Edit` 호출을 실행합니다  
+
+**per export statement,**  
+각 export 구문마다,  
+
+**each targeting**  
+각각 대상을 지정하여  
+
+**a short unique snippet,**  
+짧고 고유한 코드 조각을,  
+
+**relying on the accumulated edits**  
+누적된 수정 사항에 의존하면서  
+
+**to produce the new grouped layout.**  
+새로운 그룹화된 레이아웃을 만들어 내기 위해.  
+
+---
+
+**B)**
+**Call `Glob`**  
+`Glob`을 호출합니다  
+
+**for the file's own path**  
+파일 자체의 경로에 대해  
+
+**to confirm it exists,**  
+존재 여부를 확인하기 위해,  
+
+**then call `Edit`**  
+그런 다음 `Edit`을 호출합니다  
+
+**with `old_string` set to**  
+`old_string`을 ~로 설정하여  
+
+**the whole file's text**  
+전체 파일의 텍스트로  
+
+**and `new_string` as the new version.**  
+그리고 `new_string`을 새 버전으로.  
+
+---
+
+**C)**
+**Read the file**  
+파일을 읽어서  
+
+**to load its full contents,**  
+전체 내용을 로드합니다,  
+
+**then call `Write`**  
+그런 다음 `Write`를 호출합니다  
+
+**with the complete restructured file content**  
+재구성된 완전한 파일 내용을 가지고  
+
+**back over that same path.**  
+동일한 경로에 덮어써서.  
+
+---
+
+**D)**
+**Call `Grep`**  
+`Grep`을 호출합니다  
+
+**with output mode `content`**  
+출력 모드를 `content`로 하여  
+
+**to retrieve the matching export lines,**  
+일치하는 export 줄들을 가져오기 위해,  
+
+**treating the returned text**  
+반환된 텍스트를 취급하면서  
+
+**as already written back**  
+이미 다시 기록된 것으로  
+
+**to the file.**  
+파일에.  
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**C번**: Read the file to load its full contents, then call `Write` with the complete restructured file content back over that same path.
+
+**정답 및 해설:**
+**핵심 개념**: 파일 대규모 재구성을 위한 `Edit` vs `Write` 도구 선택 기준  
+Claude Code 도구 세트에서 `Edit` 도구는 파일의 **일부 구간(부분 수정)**을 고유한 `old_string`을 기반으로 안전하게 치환할 때 적합합니다. 반면 파일 전체에 걸쳐 코드를 대대적으로 이동하거나 레이아웃을 완전히 재구성(Restructure/Reorganize)할 때는, 여러 번의 부분 수정보다 파일 전체 내용을 읽어온 후 **`Write` 도구로 전체 내용을 덮어쓰는 것**이 훨씬 안정적이고 오류를 최소화할 수 있습니다.
+
+**문제 상황 분석:**
+- 파일 전체에 여기저기 흩어져 있는 `export` 구문들을 파일 상단으로 모으는 대대적인 구조 변경 작업임
+- 파일 전체의 여러 줄이 동시에 삭제 및 이동되는 광범위한 변화가 발생함
+- 이 상황에서 가장 적절하고 효율적인 파일 수정 도구 사용 패턴을 찾아야 함
+
+**C번이 정답인 이유:**
+파일의 전체 구조를 재배치할 때 여러 개의 부분 `Edit`을 연쇄적으로 수행하면 코드 오프셋이 달라지거나 인접 코드가 꼬여 에러가 발생하기 쉽습니다. 따라서 먼저 파일 내용을 읽어온 뒤, 재구성된 전체 코드를 `Write` 도구를 통해 동일한 경로에 통째로 새로 작성(Overwriting)하는 방식이 모범 사례(Best Practice)입니다.
+
+**오답 분석:**
+- **Option A (오답)**: 흩어진 각 구문마다 `Edit`을 여러 번 연속으로 호출하면 중간 과정에서 고유 문자열 일치가 깨지거나 코드가 꼬일 위험이 매우 큽니다.
+- **Option B (오답)**: 단일 파일의 존재 여부를 확인하기 위해 `Glob`을 호출하는 것은 불필요하며, `Edit`의 `old_string`에 파일 전체 텍스트를 넣는 것은 `Edit` 도구의 취지에도 맞지 않으며 `Write` 도구를 사용하는 것이 올바른 방법입니다.
+- **Option D (오답)**: `Grep`은 단순 파일 내용 검색 도구일 뿐, 파일에 데이터를 다시 쓰거나(Write) 수정하는 기능이 전혀 없습니다.
+
+---
+
+# 56번 문제
+
+**1. 문제 원문**
+
+A tool named `analyze_content` was originally built to summarize any pasted content, including emails and internal notes, but its description was never updated after a web-specific successor tool was introduced. The model now sometimes calls the general tool for web-only tasks. What is the recommended remediation?
+
+A) Leave both tools with their original names, but ask users to specify which tool they want by internal ID every time.
+
+B) Delete the description text from both tools so the model relies entirely on tool names for disambiguation.
+
+C) Increase the priority weight of the newer tool in the backend routing configuration without touching either tool's description.
+
+D) Rename the general tool to reflect its remaining scope, and update its description to exclude the case the newer tool now handles.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A tool named `analyze_content`**
+`analyze_content`라는 이름의 도구가
+
+**was originally built**
+원래 만들어졌습니다
+
+**to summarize any pasted content,**
+붙여넣은 모든 콘텐츠를 요약하도록,
+
+**including emails and internal notes,**
+이메일과 내부 메모를 포함하여,
+
+**but its description was never updated**
+하지만 그 설명은 전혀 업데이트되지 않았습니다
+
+**after a web-specific successor tool**
+웹 전용 후속 도구가
+
+**was introduced.**
+도입된 이후에도.
+
+**The model now sometimes calls**
+모델은 이제 때때로 호출합니다
+
+**the general tool**
+범용(일반) 도구를
+
+**for web-only tasks.**
+웹 전용 작업에 대해서.
+
+**What is the recommended remediation?**
+권장되는 해결책은 무엇입니까?
+
+---
+
+**Options:**
+
+**A)**
+**Leave both tools**
+두 도구를 남겨둡니다
+
+**with their original names,**
+원래 이름 그대로,
+
+**but ask users to specify**
+하지만 사용자에게 지정하도록 요청합니다
+
+**which tool they want**
+어떤 도구를 원하는지
+
+**by internal ID every time.**
+매번 내부 ID를 통해.
+
+---
+
+**B)**
+**Delete the description text**
+설명 텍스트를 삭제합니다
+
+**from both tools**
+두 도구 모두에서
+
+**so the model relies entirely**
+모델이 전적으로 의존하도록
+
+**on tool names**
+도구 이름에만
+
+**for disambiguation.**
+모호성 해소를 위해.
+
+---
+
+**C)**
+**Increase the priority weight**
+우선순위 가중치를 높입니다
+
+**of the newer tool**
+더 최신의 도구의
+
+**in the backend routing configuration**
+백엔드 라우팅 설정에서
+
+**without touching**
+수정하지 않고
+
+**either tool's description.**
+두 도구의 설명 중 어느 것도.
+
+---
+
+**D)**
+**Rename the general tool**
+범용 도구의 이름을 변경합니다
+
+**to reflect its remaining scope,**
+남은 역할 범위를 반영하도록,
+
+**and update its description**
+그리고 그 설명을 업데이트합니다
+
+**to exclude the case**
+사례를 제외하도록
+
+**the newer tool now handles.**
+새로운 도구가 이제 처리하는.
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**D번**: Rename the general tool to reflect its remaining scope, and update its description to exclude the case the newer tool now handles.
+
+**정답 및 해설:**
+**핵심 개념**: 도구 설명 및 이름의 명확화(Tool Name & Description Disambiguation)
+LLM 기반 에이전트 시스템에서 새로운 전용 도구(Dedicated/Successor Tool)가 추가되면 기존 범용 도구의 역할 범위가 축소되거나 명확해져야 합니다. 기존 도구의 이름과 설명(`description`)을 변경하지 않고 그대로 두면 모델이 기능이 중복되는 도구 사이에서 혼란을 느끼고 잘못된 도구를 호출(Bad Routing)하게 됩니다. 따라서 기존 도구의 이름과 설명을 최신 역할 범위에 맞게 업데이트(범위 제외 명시)해 주는 것이 명확한 도구 분격 및 해결책입니다.
+
+**문제 상황 분석:**
+- `analyze_content`라는 범용 도구가 웹 문서, 이메일, 메모 등 모든 텍스트 요약을 담당함
+- 이후 '웹 전용' 요약 도구가 새롭게 도입되었으나, 기존 범용 도구의 설명이 업데이트되지 않음
+- 모델이 웹 관련 작업이 들어왔을 때 신규 웹 전용 도구 대신 기존 범용 도구를 오호출하는 문제가 발생함
+
+**D번이 정답인 이유:**
+기존 범용 도구의 이름을 축소된 축에 맞게 변경하고, 설명(Description)에 "새로운 도구가 담당하는 웹 관련 작업은 제외함"을 명시적으로 작성(Negative Constraint)함으로써, 모델이 두 도구 간의 명확한 역할 경계를 구분하고 정확하게 라우팅할 수 있게 됩니다.
+
+**오답 분석:**
+- **Option A (오답)**: 시스템 내부 문제(도구 명세 모호성)를 해결하지 않고 매번 사용자에게 내부 ID를 지정하라고 요구하는 것은 UX 관점에서 잘못된 설계 방식입니다.
+- **Option B (오답)**: 설명을 아예 삭제하면 모델이 도구의 역할과 인자 형태를 파악할 수 있는 유일한 맥락을 잃게 되어 오작동 위험이 크게 증가합니다.
+- **Option C (오답)**: 도구 설명 및 이름을 명확히 수정하지 않고 백엔드 라우팅 가중치만 조절하는 것은 프롬프트/도구 정의 레벨에서의 모호성을 근본적으로 해결하지 못합니다.
+
+---
+
+# 57번 문제
+
+**1. 문제 원문**
+
+An architect asks Claude Code to count how many files in the `src/components` directory tree currently have no matching test file at all, as a first step in planning test coverage work. Assume that the project follows a consistent and reliable naming convention that pairs each component file with its corresponding test file (for example, `Button.tsx` is tested by `Button.test.tsx`). Which approach most directly answers this without unnecessary file reads?
+
+A) Use Grep to search each component file's own contents for the word test, and count the files where that word never appears
+
+B) Use Glob to list component files and test files separately by their naming pattern, then compare the two path lists for gaps
+
+C) Use Read to open every file under src/components and manually inspect each one for an associated describe block before counting
+
+D) Use Bash to run the full test suite and count how many components report zero assertions executed against them
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**An architect asks Claude Code**  
+아키텍트가 Claude Code에 요청합니다  
+
+**to count how many files**  
+몇 개의 파일이 있는지 개수를 세도록  
+
+**in the `src/components` directory tree**  
+`src/components` 디렉토리 트리 내에  
+
+**currently have no matching test file at all,**  
+현재 일치하는 테스트 파일이 전혀 없는,  
+
+**as a first step**  
+첫 번째 단계로서  
+
+**in planning test coverage work.**  
+테스트 커버리지 작업을 계획하는 데 있어.  
+
+**Assume that the project follows**  
+프로젝트가 따른다고 가정합니다  
+
+**a consistent and reliable naming convention**  
+일관되고 신뢰할 수 있는 명명 규칙을  
+
+**that pairs each component file**  
+각 컴포넌트 파일을 짝지어 주는  
+
+**with its corresponding test file**  
+그에 대응하는 테스트 파일과  
+
+**(for example, `Button.tsx` is tested**  
+(예를 들어, `Button.tsx`는 테스트됩니다  
+
+**by `Button.test.tsx`).**  
+`Button.test.tsx`에 의해).  
+
+**Which approach most directly answers this**  
+어떤 접근 방식이 이에 가장 직접적으로 답합니까  
+
+**without unnecessary file reads?**  
+불필요한 파일 읽기 없이?  
+
+---
+
+**Options:**
+
+**A)**
+**Use Grep**  
+Grep을 사용합니다  
+
+**to search each component file's own contents**  
+각 컴포넌트 파일 자체의 내용을 검색하기 위해  
+
+**for the word test,**  
+test라는 단어에 대해,  
+
+**and count the files**  
+그리고 파일 개수를 셉니다  
+
+**where that word never appears**  
+해당 단어가 전혀 나타나지 않는  
+
+---
+
+**B)**
+**Use Glob**  
+Glob을 사용합니다  
+
+**to list component files and test files**  
+컴포넌트 파일과 테스트 파일 목록을  
+
+**separately by their naming pattern,**  
+명명 패턴에 따라 각각 나열하기 위해,  
+
+**then compare the two path lists for gaps**  
+그런 다음 누락을 찾기 위해 두 경로 목록을 비교합니다  
+
+---
+
+**C)**
+**Use Read**  
+Read를 사용합니다  
+
+**to open every file under src/components**  
+src/components 하위의 모든 파일을 열기 위해  
+
+**and manually inspect each one**  
+그리고 각 파일을 수동으로 검사합니다  
+
+**for an associated describe block**  
+연관된 describe 블록이 있는지  
+
+**before counting**  
+개수를 세기 전에  
+
+---
+
+**D)**
+**Use Bash**  
+Bash를 사용합니다  
+
+**to run the full test suite**  
+전체 테스트 수트를 실행하기 위해  
+
+**and count how many components**  
+그리고 얼마나 많은 컴포넌트가 있는지 셉니다  
+
+**report zero assertions executed against them**  
+실행된 단정문(assertion)이 0개라고 보고하는  
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**B번**: Use Glob to list component files and test files separately by their naming pattern, then compare the two path lists for gaps
+
+**정답 및 해설:**
+**핵심 개념**: 파일 탐색 도구(`Glob`)의 효율적 활용 및 불필요한 I/O 방지  
+Claude Code의 `Glob` 도구는 파일의 내용(Content)을 읽지 않고, 파일 경로 및 이름(Filename/Path)의 패턴만을 빠르게 일치시켜 파일 목록을 수집합니다. 파일 명명 규칙(Naming Convention)이 명확히 정립되어 있는 환경에서 파일 존재 여부나 차이(Gap)를 파악할 때 `Glob`을 활용하면 불필요한 파일 읽기(Read/I/O)나 토큰 소모 없이 빠르게 결과를 도출할 수 있습니다.
+
+**문제 상황 분석:**
+- `src/components` 하위에 대응하는 테스트 파일이 없는 컴포넌트 파일의 수량을 파악해야 함
+- 프로젝트는 `[Name].tsx`와 `[Name].test.tsx`라는 일관되고 신뢰할 수 있는 명명 규칙을 따르고 있음
+- 조건으로 "불필요한 파일 읽기 없이(without unnecessary file reads)" 가장 직접적으로 답할 수 있는 방식을 요구함
+
+**B번이 정답인 이유:**
+명명 규칙이 정해져 있으므로, `Glob`을 사용하여 컴포넌트 파일 목록(`*.tsx`)과 테스트 파일 목록(`*.test.tsx`)을 파일 이름을 기준으로 각각 추출한 뒤 두 경로 목록을 비교하기만 하면 됩니다. 이 방식은 파일 내부 콘텐츠를 전혀 읽을 필요가 없어 I/O 오버헤드와 토큰 소비를 최소화하면서 문제를 해결할 수 있습니다.
+
+**오답 분석:**
+- **Option A (오답)**: `Grep`은 파일 '내부 콘텐츠'를 검색하는 도구입니다. 컴포넌트 파일 내용 안에 'test'라는 단어가 포함되어 있는지 여부와 테스트 파일 존재 여부는 관련이 없으며, 불필요하게 파일 내용을 읽게 됩니다.
+- **Option C (오답)**: `Read` 도구로 디렉토리 내 모든 파일을 하나씩 다 열어보는 것은 문제에서 제시한 "불필요한 파일 읽기를 하지 않는다"는 조건에 정면으로 위배되며 토큰 및 시간 낭비가 매우 심합니다.
+- **Option D (오답)**: 전체 테스트 수트를 실행(`Bash`)하는 것은 파일 존재 유무만 확인하면 되는 단순한 작업에 비해 무겁고 느리며, 존재하지 않는 테스트 파일에 대한 어설션 실행 결과를 추적하는 것은 문제의 요구사항에서 벗어납니다.
+
+---
+
+# 58번 문제
+
+**1. 문제 원문**
+
+A module `dateUtils.ts` re-exports several functions under different names, such as `export { formatDate as fmt, parseDate as pd }`. Claude needs to find every caller of either the original or the re-exported names before it can safely rename the underlying `formatDate` function. Which approach correctly accounts for the re-exports?
+
+A) Run Glob for `**/dateUtils*` to find files related to date utilities, then assume every caller also lives inside a file matching that same pattern
+
+B) Read dateUtils.ts first to identify every exported name including aliases, then Grep for each exported name across the codebase
+
+C) Run Bash to count how many times the word export appears in the repository, then read only the files where that count exceeds a fixed threshold
+
+D) Run a single Grep search for the literal string formatDate, assuming any caller that uses the alias fmt will also match that same pattern
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A module `dateUtils.ts`**  
+모듈 `dateUtils.ts`는  
+
+**re-exports several functions**  
+여러 함수를 다시 내보냅니다(re-export)  
+
+**under different names,**  
+다른 이름으로,  
+
+**such as `export { formatDate as fmt, parseDate as pd }`.**  
+`export { formatDate as fmt, parseDate as pd }`와 같이.  
+
+**Claude needs to find**  
+Claude는 찾아야 합니다  
+
+**every caller of**  
+~의 모든 호출자를  
+
+**either the original**  
+원래 이름이나  
+
+**or the re-exported names**  
+또는 다시 내보내진 이름 중 하나라도 사용한  
+
+**before it can safely rename**  
+안전하게 이름을 변경하기 전에  
+
+**the underlying `formatDate` function.**  
+기반이 되는 `formatDate` 함수를.  
+
+**Which approach**  
+어떤 접근 방식이  
+
+**correctly accounts for**  
+올바르게 고려합니까  
+
+**the re-exports?**  
+다시 내보내진 이름(re-exports)을?  
+
+---
+
+**Options:**
+
+**A)**
+**Run Glob for `**/dateUtils*`**  
+`**/dateUtils*`로 Glob을 실행하여  
+
+**to find files related to date utilities,**  
+날짜 유틸리티와 관련된 파일들을 찾고,  
+
+**then assume every caller**  
+그런 다음 모든 호출자 또한 ~라고 가정합니다  
+
+**also lives inside a file**  
+파일 내부에 존재한다고  
+
+**matching that same pattern**  
+동일한 패턴과 일치하는  
+
+---
+
+**B)**
+**Read dateUtils.ts first**  
+`dateUtils.ts`를 먼저 읽어서  
+
+**to identify every exported name**  
+내보내진 모든 이름을 확인합니다  
+
+**including aliases,**  
+별칭(alias)을 포함하여,  
+
+**then Grep for each exported name**  
+그런 다음 내보내진 각 이름에 대해 Grep을 실행합니다  
+
+**across the codebase**  
+코드베이스 전체에서  
+
+---
+
+**C)**
+**Run Bash**  
+Bash를 실행합니다  
+
+**to count how many times**  
+얼마나 여러 번 ~하는지 세기 위해  
+
+**the word export appears**  
+export라는 단어가 나타나는지  
+
+**in the repository,**  
+저장소 내에서,  
+
+**then read only the files**  
+그런 다음 해당 파일들만 읽습니다  
+
+**where that count exceeds**  
+그 횟수가 초과하는  
+
+**a fixed threshold**  
+고정된 임계값을  
+
+---
+
+**D)**
+**Run a single Grep search**  
+단일 Grep 검색을 실행합니다  
+
+**for the literal string formatDate,**  
+리터럴 문자열 `formatDate`에 대해,  
+
+**assuming any caller**  
+어떠한 호출자이든 ~할 것이라고 가정하면서  
+
+**that uses the alias fmt**  
+별칭 `fmt`를 사용하는  
+
+**will also match that same pattern**  
+동일한 패턴과 일치할 것이라고  
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**B번**: Read dateUtils.ts first to identify every exported name including aliases, then Grep for each exported name across the codebase
+
+**정답 및 해설:**
+**핵심 개념**: 코드 리팩토링 시 심볼 파악 및 코드베이스 검색(`Read` -> `Grep`)  
+함수 이름을 리팩토링/변경할 때, 해당 함수가 다른 이름(Alias/Re-export)으로 재정의되어 사용 중이라면 단일 원본 이름 검색만으로는 호출 지점(Caller)을 모두 찾아낼 수 없습니다. 따라서 모듈 파일을 먼저 읽어 별칭을 식별한 뒤, 식별된 모든 이름들에 대해 코드베이스 전체를 검색하는 단계별 접근 방식이 필수적입니다.
+
+**문제 상황 분석:**
+- `formatDate` 함수가 `dateUtils.ts` 내에서 `fmt`라는 별칭(alias)으로 re-export되어 있음
+- 외부 코드에서는 `formatDate`뿐만 아니라 `fmt`라는 이름으로 해당 함수를 호출하고 있을 가능성이 있음
+- 안전한 함수명 변경을 위해 모든 실제 호출 지점(Caller)을 누락 없이 파악해야 함
+
+**B번이 정답인 이유:**
+먼저 `Read` 도구로 `dateUtils.ts` 파일의 내용을 확인하여 `formatDate`가 `fmt`로 re-export되었음을 파악한 후, `formatDate`와 `fmt` 두 이름 모두에 대해 `Grep` 검색을 수행해야 코드베이스 전체에서 호출되는 모든 위치를 완벽하게 추적할 수 있습니다.
+
+**오답 분석:**
+- **Option A (오답)**: `Glob`은 파일 경로만 검색하므로 파일 내부에서 함수를 호출하는 지점을 찾을 수 없으며, 호출자가 반드시 동일한 파일명 패턴 내에만 존재한다는 가정은 잘못되었습니다.
+- **Option C (오답)**: export 단어의 등장 횟수를 기준으로 임계값을 적용하는 방식은 호출 지점을 탐색하는 것과 전혀 무관한 잘못된 접근 방식입니다.
+- **Option D (오답)**: `formatDate` 문자열만 단일 Grep으로 검색하면, 별칭인 `fmt`로 호출하고 있는 위치를 모두 놓치게(Miss) 되므로 리팩토링 시 런타임 에러가 발생할 수 있습니다.
+
+---
+
+# 59번 문제
+
+**1. 문제 원문**
+
+A classification subagent must always emit a structured label using one of its provided tools (e.g. `tag_urgent`, `tag_normal`, `tag_spam`) and must never return free-text commentary instead of a call, though which specific tag applies depends on the message content. Which tool_choice setting guarantees this behavior?
+
+A) `tool_choice: {"type": "any"}`, which requires the model to call one of the provided tools without pinning it to a specific one
+
+B) `tool_choice: {"type": "auto"}`, which lets the model decide whether calling a tag tool or replying in prose better fits the message
+
+C) `tool_choice: {"type": "none"}`, which stops the model from calling any tag tool and relies on prompt wording instead
+
+D) `tool_choice: {"type": "tool", "name": "tag_normal"}`, which forces the same tag every time regardless of message content
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A classification subagent**  
+분류 서브에이전트는  
+
+**must always emit**  
+항상 출력해야 합니다  
+
+**a structured label**  
+구조화된 레이블을  
+
+**using one of its provided tools**  
+제공된 도구 중 하나를 사용하여  
+
+**(e.g. `tag_urgent`, `tag_normal`, `tag_spam`)**  
+(예: `tag_urgent`, `tag_normal`, `tag_spam`)  
+
+**and must never return**  
+그리고 절대 반환해서는 안 됩니다  
+
+**free-text commentary**  
+자유 형식의 텍스트 해설을  
+
+**instead of a call,**  
+도구 호출 대신에,  
+
+**though which specific tag applies**  
+어떤 특정 태그가 적용될지는  
+
+**depends on the message content.**  
+메시지 내용에 따라 달라지지만.  
+
+**Which tool_choice setting**  
+어떤 tool_choice 설정이  
+
+**guarantees this behavior?**  
+이 동작을 보장합니까?  
+
+---
+
+**Options:**
+
+**A)**
+**`tool_choice: {"type": "any"}`**,  
+`tool_choice: {"type": "any"}`  
+
+**which requires the model**  
+이는 모델에게 요구합니다  
+
+**to call one of the provided tools**  
+제공된 도구 중 하나를 호출하도록  
+
+**without pinning it**  
+이를 고정하지 않고  
+
+**to a specific one**  
+특정 도구 하나로  
+
+---
+
+**B)**
+**`tool_choice: {"type": "auto"}`**,  
+`tool_choice: {"type": "auto"}`  
+
+**which lets the model decide**  
+이는 모델이 결정하도록 합니다  
+
+**whether calling a tag tool**  
+태그 도구를 호출하는 것과  
+
+**or replying in prose**  
+일반 텍스트로 응답하는 것 중  
+
+**better fits the message**  
+어느 쪽이 메시지에 더 적합한지를  
+
+---
+
+**C)**
+**`tool_choice: {"type": "none"}`**,  
+`tool_choice: {"type": "none"}`  
+
+**which stops the model**  
+이는 모델을 멈추게 합니다  
+
+**from calling any tag tool**  
+어떤 태그 도구도 호출하지 못하도록  
+
+**and relies on prompt wording instead**  
+대신 프롬프트 문구에 의존합니다  
+
+---
+
+**D)**
+**`tool_choice: {"type": "tool", "name": "tag_normal"}`**,  
+`tool_choice: {"type": "tool", "name": "tag_normal"}`  
+
+**which forces the same tag every time**  
+이는 매번 동일한 태그를 강제합니다  
+
+**regardless of message content**  
+메시지 내용에 관계없이  
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**A번**: `tool_choice: {"type": "any"}`, which requires the model to call one of the provided tools without pinning it to a specific one
+
+**정답 및 해설:**
+**핵심 개념**: Anthropic Claude API의 `tool_choice` 제어 방식  
+`tool_choice` 파라미터는 모델이 도구를 사용할 방식을 제어합니다. `type: "any"` 옵션은 모델이 자유 텍스트 응답을 출력하는 것을 금지하고, 정의된 도구들 중 **최소 하나 이상을 반드시 호출하도록 강제(Required Tool Calling)**합니다. 특정한 하나의 도구 이름만 지정하지 않기 때문에 모델이 내용에 맞는 도구를 자유롭게 선택할 수 있습니다.
+
+**문제 상황 분석:**
+- 에이전트는 일반 텍스트 응답 없이 반드시 도구를 사용하여 구조화된 레이블을 반환해야 함
+- 상황/메시지 내용에 따라 호출할 도구(`tag_urgent`, `tag_normal`, `tag_spam`)가 달라짐
+- 즉, '특정 도구 1개로의 고정'이 아닌 '제공된 도구 중 하나를 무조건 호출'하도록 설정해야 함
+
+**A번이 정답인 이유:**
+`{"type": "any"}` 설정은 모델이 일반 텍스트 형태의 답변을 출력하는 것을 차단하고 제공된 도구 목록 중 상황에 알맞은 도구 1개를 반드시 선택하여 호출하도록 강제하므로 요구사항을 정확히 만족시킵니다.
+
+**오답 분석:**
+- **Option B (오답)**: `{"type": "auto"}`는 도구를 호출할지, 일반 텍스트로 답변할지를 모델이 자율적으로 판단하므로 도구 호출을 항상 보장(Guarantee)하지 못합니다.
+- **Option C (오답)**: `{"type": "none"}`은 모든 도구 호출을 금지하고 텍스트 응답만 생성하도록 만듭니다.
+- **Option D (오답)**: `{"type": "tool", "name": "tag_normal"}`은 메시지 내용과 무관하게 오직 `tag_normal` 도구만 강제로 호출하도록 고정하므로 내용에 따라 알맞은 태그를 선택해야 하는 조건에 위배됩니다.
+
+---
+
+# 60번 문제
+
+**1. 문제 원문**
+
+A single generalist agent handling an entire content pipeline (research, outline, draft, edit, publish) has 20 tools and shows declining tool-selection accuracy as more tools were added over time. The architect proposes splitting it into five specialized subagents, each scoped to roughly 4 tools for its stage, coordinated by a lightweight orchestrator. What is the main reliability benefit of this redesign, based on the relationship between tool count and selection accuracy?
+
+A) The orchestrator caches tool results across subagents, which eliminates the need for most subagents to make tool calls at all
+
+B) Splitting into subagents reduces the total number of API calls made across the whole pipeline, which is the main source of the earlier selection errors
+
+C) Each subagent now discriminates among a much smaller candidate set, which directly reduces the decision complexity that was degrading tool selection at 20 tools
+
+D) Each subagent now runs on a smaller context window, which forces the model to think more carefully before selecting a tool
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A single generalist agent**  
+단일 일반형(generalist) 에이전트가  
+
+**handling an entire content pipeline**  
+전체 콘텐츠 파이프라인을 처리하는  
+
+**(research, outline, draft, edit, publish)**  
+(조사, 개요 작성, 초안 작성, 편집, 게시)  
+
+**has 20 tools**  
+20개의 도구를 가지고 있으며  
+
+**and shows declining tool-selection accuracy**  
+도구 선택 정확도 저하를 보입니다  
+
+**as more tools were added over time.**  
+시간이 지남에 따라 더 많은 도구가 추가되면서.  
+
+**The architect proposes splitting it**  
+아키텍터는 이를 분할할 것을 제안합니다  
+
+**into five specialized subagents,**  
+5개의 전문화된 서브에이전트로,  
+
+**each scoped to roughly 4 tools**  
+각각 약 4개의 도구로 범위가 제한된  
+
+**for its stage,**  
+해당 단계를 위해,  
+
+**coordinated by a lightweight orchestrator.**  
+가벼운 오케스트레이터에 의해 조율되는.  
+
+**What is the main reliability benefit**  
+주요 신뢰성 이점은 무엇입니까  
+
+**of this redesign,**  
+이 재설계의,  
+
+**based on the relationship**  
+관계를 바탕으로 했을 때  
+
+**between tool count and selection accuracy?**  
+도구 개수와 선택 정확도 사이의?  
+
+---
+
+**Options:**
+
+**A)**
+**The orchestrator caches tool results**  
+오케스트레이터가 도구 결과를 캐싱합니다  
+
+**across subagents,**  
+서브에이전트 전체에 걸쳐,  
+
+**which eliminates the need**  
+이것은 필요성을 없애줍니다  
+
+**for most subagents**  
+대부분의 서브에이전트가  
+
+**to make tool calls at all**  
+도구 호출을 전혀 하지 않을  
+
+---
+
+**B)**
+**Splitting into subagents reduces**  
+서브에이전트로 분할하는 것은 줄여줍니다  
+
+**the total number of API calls**  
+전체 API 호출 횟수를  
+
+**made across the whole pipeline,**  
+전체 파이프라인에서 발생하는,  
+
+**which is the main source**  
+이것이 주요 원인입니다  
+
+**of the earlier selection errors**  
+이전 선택 오류의  
+
+---
+
+**C)**
+**Each subagent now discriminates**  
+각 서브에이전트는 이제 식별 및 선택합니다  
+
+**among a much smaller candidate set,**  
+훨씬 더 작은 후보군 집합 중에서,  
+
+**which directly reduces**  
+이것은 직접적으로 줄여줍니다  
+
+**the decision complexity**  
+의사결정 복잡성을  
+
+**that was degrading tool selection**  
+도구 선택 성능을 저하시키던  
+
+**at 20 tools**  
+20개 도구 상황에서  
+
+---
+
+**D)**
+**Each subagent now runs**  
+각 서브에이전트는 이제 실행됩니다  
+
+**on a smaller context window,**  
+더 작은 컨텍스트 윈도우에서,  
+
+**which forces the model**  
+이것은 모델에게 강제합니다  
+
+**to think more carefully**  
+더 신중하게 생각하도록  
+
+**before selecting a tool**  
+도구를 선택하기 전에  
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**C번**: Each subagent now discriminates among a much smaller candidate set, which directly reduces the decision complexity that was degrading tool selection at 20 tools
+
+**정답 및 해설:**
+**핵심 개념**: 도구 개수와 도구 선택 정확도(Tool-Selection Accuracy)의 관계  
+LLM 기반 에이전트 시스템에서 단일 에이전트에 제공되는 도구의 개수(Tool Count)가 늘어날수록 모델이 평가해야 하는 스키마와 설명(Description)의 양이 많아져 **의사결정 복잡성(Decision Complexity)**이 급격히 증가합니다. 도구가 약 10~20개를 넘어가면 적절한 도구를 라우팅하고 정확한 인자를 추출하는 정확도가 눈에 띄게 저하됩니다. 이를 단계별 서브에이전트로 나누어 각 에이전트가 처리하는 도구 후보군을 소수로 제한(Scoping)하는 것이 시스템 신뢰성을 높이는 핵심 아키텍처 패턴입니다.
+
+**문제 상황 분석:**
+- 1개의 범용 에이전트가 20개의 도구를 가지면서 도구 선택 정확도가 저하되는 문제 발생
+- 파라미터/도구 스키마의 수와 모호성 증가로 인해 모델의 도구 라우팅 오작동 증가
+- 해결책으로 5개의 전용 서브에이전트에 각각 약 4개의 도구만 할당하도록 멀티 에이전트 아키텍처로 변경함
+
+**C번이 정답인 이유:**
+단일 에이전트가 고려해야 하는 도구가 20개에서 각 서브에이전트당 4개로 대폭 줄어듦에 따라, 모델이 도구를 비교·선택할 때 거쳐야 하는 후보군 집합(Candidate Set)의 크기가 크게 감소합니다. 이는 의사결정 복잡성을 직접적으로 낮춰주어 도구 선택 정확도와 신뢰성을 획기적으로 개선합니다.
+
+**오답 분석:**
+- **Option A (오답)**: 오케스트레이터의 결과 캐싱은 응답 속도 향상이나 비용 절감 요소일 수 있으나, 도구 선택 정확도 저하 문제를 다루는 핵심 신뢰성 이점이 아니며 도구 호출 자체를 없애주지도 않습니다.
+- **Option B (오답)**: 에이전트를 여러 개로 분할하고 오케스트레이션을 거치면 오케스트레이터 및 서브에이전트 간의 통신이 추가되어 총 API 호출 수가 오히려 증가하거나 유지됩니다. API 호출 횟수 자체가 도구 선택 오류의 원인이 아닙니다.
+- **Option D (오답)**: 컨텍스트 윈도우 크기가 작아진다고 해서 모델이 더 신중하게 생각(Think carefully)하도록 강제되는 것은 아니며, 본 문제의 핵심 원인은 컨텍스트 크기가 아닌 도구 후보군의 복잡성입니다.
