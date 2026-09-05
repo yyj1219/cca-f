@@ -1,0 +1,2282 @@
+### 31번 문제
+
+**1. 문제 원문**
+
+A `cancel_subscription` MCP tool rejects a cancellation because the account is locked in a legal hold, a policy condition that will not change no matter how the request is retried or reformatted. The engineer must choose between labeling this a validation error or a business error. Which choice is correct, and why?
+
+A) Validation error, because any rejection after initial schema checks indicates the input, when checked against account state, does not pass full system validation.
+
+B) Business error, because the legal hold check occurs in a separate service after request validation, so the rejection is a business rule violation, not a schema issue.
+
+C) It is a business error because the request itself is well-formed and the rejection stems from a policy rule about the account's state rather than malformed input.
+
+D) Validation fails because the account ID in the request is the specific field that, when evaluated against the account's legal hold status, causes the rejection.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A `cancel_subscription` MCP tool**
+`cancel_subscription` MCP 도구가
+
+**rejects a cancellation**
+구독 취소를 거부합니다
+
+**because the account is locked**
+계정이 잠겨있기 때문에
+
+**in a legal hold,**
+법적 보류 상태로
+
+**a policy condition**
+정책 조건인
+
+**that will not change**
+변하지 않을
+
+**no matter how the request is retried**
+요청을 어떻게 재시도하든
+
+**or reformatted.**
+또는 재구성하든 간에.
+
+**The engineer must choose**
+엔지니어는 선택해야 합니다
+
+**between labeling this**
+이를 분류하는 것 중에서
+
+**a validation error or a business error.**
+검증 에러로 볼 것인지 비즈니스 에러로 볼 것인지.
+
+**Which choice is correct, and why?**
+어떤 선택이 올바르며, 그 이유는 무엇입니까?
+
+---
+
+**Options:**
+
+**A)**
+**Validation error,**
+검증 에러,
+
+**because any rejection**
+왜냐하면 모든 거부는
+
+**after initial schema checks**
+초기 스키마 검사 이후의
+
+**indicates the input,**
+입력값이 ~함을 나타내기 때문이다
+
+**when checked against account state,**
+계정 상태와 비교하여 검사될 때
+
+**does not pass full system validation.**
+전체 시스템 검증을 통과하지 못했음을.
+
+**B)**
+**Business error,**
+비즈니스 에러,
+
+**because the legal hold check**
+왜냐하면 법적 보류 검사가
+
+**occurs in a separate service**
+별도의 서비스에서 발생하기 때문이다
+
+**after request validation,**
+요청 검증 이후에
+
+**so the rejection is a business rule violation,**
+따라서 이 거부는 비즈니스 규칙 위반이다
+
+**not a schema issue.**
+스키마 문제가 아니라.
+
+**C)**
+**It is a business error**
+비즈니스 에러이다
+
+**because the request itself**
+왜냐하면 요청 자체는
+
+**is well-formed**
+올바른 형식(well-formed)이며
+
+**and the rejection stems from**
+거부는 ~에서 비롯되기 때문이다
+
+**a policy rule**
+정책 규칙으로부터
+
+**about the account's state**
+계정의 상태에 관한
+
+**rather than malformed input.**
+잘못된 형식의 입력이 아니라.
+
+**D)**
+**Validation fails**
+검증이 실패한다
+
+**because the account ID in the request**
+왜냐하면 요청 안의 계정 ID가
+
+**is the specific field that,**
+~한 특정 필드이기 때문이다
+
+**when evaluated against the account's legal hold status,**
+계정의 법적 보류 상태와 평가될 때
+
+**causes the rejection.**
+거부를 유발하는.
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**C번**: It is a business error because the request itself is well-formed and the rejection stems from a policy rule about the account's state rather than malformed input.
+
+**정답 및 해설:**
+**핵심 개념**: 
+검증 에러(Validation Error)는 전달된 데이터/입력의 형식, 구조, 필드 누락 등 스키마(Schema) 차원의 결함을 의미하며, 비즈니스 에러(Business/Domain Error)는 입력 형식 자체는 정상(Well-formed)이지만 도메인 정책, 계정 상태, 비즈니스 규칙 위반으로 인해 요청을 처리할 수 없는 경우 발생합니다.
+
+**문제 상황 분석:**
+- 클라이언트가 보낸 구독 취소 요청 메시지는 형식이나 데이터 타입 측면에서 완벽한 상태(Well-formed)입니다.
+- 계정이 '법적 보류(Legal hold)' 상태에 있어 정책상 취소가 불가능한 시스템/비즈니스 제약이 존재합니다.
+- 입력값의 형식을 재구성(reformat)하거나 재시도(retry)하더라도 비즈니스 정책 조건이 바뀌지 않는 한 해결되지 않습니다.
+
+**C번이 정답인 이유:**
+요청 문맥 및 스키마 관점에서 입력값 형태 자체는 정상적이지만, 시스템의 비즈니스 정책(계정 상태가 법적 보류)에 의해 거부된 것이므로 '비즈니스 에러(Business error)'로 분류하는 것이 정확합니다. C번은 입력 데이터의 결함(Malformed input)이 아닌 계정 상태 정책(Policy rule)이 원인임을 명확히 설명합니다.
+
+**오답 분석:**
+- **Option A (오답)**: 시스템 상태 체크 과정에서 거부된다고 해서 이를 유효성 검증(Validation) 에러로 분류하는 것은 에러의 본질(입력 오류 vs 도메인 정책 위반)을 혼동한 설명입니다.
+- **Option B (오답)**: 비즈니스 에러로 분류한 결론은 맞지만, 이유로서 '별도의 서비스에서 실행되기 때문'이라는 구조적/실행 위치 조건은 에러의 개념적 원인 분류 표준이 아닙니다.
+- **Option D (오답)**: 계정 ID 필드가 법적 보류 상태와 평가된다는 이유로 이를 검증 실패(Validation fails)로 규정하는 것은 잘못되었습니다. 필드의 형식적 유효성과 데이터가 가리키는 대상의 상태 정책 위반은 엄격히 구분됩니다.
+
+---
+
+### 32번 문제
+
+**1. 문제 원문**
+
+Claude Code is fixing a bug and wants to reproduce it first by running the project's test suite and capturing the failing stack trace before making any code changes. Which tool should Claude use to run the suite and view its output?
+
+A) Grep, to search the codebase for the word test and treat matching file names as evidence that the suite has already passed
+
+B) Bash, to invoke the project's test runner command and capture its stdout and stderr, including the stack trace, in the result
+
+C) Read, to open the test runner's configuration file and infer the current pass or fail status of the suite from its settings
+
+D) Glob, to list all files matching **/*.test.* and treat the presence of test files as confirmation that the suite runs cleanly
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**Claude Code is fixing a bug**
+Claude Code가 버그를 수정하고 있으며
+
+**and wants to reproduce it first**
+그것을 먼저 재현하고자 합니다
+
+**by running the project's test suite**
+프로젝트의 테스트 스위트를 실행하여
+
+**and capturing the failing stack trace**
+그리고 실패한 스택 트레이스를 수집하여
+
+**before making any code changes.**
+어떤 코드 변경도 하기 전에.
+
+**Which tool should Claude use**
+Claude는 어떤 도구를 사용해야 합니까
+
+**to run the suite**
+스위트를 실행하고
+
+**and view its output?**
+그 출력을 확인하기 위해?
+
+---
+
+**Options:**
+
+**A)**
+**Grep,**
+Grep 도구,
+
+**to search the codebase**
+코드베이스를 검색하기 위해
+
+**for the word test**
+'test'라는 단어를 찾아
+
+**and treat matching file names**
+그리고 일치하는 파일 이름을 간주하기 위해
+
+**as evidence**
+증거로
+
+**that the suite has already passed**
+스위트가 이미 통과했다는.
+
+**B)**
+**Bash,**
+Bash 도구,
+
+**to invoke the project's test runner command**
+프로젝트의 테스트 러너 명령어를 실행하기 위해
+
+**and capture its stdout and stderr,**
+그리고 그것의 표준 출력(stdout) 및 표준 에러(stderr)를 수집하기 위해,
+
+**including the stack trace,**
+스택 트레이스를 포함하여,
+
+**in the result**
+결과 내에서.
+
+**C)**
+**Read,**
+Read 도구,
+
+**to open the test runner's configuration file**
+테스트 러너의 설정 파일을 열기 위해
+
+**and infer the current pass or fail status**
+그리고 현재의 성공 또는 실패 상태를 추론하기 위해
+
+**of the suite from its settings**
+그 설정으로부터 스위트의.
+
+**D)**
+**Glob,**
+Glob 도구,
+
+**to list all files matching `**/*.test.*`**
+`**/*.test.*` 패턴과 일치하는 모든 파일을 나열하기 위해
+
+**and treat the presence of test files**
+그리고 테스트 파일의 존재를 간주하기 위해
+
+**as confirmation**
+확증으로
+
+**that the suite runs cleanly**
+스위트가 문제없이 실행된다는.
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**B번**: Bash, to invoke the project's test runner command and capture its stdout and stderr, including the stack trace, in the result
+
+**정답 및 해설:**
+**핵심 개념**: 
+Claude Code 환경에서 `Bash` 도구는 터미널 명령어를 실행하고 그 결과로 나오는 표준 출력(`stdout`)과 표준 에러(`stderr`)를 캡처하는 데 사용됩니다. 외부 명령어(예: `npm test`, `pytest` 등 테스트 러너)를 직접 실행하여 실제 오류 발생 현상 및 스택 트레이스를 확인하기 위해서는 Shell 명령을 실행할 수 있는 `Bash` 도구가 필수적입니다.
+
+**문제 상황 분석:**
+- Claude Code가 코드를 수정하기 전, 버그를 재현하고 오류 원인을 확인하려 합니다.
+- 이를 위해 프로젝트의 테스트 스위트를 직접 실행(run)하고 출력 결과(스택 트레이스)를 수집해야 합니다.
+- 파일 검색, 파일 읽기 등의 단순 조회용 도구로는 시스템 명령어를 직접 실행하거나 실행 결과를 얻어올 수 없습니다.
+
+**B번이 정답인 이유:**
+`Bash` 도구는 프로젝트에 설정된 테스트 러너 명령어(예: `pytest`, `jest`, `cargo test` 등)를 실제로 실행(invoke)하고, 이 과정에서 출력되는 스택 트레이스를 포함한 `stdout`과 `stderr` 결과를 받아올 수 있는 유일한 도구입니다.
+
+**오답 분석:**
+- **Option A (오답)**: `Grep`은 텍스트 패턴을 검색하는 도구일 뿐, 명령어를 실행하거나 테스트 결과를 얻을 수 없습니다. 또한 파일 이름 존재 여부를 테스트 통과 증거로 간주한다는 설명 역시 부적절합니다.
+- **Option C (오답)**: `Read`는 파일을 읽는 도구입니다. 설정 파일의 내용을 읽는 것만으로는 실제 테스트 실행 결과나 에러 발생 시의 스택 트레이스를 알 수 없습니다.
+- **Option D (오답)**: `Glob`은 패턴에 맞는 파일 목록을 찾는 도구입니다. 테스트 파일이 존재하는지 확인하는 것과 실제 테스트를 실행하여 버그를 재현하는 것은 무관합니다.
+
+---
+
+### 33번 문제
+
+**1. 문제 원문**
+
+An onboarding agent walks a new user through account setup and needs to call `create_profile` immediately as the very first action of the conversation, before considering any other tool such as `send_welcome_email` or `assign_default_settings`. After that first call, the agent should freely decide among the remaining tools based on what the user says. What is the best way to configure this?
+
+A) Order `create_profile` first in the `tools` array and leave `tool_choice` at `{"type": "auto"}` for the whole conversation
+
+B) Use `tool_choice: {"type": "none"}` for the first turn so the model cannot call any tool, then switch to `{"type": "auto"}` afterward
+
+C) Use `tool_choice: {"type": "any"}` for the entire conversation so the model is always forced to pick from `create_profile`, `send_welcome_email`, and `assign_default_settings`
+
+D) Use `tool_choice: {"type": "tool", "name": "create_profile"}` for the first turn only, then switch to `tool_choice: {"type": "auto"}` for subsequent turns
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**An onboarding agent**
+온보딩 에이전트가
+
+**walks a new user**
+신규 사용자를 안내합니다
+
+**through account setup**
+계정 설정을 진행하도록
+
+**and needs to call `create_profile`**
+그리고 `create_profile`을 호출해야 합니다
+
+**immediately as the very first action**
+가장 첫 번째 동작으로 즉시
+
+**of the conversation,**
+대화의,
+
+**before considering any other tool**
+다른 도구를 고려하기 전에
+
+**such as `send_welcome_email`**
+`send_welcome_email`과 같은
+
+**or `assign_default_settings`.**
+또는 `assign_default_settings`와 같은.
+
+**After that first call,**
+그 첫 번째 호출 이후에는,
+
+**the agent should freely decide**
+에이전트가 자유롭게 결정해야 합니다
+
+**among the remaining tools**
+남은 도구들 중에서
+
+**based on what the user says.**
+사용자가 말하는 내용에 기반하여.
+
+**What is the best way**
+가장 좋은 방법은 무엇입니까
+
+**to configure this?**
+이를 설정하는?
+
+---
+
+**Options:**
+
+**A)**
+**Order `create_profile` first**
+`create_profile`을 먼저 정렬하고
+
+**in the `tools` array**
+`tools` 배열에서
+
+**and leave `tool_choice`**
+그리고 `tool_choice`를 유지하는 것
+
+**at `{"type": "auto"}`**
+`{"type": "auto"}` 상태로
+
+**for the whole conversation**
+전체 대화 동안
+
+**B)**
+**Use `tool_choice: {"type": "none"}`**
+`tool_choice: {"type": "none"}`을 사용하는 것
+
+**for the first turn**
+첫 번째 턴 동안
+
+**so the model cannot call any tool,**
+모델이 어떤 도구도 호출할 수 없도록,
+
+**then switch to `{"type": "auto"}` afterward**
+그런 다음 이후에 `{"type": "auto"}`로 전환하는 것
+
+**C)**
+**Use `tool_choice: {"type": "any"}`**
+`tool_choice: {"type": "any"}`를 사용하는 것
+
+**for the entire conversation**
+전체 대화 동안
+
+**so the model is always forced**
+모델이 항상 강제되도록
+
+**to pick from `create_profile`,**
+`create_profile` 중에서 선택하도록,
+
+**`send_welcome_email`, and `assign_default_settings`**
+`send_welcome_email`, 그리고 `assign_default_settings`
+
+**D)**
+**Use `tool_choice: {"type": "tool", "name": "create_profile"}`**
+`tool_choice: {"type": "tool", "name": "create_profile"}`을 사용하는 것
+
+**for the first turn only,**
+첫 번째 턴에만,
+
+**then switch to `tool_choice: {"type": "auto"}`**
+그런 다음 `tool_choice: {"type": "auto"}`로 전환하는 것
+
+**for subsequent turns**
+이후 턴들에 대해
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**D번**: Use `tool_choice: {"type": "tool", "name": "create_profile"}` for the first turn only, then switch to `tool_choice: {"type": "auto"}` for subsequent turns
+
+**정답 및 해설:**
+**핵심 개념**: 
+Anthropic Claude API의 `tool_choice` 파라미터는 모델의 도구 호출 동작을 정밀하게 제어합니다. 특정 도구를 무조건 강제로 실행하게 하려면 `{"type": "tool", "name": "<tool_name>"}`을 지정하며, 이후 턴에서 모델이 대화 흐름에 따라 도구 사용 여부 및 종류를 자율적으로 판단하게 하려면 `{"type": "auto"}`로 변경해야 합니다.
+
+**문제 상황 분석:**
+- 첫 턴에서는 다른 도구보다 `create_profile` 도구가 무조건 최우선으로 실행되어야 하는 명확한 제약 조건이 존재합니다.
+- 첫 호출이 완료된 이후 턴부터는 사용자의 입력 내용에 따라 남아있는 도구들을 자율적/자유롭게 선택하여 사용할 수 있어야 합니다.
+- 따라서 턴(Turn)의 진행 상태에 따라 `tool_choice` 설정을 동적으로 변경해주는 전략이 필요합니다.
+
+**D번이 정답인 이유:**
+첫 턴에서는 `tool_choice`를 `{"type": "tool", "name": "create_profile"}`로 지정하여 모델이 다른 도구나 일반 텍스트 응답 대신 무조건 `create_profile` 도구를 호출하도록 강제합니다. 그 후 두 번째 턴부터는 `tool_choice: {"type": "auto"}`로 변경함으로써 모델이 상황에 맞게 도구를 호출하거나 응답하도록 자율성을 부여하는 것이 완벽한 해결책입니다.
+
+**오답 분석:**
+- **Option A (오답)**: `tools` 배열 내의 순서는 모델의 자율적 선택(`auto`)에 강제력을 제공하지 않습니다. 모델이 첫 턴에 다른 도구를 선택하거나 텍스트 응답만 보낼 위험이 있습니다.
+- **Option B (오답)**: `{"type": "none"}`은 첫 턴에 모델이 어떠한 도구도 호출하지 못하도록 금지하므로, 첫 동작으로 `create_profile`을 실행해야 하는 요구사항에 정반대됩니다.
+- **Option C (오답)**: `{"type": "any"}`는 목록 내의 무작위 도구를 반드시 하나 호출하도록 강제하지만, 특정 도구(`create_profile`)만을 지정하여 강제할 수 없으며, 전체 대화 동안 적용하면 이후 턴에서 자율적 판단을 방해합니다.
+
+---
+
+### 34번 문제
+
+**1. 문제 원문**
+
+A `get_customer_orders` MCP tool is called for a customer who exists in the system but has placed zero orders. Separately, the same tool is called with a customer ID that does not exist in the database at all. How should these two outcomes be reported so the agent can respond correctly in each case?
+
+A) Both cases return `isError:true` with `errorCategory` `transient`, and the agent should schedule periodic retries for these calls to account for possible delayed order placement or customer record creation.
+
+B) The zero-orders case returns `isError:false` with an empty order array; the nonexistent-ID case returns `isError:true` with `errorCategory` `not_found_error` and a description that the customer ID was not found.
+
+C) The zero-orders case returns `isError:true` with `errorCategory` `suspicious` and a description noting the empty result; the nonexistent-ID case returns `isError:false` with an empty `orders` array, treating the missing ID as an empty result.
+
+D) Both cases return `isError:false` with an empty `orders` array, and the agent should proceed without error handling for both scenarios, as the tool correctly reports the absence of orders in each case.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A `get_customer_orders` MCP tool**
+`get_customer_orders` MCP 도구가
+
+**is called for a customer**
+한 고객에 대해 호출됩니다
+
+**who exists in the system**
+시스템에 존재하는
+
+**but has placed zero orders.**
+하지만 주문을 0건 한 (주문 내역이 없는).
+
+**Separately, the same tool is called**
+이와 별개로, 동일한 도구가 호출됩니다
+
+**with a customer ID**
+고객 ID를 가지고
+
+**that does not exist in the database at all.**
+데이터베이스에 전혀 존재하지 않는.
+
+**How should these two outcomes be reported**
+이 두 가지 결과가 어떻게 보고되어야 합니까
+
+**so the agent can respond correctly**
+에이전트가 바르게 응답할 수 있도록
+
+**in each case?**
+각 케이스에서?
+
+---
+
+**Options:**
+
+**A)**
+**Both cases return `isError:true`**
+두 케이스 모두 `isError:true`를 반환하고
+
+**with `errorCategory` `transient`,**
+`errorCategory`를 `transient`로 설정하여,
+
+**and the agent should schedule**
+그리고 에이전트는 계획해야 한다
+
+**periodic retries for these calls**
+이 호출들에 대한 주기적인 재시도를
+
+**to account for possible delayed order placement**
+지연된 주문 생성 가능성을 고려하기 위해
+
+**or customer record creation.**
+또는 고객 기록 생성 가능성을.
+
+**B)**
+**The zero-orders case returns `isError:false`**
+주문이 0건인 케이스는 `isError:false`를 반환하고
+
+**with an empty order array;**
+빈 주문 배열과 함께;
+
+**the nonexistent-ID case returns `isError:true`**
+존재하지 않는 ID 케이스는 `isError:true`를 반환한다
+
+**with `errorCategory` `not_found_error`**
+`errorCategory`를 `not_found_error`로 설정하여
+
+**and a description that the customer ID was not found.**
+그리고 고객 ID를 찾을 수 없다는 설명과 함께.
+
+**C)**
+**The zero-orders case returns `isError:true`**
+주문이 0건인 케이스는 `isError:true`를 반환하고
+
+**with `errorCategory` `suspicious`**
+`errorCategory`를 `suspicious`로 설정하여
+
+**and a description noting the empty result;**
+그리고 빈 결과를 언급하는 설명과 함께;
+
+**the nonexistent-ID case returns `isError:false`**
+존재하지 않는 ID 케이스는 `isError:false`를 반환한다
+
+**with an empty `orders` array,**
+빈 `orders` 배열과 함께,
+
+**treating the missing ID**
+존재하지 않는 ID를 취급하면서
+
+**as an empty result.**
+빈 결과로.
+
+**D)**
+**Both cases return `isError:false`**
+두 케이스 모두 `isError:false`를 반환하고
+
+**with an empty `orders` array,**
+빈 `orders` array와 함께,
+
+**and the agent should proceed**
+그리고 에이전트는 진행해야 한다
+
+**without error handling for both scenarios,**
+두 시나리오 모두 오류 처리 없이,
+
+**as the tool correctly reports**
+도구가 올바르게 보고하므로
+
+**the absence of orders in each case.**
+각 케이스에서 주문의 부재를.
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**B번**: The zero-orders case returns `isError:false` with an empty order array; the nonexistent-ID case returns `isError:true` with `errorCategory` `not_found_error` and a description that the customer ID was not found.
+
+**정답 및 해설:**
+**핵심 개념**: 
+MCP(Model Context Protocol) 도구의 응답 설계 시, 성공적인 리소스 조회 결과가 단지 빈 집합(empty set)인 경우와 조회 대상 리소스 자체가 존재하지 않는 리소스 조회 실패(Not Found)를 구분해야 합니다. 정상적인 데이터 처리 결과는 성공(`isError:false`)으로 응답하고, 조회 리소스 미존재는 에러(`isError:true`) 및 명확한 에러 카테고리(`not_found_error`)를 반환해야 에러 대처를 정확히 할 수 있습니다.
+
+**문제 상황 분석:**
+- 케이스 1: 존재하는 고객이지만 주문 내역이 없음 $\rightarrow$ 시스템 및 고객 조회는 정상 성공했으나 데이터 목록만 비어 있는 정상 응답 상태입니다.
+- 케이스 2: 데이터베이스에 입력된 고객 ID 자체가 존재하지 않음 $\rightarrow$ 요청한 대상(Resource)을 찾을 수 없는 명백한 조회 에러 상태입니다.
+- 두 상황을 구분 없이 동일하게 처리하면 에러 핸들링 및 사용자에 대한 응답 유효성이 떨어지게 됩니다.
+
+**B번이 정답인 이유:**
+존재하는 고객의 주문 0건 케이스는 조회가 정상적으로 완료된 것이므로 `isError:false`와 함께 빈 배열(`[]`)을 반환해야 합니다. 반면, 데이터베이스에 존재하지 않는 고객 ID 케이스는 리소스를 찾을 수 없는 오류 상황이므로 `isError:true`, `errorCategory: not_found_error` 및 오류 상세 설명을 반환하는 것이 시스템 및 에이전트 설계 표준에 부합합니다.
+
+**오답 분석:**
+- **Option A (오답)**: 두 케이스 모두 에러(`isError:true`) 및 일시적 오류(`transient`)로 처리하고 재시도를 수행하는 것은 잘못된 오류 분류이자 불필요한 네트워크 재요청을 유발합니다.
+- **Option C (오답)**: 정상 조회된 빈 결과를 의심스러운 오류(`suspicious`)로 간주하고, 존재하지 않는 리소스 조회를 성공(`isError:false`)으로 처리하는 것은 두 케이스의 의미를 반대로 뒤바꾼 설명입니다.
+- **Option D (오답)**: 존재하지 않는 고객 ID 조회를 정상 응답으로 간주하여 빈 배열로 반환하면, 에러를 감추게 되므로 에러 핸들링이 불가능해집니다.
+
+---
+
+### 35번 문제
+
+**1. 문제 원문**
+
+A team has ten MCP servers connected, but one small internal server exposes two tools that Claude needs on nearly every single turn, and the team has noticed occasional delay while tool search resolves them. What configuration change addresses this for just that one server?
+
+A) Increase `MAX_MCP_OUTPUT_TOKENS` for just that server so its tool responses return noticeably faster once a call is actually made
+
+B) Set `alwaysLoad: true` on that server's entry so its tools load into context at session start instead of being deferred behind tool search
+
+C) Set `ENABLE_TOOL_SEARCH=false` globally so every server's tools load upfront and none are deferred behind a search step
+
+D) Move that server's entry from project scope to user scope so its tools are prioritized ahead of the other nine connected servers
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A team has**
+한 팀이 가지고 있습니다
+
+**ten MCP servers connected,**
+10개의 MCP 서버가 연결되어 있는 상태를,
+
+**but one small internal server**
+하지만 하나의 작은 내부 서버가
+
+**exposes two tools**
+두 개의 도구를 제공합니다
+
+**that Claude needs**
+Claude가 필요로 하는
+
+**on nearly every single turn,**
+거의 모든 턴마다,
+
+**and the team has noticed**
+그리고 팀은 알아차렸습니다
+
+**occasional delay**
+가끔 발생하는 지연을
+
+**while tool search resolves them.**
+도구 탐색이 이를 해석/검색하는 동안.
+
+**What configuration change**
+어떤 설정 변경이
+
+**addresses this**
+이 문제를 해결합니까
+
+**for just that one server?**
+오직 그 하나의 서버에 대해서만?
+
+---
+
+**Options:**
+
+**A)**
+**Increase `MAX_MCP_OUTPUT_TOKENS`**
+`MAX_MCP_OUTPUT_TOKENS`를 늘리는 것
+
+**for just that server**
+오직 그 서버에 대해서만
+
+**so its tool responses return**
+그 도구의 응답이 반환되도록
+
+**noticeably faster**
+눈에 띄게 더 빠르게
+
+**once a call is actually made**
+호출이 실제로 이루어진 후에.
+
+**B)**
+**Set `alwaysLoad: true`**
+`alwaysLoad: true`로 설정하는 것
+
+**on that server's entry**
+해당 서버의 항목에
+
+**so its tools load**
+그 도구들이 로드되도록
+
+**into context at session start**
+세션 시작 시 컨텍스트로
+
+**instead of being deferred**
+지연되는 대신에
+
+**behind tool search**
+도구 탐색 뒤로.
+
+**C)**
+**Set `ENABLE_TOOL_SEARCH=false`**
+`ENABLE_TOOL_SEARCH=false`로 설정하는 것
+
+**globally**
+전역적으로
+
+**so every server's tools**
+모든 서버의 도구가 ~하도록
+
+**load upfront**
+사전에(초기에) 로드되도록
+
+**and none are deferred**
+그리고 아무것도 지연되지 않도록
+
+**behind a search step**
+탐색 단계 뒤로.
+
+**D)**
+**Move that server's entry**
+해당 서버 항목을 이동하는 것
+
+**from project scope to user scope**
+프로젝트 스코프에서 사용자 스코프로
+
+**so its tools are prioritized**
+그 도구들이 우선시되도록
+
+**ahead of the other nine connected servers**
+연결된 다른 9개 서버보다 앞서.
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**B번**: Set `alwaysLoad: true` on that server's entry so its tools load into context at session start instead of being deferred behind tool search
+
+**정답 및 해설:**
+
+**핵심 개념**: 
+MCP(Model Context Protocol) 환경에서 연결된 서버나 도구가 많아지면 컨텍스트 및 토큰 효율성을 위해 도구 탐색(Tool Search) 단계가 개입하여 필요할 때 동적으로 도구를 탐색 및 지연 로딩(Deferred loading)합니다. 그러나 특정 서버의 도구를 거의 매 턴마다 사용하는 경우, 해당 서버 설정 항목에 `alwaysLoad: true` 옵션을 지정하면 세션 개시 시점에 도구 정의가 컨텍스트에 즉시 로드되어 탐색 단계로 인한 지연을 없애줍니다.
+
+**문제 상황 분석:**
+- 총 10개의 MCP 서버가 연결되어 있어 기본적으로 도구 탐색(Tool Search) 레이어가 동작 중입니다.
+- 특정 1개 내부 서버의 도구 2개는 거의 모든 대화 턴마다 계속 사용됩니다.
+- 도구가 필요할 때마다 동적 도구 탐색이 수행되어 지연(Delay)이 발생하므로, 오직 해당 서버에 대해서만 도구를 상시 로드하도록 설정해야 합니다.
+
+**B번이 정답인 이유:**
+해당 서버의 구성 항목에 `alwaysLoad: true`를 지정하면, 해당 서버의 도구들이 세션 시작 시 컨텍스트에 사전에 즉시 포함됩니다. 이로 인해 매 턴마다 발생하던 도구 탐색(Tool Search) 지연을 회피할 수 있으며, 질문에서 요구한 "오직 그 하나의 서버에 대해서만(for just that one server)" 제약을 정확히 충족합니다.
+
+**오답 분석:**
+- **Option A (오답)**: `MAX_MCP_OUTPUT_TOKENS`는 도구 응답 결과의 토큰 수 제한을 설정하는 값으로, 도구 호출 전 도구를 검색/해석하는 지연 문제 및 로딩 시점과는 아무런 관련이 없습니다.
+- **Option C (오답)**: `ENABLE_TOOL_SEARCH=false`를 전역(globally)으로 설정하면 10개 서버 전체의 도구 탐색이 비활성화되어 컨텍스트 낭비 및 관리 부담이 커집니다. 문제에서는 "오직 그 하나의 서버"만 변경할 것을 요구했습니다.
+- **Option D (오답)**: 스코프 변경(Project $\rightarrow$ User)은 설정 적용 범위와 공유 방식에 관한 것일 뿐, 도구를 세션 개시 시 컨텍스트에 상시 로드하여 탐색 지연을 제거하는 동작 제어 옵션이 아닙니다.
+
+---
+
+### 36번 문제
+
+**1. 문제 원문**
+
+A tool named `analyze_content` was originally built to summarize any pasted content, including emails and internal notes, but its description was never updated after a web-specific successor tool was introduced. The model now sometimes calls the general tool for web-only tasks. What is the recommended remediation?
+
+A) Leave both tools with their original names, but ask users to specify which tool they want by internal ID every time.
+
+B) Rename the general tool to reflect its remaining scope, and update its description to exclude the case the newer tool now handles.
+
+C) Increase the priority weight of the newer tool in the backend routing configuration without touching either tool's description.
+
+D) Delete the description text from both tools so the model relies entirely on tool names for disambiguation.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A tool named**
+~라는 이름의 도구가
+
+**`analyze_content`**
+`analyze_content`
+
+**was originally built**
+원래 구축되었습니다
+
+**to summarize**
+요약하기 위해
+
+**any pasted content,**
+붙여넣은 모든 콘텐츠를,
+
+**including emails**
+이메일을 포함하여
+
+**and internal notes,**
+그리고 내부 메모를,
+
+**but its description**
+하지만 그것의 설명(description)은
+
+**was never updated**
+결코 업데이트되지 않았습니다
+
+**after a web-specific successor tool**
+웹 전용 후속 도구가
+
+**was introduced.**
+도입된 이후에.
+
+**The model now**
+모델은 이제
+
+**sometimes calls**
+때때로 호출합니다
+
+**the general tool**
+범용 도구를
+
+**for web-only tasks.**
+웹 전용 작업에 대해.
+
+**What is the recommended remediation?**
+권장되는 수정 조치는 무엇입니까?
+
+---
+
+**Options:**
+
+**A)**
+**Leave both tools**
+두 도구를 남겨두는 것
+
+**with their original names,**
+원래 이름 그대로,
+
+**but ask users to specify**
+하지만 사용자에게 명시하도록 요청하는 것
+
+**which tool they want**
+그들이 원하는 도구를
+
+**by internal ID**
+내부 ID로
+
+**every time.**
+매번.
+
+**B)**
+**Rename the general tool**
+범용 도구의 이름을 변경하고
+
+**to reflect its remaining scope,**
+남은 역할 범위를 반영하도록,
+
+**and update its description**
+그 설명을 업데이트하는 것
+
+**to exclude the case**
+유형을 제외하도록
+
+**the newer tool now handles.**
+새 도구가 이제 처리하는.
+
+**C)**
+**Increase the priority weight**
+우선순위 가중치를 높이는 것
+
+**of the newer tool**
+새 도구의
+
+**in the backend routing configuration**
+백엔드 라우팅 설정에서
+
+**without touching**
+수정하지 않고
+
+**either tool's description.**
+두 도구의 설명을.
+
+**D)**
+**Delete the description text**
+설명 텍스트를 삭제하는 것
+
+**from both tools**
+두 도구 모두에서
+
+**so the model relies entirely**
+모델이 전적으로 의존하도록
+
+**on tool names**
+도구 이름에만
+
+**for disambiguation.**
+모호성 해소를 위해.
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**B번**: Rename the general tool to reflect its remaining scope, and update its description to exclude the case the newer tool now handles.
+
+**정답 및 해설:**
+**핵심 개념**: 
+LLM의 도구 사용(Tool Use / Function Calling)에서 모델은 도구의 이름(Name)과 설명(Description)을 가장 중요한 맥락 지표로 활용합니다. 도구 기능의 범위(Scope)가 변경되거나 후속 전문 도구가 추가된 경우, 기존 도구의 설명과 이름을 업데이트하여 역할 중복 및 모호성을 제거해야 모델이 정확한 도구를 선택합니다.
+
+**문제 상황 분석:**
+- 기존 `analyze_content` 도구는 웹 콘텐츠를 포함한 범용 콘텐츠 요약용으로 설계되었습니다.
+- 웹 전용 후속 도구가 새로 추가되었으나, 기존 범용 도구의 설명이 업데이트되지 않았습니다.
+- 이로 인해 모델이 웹 전용 작업 처리 시 새로운 웹 전용 도구 대신 기존 범용 도구를 오호출(Hallucination / Misrouting)하는 현상이 발생하고 있습니다.
+
+**B번이 정답인 이유:**
+기존 범용 도구의 이름을 현재 역할 범위에 맞게 변경하고, 설명을 업데이트하여 새로운 도구가 전담하는 웹 관련 처리 케이스를 명시적으로 제외(Exclude)시키는 것이 모호성을 제거하는 가장 표준적이고 확실한 해결책입니다.
+
+**오답 분석:**
+- **Option A (오답)**: 매번 내부 ID로 사용할 도구를 명시하도록 사용자에게 요구하는 것은 에이전트의 자율적 도구 호출 기능을 저해하며 심각한 UX 저하를 초래합니다.
+- **Option C (오답)**: 백엔드 라우팅 가중치를 조절하는 방식은 LLM 프롬프트 수준에서의 도구 설명 모호성을 근본적으로 해결하지 못합니다.
+- **Option D (오답)**: 설명 텍스트를 삭제하면 모델이 도구의 역할과 입력 규칙을 파악할 수 없게 되어 올바른 도구 선택이 불가능해집니다.
+
+---
+
+### 37번 문제
+
+**1. 문제 원문**
+
+A team observes that adding 'If in doubt, use the search tool' to the system prompt caused the model to call `search_web` even when the `lookup_internal_docs` tool was more appropriate. What does this scenario illustrate?
+
+A) System prompts can significantly influence tool selection, and explicit instructions may override the model's assessment of which tool is most appropriate.
+
+B) System prompts have no measurable effect on tool selection; the behavior must be caused by a defect in the model.
+
+C) The word 'search' appearing anywhere in a tool's name always takes absolute priority over any other tool regardless of prompt content.
+
+D) The `lookup_internal_docs` tool must have a malformed JSON schema, since that is the only way a tool can be excluded from selection.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A team observes**
+한 팀이 관찰합니다
+
+**that adding 'If in doubt, use the search tool'**
+'확신이 서지 않으면 검색 도구를 사용하라'를 추가하는 것이
+
+**to the system prompt**
+시스템 프롬프트에
+
+**caused the model to call `search_web`**
+모델이 `search_web`을 호출하게 만들었다는 것을
+
+**even when the `lookup_internal_docs` tool**
+`lookup_internal_docs` 도구가
+
+**was more appropriate.**
+더 적절했을 때조차도.
+
+**What does this scenario illustrate?**
+이 시나리오는 무엇을 보여줍니까?
+
+---
+
+**Options:**
+
+**A)**
+**System prompts can significantly influence**
+시스템 프롬프트는 크게 영향을 미칠 수 있으며
+
+**tool selection,**
+도구 선택에,
+
+**and explicit instructions**
+그리고 명시적인 지시사항은
+
+**may override**
+우선하여 적용될 수 있다
+
+**the model's assessment**
+모델의 평가보다
+
+**of which tool is most appropriate.**
+어떤 도구가 가장 적절한지에 대한.
+
+**B)**
+**System prompts have no measurable effect**
+시스템 프롬프트는 측정할 수 있는 영향이 없다
+
+**on tool selection;**
+도구 선택에;
+
+**the behavior must be caused**
+이 동작은 원인이 발생한 것임에 틀림없다
+
+**by a defect in the model.**
+모델의 결함에 의해.
+
+**C)**
+**The word 'search' appearing anywhere**
+'search'라는 단어가 어디든 등장하는 것은
+
+**in a tool's name**
+도구의 이름 내에
+
+**always takes absolute priority**
+항상 절대적인 우선순위를 갖는다
+
+**over any other tool**
+다른 어떤 도구보다도
+
+**regardless of prompt content.**
+프롬프트 내용과 관계없이.
+
+**D)**
+**The `lookup_internal_docs` tool**
+`lookup_internal_docs` 도구는
+
+**must have a malformed JSON schema,**
+잘못된 형식의 JSON 스키마를 가졌음에 틀림없다,
+
+**since that is the only way**
+왜냐하면 그것이 유일한 방법이기 때문이다
+
+**a tool can be excluded**
+도구가 제외될 수 있는
+
+**from selection.**
+선택에서.
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**A번**: System prompts can significantly influence tool selection, and explicit instructions may override the model's assessment of which tool is most appropriate.
+
+**정답 및 해설:**
+**핵심 개념**: 
+LLM의 도구 선택(Tool Selection) 과정에서 시스템 프롬프트(System Prompt)에 포함된 지시사항은 모델의 의사결정에 결정적인 영향을 미칩니다. 프롬프트에 명시된 지시나 편향(Bias) 문구는 도구의 개별 설명이나 맥락적 적합성에 대한 모델 자체의 가치 평가보다 우선시되어 적용될 수 있습니다.
+
+**문제 상황 분석:**
+- 시스템 프롬프트에 'If in doubt, use the search tool(확신이 없으면 검색 도구를 사용하라)'이라는 강한 지시 지침을 추가함.
+- 그 결과, 내부 문서를 먼저 확인하는 `lookup_internal_docs` 도구가 상황상 더 적합함에도 불구하고 모델이 프롬프트의 지침을 따라 `search_web`을 오호출함.
+- 지시 문구 하나가 모델의 추론 및 도구 선택 판단 알고리즘을 덮어쓰는(Override) 지배적인 영향력을 나타냄.
+
+**A번이 정답인 이유:**
+시스템 프롬프트는 모델의 도구 선택 동작에 강력한 영향을 미치며, 명시적으로 주어진 프롬프트 지침은 모델이 본래 판단했을 최선의 도구 선택 기준보다 우선하여 작용함을 정확히 설명하고 있습니다.
+
+**오답 분석:**
+- **Option B (오답)**: 시스템 프롬프트가 도구 선택에 아무런 영향이 없으며 모델의 결함 때문이라는 주장은 거짓입니다. 프롬프트는 모델의 행동 제어에 핵심적 역할을 합니다.
+- **Option C (오답)**: 'search'라는 단어의 포함 여부만으로 무조건 절대적 우선순위가 정해진다는 것은 프롬프트의 지침(지시어) 역할을 무시한 자의적인 해석입니다.
+- **Option D (오답)**: 도구가 선택에서 제외되는 이유가 JSON 스키마 오류 때문이라는 것은 단정적 오류이며, 이 시나리오는 스키마 결함이 아닌 프롬프트 지시어에 의한 의사결정 편향 현상을 보여줍니다.
+
+---
+
+### 38번 문제
+
+**1. 문제 원문**
+
+A coordinator agent delegates a three-step data migration to a subagent: extract, transform, and load, but the load step fails twice on a database connection reset, a known transient condition, before finally succeeding on the third attempt inside the subagent's own execution. What should the subagent report back to the coordinator?
+
+A) An `isError: true` result describing both connection resets in detail, so the coordinator can decide independently whether the migration should be retried
+
+B) A success result summarizing the completed migration, since the transient failures were resolved locally and never needed to surface above the subagent
+
+C) An escalation asking the coordinator to obtain new database credentials, since two consecutive connection resets indicate the credentials have expired
+
+D) A partial-results payload listing only the extract and transform steps as done, omitting the load step entirely since it initially failed twice
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A coordinator agent**
+코디네이터 에이전트가
+
+**delegates a three-step data migration**
+3단계 데이터 마이그레이션을 위임합니다
+
+**to a subagent:**
+서브에이전트에게:
+
+**extract, transform, and load,**
+추출, 변환, 그리고 로드,
+
+**but the load step fails twice**
+하지만 로드 단계가 두 번 실패합니다
+
+**on a database connection reset,**
+데이터베이스 연결 재설정으로 인해,
+
+**a known transient condition,**
+알려진 일시적 오류 조건인,
+
+**before finally succeeding**
+마침내 성공하기 전에
+
+**on the third attempt**
+세 번째 시도에서
+
+**inside the subagent's own execution.**
+서브에이전트 자체 실행 내부에서.
+
+**What should the subagent report back**
+서브에이전트는 무엇을 보고해야 합니까
+
+**to the coordinator?**
+코디네이터에게?
+
+---
+
+**Options:**
+
+**A)**
+**An `isError: true` result**
+`isError: true` 결과를
+
+**describing both connection resets in detail,**
+두 번의 연결 재설정을 자세히 기술하는,
+
+**so the coordinator can decide independently**
+코디네이터가 독립적으로 결정할 수 있도록
+
+**whether the migration should be retried**
+마이그레이션을 재시도해야 하는지 여부를
+
+**B)**
+**A success result**
+성공 결과를
+
+**summarizing the completed migration,**
+완료된 마이그레이션을 요약하는,
+
+**since the transient failures**
+왜냐하면 일시적인 실패들이
+
+**were resolved locally**
+자체적으로(로컬에서) 해결되었고
+
+**and never needed to surface**
+상위로 전달될 필요가 없었기 때문이다
+
+**above the subagent**
+서브에이전트 위로
+
+**C)**
+**An escalation**
+에스컬레이션(상위 보고)을
+
+**asking the coordinator**
+코디네이터에게 요청하는
+
+**to obtain new database credentials,**
+새로운 데이터베이스 자격 증명을 취득하도록,
+
+**since two consecutive connection resets**
+왜냐하면 두 번 연속된 연결 재설정은
+
+**indicate the credentials have expired**
+자격 증명이 만료되었음을 나타내기 때문이다
+
+**D)**
+**A partial-results payload**
+부분 결과 페이로드를
+
+**listing only the extract and transform steps**
+추출 및 변환 단계만 나열하는
+
+**as done,**
+완료된 것으로,
+
+**omitting the load step entirely**
+로드 단계를 완전히 누락하면서
+
+**since it initially failed twice**
+처음에 두 번 실패했기 때문에
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**B번**: A success result summarizing the completed migration, since the transient failures were resolved locally and never needed to surface above the subagent
+
+**정답 및 해설:**
+**핵심 개념**: 
+계층적 에이전트 구조(Hierarchical Agent Architecture) 및 서브에이전트 패턴에서, 서브에이전트는 위임받은 작업을 자체적으로 관리하고 복구하는 캡슐화(Encapsulation) 책임을 가집니다. 일시적 오류(Transient Fault)가 서브에이전트 내부 재시도 로직을 통해 최종 해결되어 전체 작업이 완수되었다면, 상위 코디네이터에게는 불필요한 오류 메시지 대신 **성공 결과**만 보고하는 것이 올바른 설계입니다.
+
+**문제 상황 분석:**
+- 상위 코디네이터가 서브에이전트에게 3단계 데이터 마이그레이션(추출 $\rightarrow$ 변환 $\rightarrow$ 로드)을 위임함.
+- 마지막 '로드' 단계에서 일시적인 연결 재설정(Transient Condition)으로 2회 실패가 발생했으나, 서브에이전트 내부에서 3번째 시도 만에 최종 성공함.
+- 전체 태스크 관점에서는 3단계가 모두 최종 성공적으로 완료된 상태임.
+
+**B번이 정답인 이유:**
+일시적인 장애는 서브에이전트 수준에서 이미 성공적으로 복구(Resolved locally)되어 전체 마이그레이션 과업이 완성되었으므로, 코디네이터에게는 최종 작업의 성공 결과만 상위로 보고하는 것이 계층적 위임 구조 및 카오스 차단(Fault Containment) 원칙에 부합합니다.
+
+**오답 분석:**
+- **Option A (오답)**: 이미 내부 재시도로 최종 성공했음에도 불구하고 `isError: true`를 반환하면 상위 코디네이터가 불필요하게 전체 태스크를 재시도하거나 에러 처리를 수행하여 중복 작업 및 시스템 혼란을 유발합니다.
+- **Option C (오답)**: 연결 재설정이 일시적 오류(Transient Condition)라고 문제에 명시되어 있고 세 번째에 성공했으므로, 자격 증명 만료로 단정 짓고 자격 증명을 재요청하는 것은 잘못된 진단입니다.
+- **Option D (오답)**: 세 번째 시도에서 '로드' 단계가 최종 성공했음에도 불구하고 처음에 실패했다는 이유로 결과를 누락하거나 부분 성공으로만 보고하는 것은 데이터 상태 불일치를 일으킵니다.
+
+---
+
+### 39번 문제
+
+**1. 문제 원문**
+
+Claude Code needs to update a version string inside a nested JSON field in `package.json`, where the same string coincidentally also appears as a substring inside an unrelated dependency name elsewhere in the file. Claude wants Edit to target only the version field. Which `old_string` design correctly ensures the edit applies to the intended location only?
+
+A) Use only the bare version string as `old_string`, since Edit automatically infers which occurrence is semantically the version field
+
+B) Use a regular expression in `old_string` that matches the version field specifically, since Edit interprets `old_string` as regex when quotes are present
+
+C) Set `replace_all` to true so every occurrence of the version string throughout the whole file is updated to the same new value
+
+D) Include the surrounding JSON key and adjacent structure, such as the `"version":` prefix and its line, so the string becomes unique to that field
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**Claude Code needs to update**
+Claude Code가 업데이트해야 합니다
+
+**a version string**
+버전 문자열을
+
+**inside a nested JSON field**
+중첩된 JSON 필드 내의
+
+**in `package.json`,**
+`package.json` 파일에서,
+
+**where the same string**
+거기서 동일한 문자열이
+
+**coincidentally also appears**
+우연히 함께 나타납니다
+
+**as a substring**
+부분 문자열로
+
+**inside an unrelated dependency name**
+무관한 의존성 이름 내에
+
+**elsewhere in the file.**
+파일의 다른 곳에서.
+
+**Claude wants Edit to target**
+Claude는 Edit 도구가 겨냥하기를 원합니다
+
+**only the version field.**
+오직 버전 필드만을.
+
+**Which `old_string` design**
+어떤 `old_string` 설계가
+
+**correctly ensures**
+올바르게 보장합니까
+
+**the edit applies**
+수정이 적용되도록
+
+**to the intended location only?**
+의도한 위치에만?
+
+---
+
+**Options:**
+
+**A)**
+**Use only the bare version string**
+단순 버전 문자열만 사용하는 것
+
+**as `old_string`,**
+`old_string`으로,
+
+**since Edit automatically infers**
+Edit이 자동 추론하기 때문에
+
+**which occurrence is semantically**
+어느 출현 위치가 의미상
+
+**the version field**
+버전 필드인지를.
+
+**B)**
+**Use a regular expression**
+정규 표현식을 사용하는 것
+
+**in `old_string`**
+`old_string`에
+
+**that matches the version field specifically,**
+버전 필드에 특정하여 일치하는,
+
+**since Edit interprets `old_string` as regex**
+Edit이 `old_string`을 정규식으로 해석하기 때문에
+
+**when quotes are present**
+따옴표가 있을 때.
+
+**C)**
+**Set `replace_all` to true**
+`replace_all`을 true로 설정하는 것
+
+**so every occurrence of the version string**
+버전 문자열의 모든 출현 위치가 ~하도록
+
+**throughout the whole file**
+전체 파일에 걸쳐
+
+**is updated**
+업데이트되도록
+
+**to the same new value**
+동일한 새 값으로.
+
+**D)**
+**Include the surrounding JSON key**
+주변의 JSON 키를 포함하는 것
+
+**and adjacent structure,**
+그리고 인접한 구조를,
+
+**such as the `"version":` prefix**
+`"version":` 접두사와 같은
+
+**and its line,**
+그리고 그것의 해당 줄을,
+
+**so the string becomes unique**
+문자열이 유일해지도록
+
+**to that field**
+해당 필드에.
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**D번**: Include the surrounding JSON key and adjacent structure, such as the `"version":` prefix and its line, so the string becomes unique to that field
+
+**정답 및 해설:**
+**핵심 개념**: 
+Claude Code의 `Edit` 도구(파일 텍스트 교체 도구)는 파일 내에서 교체 대상인 `old_string`을 정확히 찾아 대체합니다. 파일 내에 동일한 문자열이 여러 곳 존재할 경우, 교체 대상이 모호해져 잘못된 위치가 변경되거나 교체 실패가 발생할 수 있습니다. 이를 방지하기 위해서는 주변의 키, 문맥 코드, 줄(Line) 등 주변 구조(Surrounding Context)를 `old_string`에 함께 포함시켜 파일 내에서 고유(Unique)하게 식별되도록 설계해야 합니다.
+
+**문제 상황 분석:**
+- `package.json` 파일 내에 교체하고자 하는 버전 문자열이 존재합니다.
+- 동일한 문자열이 상관없는 다른 의존성(dependency) 이름의 일부로도 우연히 포함되어 있습니다.
+- 교체 대상의 유일성이 확보되지 않으면 의도치 않은 다른 의존성 이름까지 함께 변경되는 문제가 발생할 수 있습니다.
+
+**D번이 정답인 이유:**
+`"version": "1.0.0"`과 같이 단순히 버전 값만 지정하지 않고 주변의 JSON 키(`"version":`)와 해당 라인의 고유한 문맥/구조를 `old_string`에 함께 포함함으로써, 파일 전체에서 오직 변경하려는 특정 버전 필드만 고유하게 타겟팅(Unique match)되도록 확실히 보장할 수 있습니다.
+
+**오답 분석:**
+- **Option A (오답)**: Edit 도구는 파일 내 문맥이나 의미(Semantics)를 스스로 추론하여 교체해 주지 않으며, 완전히 일치하는 텍스트 검색 방식을 사용합니다.
+- **Option B (오답)**: Claude Code의 Edit 도구는 `old_string`을 정규식(Regex)으로 해석하지 않고 리터럴 텍스트(Literal text)로 처리합니다.
+- **Option C (오답)**: `replace_all: true`로 설정하면 의존성 이름에 포함된 무관한 위치의 동일 문자열까지 모두 원치 않는 새 값으로 바뀌는 사이드 이펙트(Side effect)가 발생합니다.
+
+---
+
+### 40번 문제
+
+**1. 문제 원문**
+
+A developer wants to try out an experimental local MCP server that queries their personal Notion workspace. They do not want it to appear for any other teammate, and they want it available whenever they open any project on their own machine. Which configuration achieves this?
+
+A) Add the server with local scope so the entry is written to .mcp.json but excluded from git tracking via a .gitignore rule
+
+B) Add the server directly inside .claude/settings.json so it inherits the personal visibility rules of local project settings
+
+C) Add the server with project scope so the entry is written to .mcp.json and stays private until the developer marks it as personal-only
+
+D) Add the server with user scope so the entry is written to ~/.claude.json and loads across every project on that machine without being shared
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A developer wants to try out**
+한 개발자가 시도해보고 싶어 합니다
+
+**an experimental local MCP server**
+실험적인 로컬 MCP 서버를
+
+**that queries their personal Notion workspace.**
+자신의 개인 Notion 워크스페이스를 조회하는.
+
+**They do not want it to appear**
+그들은 이것이 나타나는 것을 원하지 않으며
+
+**for any other teammate,**
+다른 동료에게,
+
+**and they want it available**
+그리고 이것이 사용 가능하기를 원합니다
+
+**whenever they open any project**
+어떤 프로젝트를 열 때마다
+
+**on their own machine.**
+자신의 머신에서.
+
+**Which configuration**
+어떤 설정이
+
+**achieves this?**
+이를 달성합니까?
+
+---
+
+**Options:**
+
+**A)**
+**Add the server with local scope**
+로컬 스코프로 서버를 추가하는 것
+
+**so the entry is written**
+항목이 기록되도록
+
+**to .mcp.json**
+`.mcp.json`에
+
+**but excluded from git tracking**
+하지만 git 추적에서 제외되도록
+
+**via a .gitignore rule**
+`.gitignore` 규칙을 통해
+
+**B)**
+**Add the server directly**
+서버를 직접 추가하는 것
+
+**inside .claude/settings.json**
+`.claude/settings.json` 내부에
+
+**so it inherits**
+그것이 상속받도록
+
+**the personal visibility rules**
+개인 가시성 규칙을
+
+**of local project settings**
+로컬 프로젝트 설정의
+
+**C)**
+**Add the server with project scope**
+프로젝트 스코프로 서버를 추가하는 것
+
+**so the entry is written**
+항목이 기록되도록
+
+**to .mcp.json**
+`.mcp.json`에
+
+**and stays private**
+그리고 비공개로 유지되도록
+
+**until the developer marks it**
+개발자가 그것을 표시할 때까지
+
+**as personal-only**
+개인 전용으로
+
+**D)**
+**Add the server with user scope**
+사용자 스코프(user scope)로 서버를 추가하는 것
+
+**so the entry is written**
+항목이 기록되도록
+
+**to ~/.claude.json**
+`~/.claude.json`에
+
+**and loads across every project**
+그리고 모든 프로젝트 전반에서 로드되도록
+
+**on that machine**
+해당 머신의
+
+**without being shared**
+공유되지 않고서
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**D번**: Add the server with user scope so the entry is written to ~/.claude.json and loads across every project on that machine without being shared
+
+**정답 및 해설:**
+**핵심 개념**: 
+Claude Code의 MCP(Model Context Protocol) 서버 설정 스코프는 **User Scope**와 **Project Scope**로 나뉩니다.
+* **User Scope**: 사용자 홈 디렉터리의 `~/.claude.json` 파일에 저장되며, 해당 머신에서 여는 **모든 프로젝트**에 전역 적용되고 프로젝트 Git 리포지토리에 공유되지 않아 개인 전용으로 유지됩니다.
+* **Project Scope**: 프로젝트 루트의 `.mcp.json` 파일에 저장되며, 해당 프로젝트 내에서만 적용되고 팀원들과 공유(Git 커밋)하기 위한 스코프입니다.
+
+**문제 상황 분석:**
+- 개발자가 개인 Notion 워크스페이스에 접근하는 실험적 MCP 서버를 설정하려 함.
+- 다른 팀원에게 노출되지 않아야 함 (Git 등을 통해 공유 금지).
+- 특정 프로젝트에 국한되지 않고, **자신의 머신에서 어떤 프로젝트를 열든(any project)** 항상 사용할 수 있어야 함.
+
+**D번이 정답인 이유:**
+사용자 스코프(User Scope)를 사용하면 설정이 개발자 개인의 홈 디렉터리(`~/.claude.json`)에 기록됩니다. 따라서 프로젝트 리포지토리를 통해 팀원에게 공유되지 않으면서, 해당 개발자 머신의 모든 프로젝트에 전역으로 로드되는 요구사항을 완벽히 충족합니다.
+
+**오답 분석:**
+- **Option A (오답)**: `.mcp.json`은 프로젝트 수준 스코프이며, `.gitignore`로 제외하더라도 개별 프로젝트 범위에만 국한되므로 "어떤 프로젝트에서나 사용 가능해야 한다"는 요구사항을 만족하지 못합니다.
+- **Option B (오답)**: `.claude/settings.json`은 프로젝트 전용 설정 파일이며 MCP 서버를 사용자 전역 스코프로 등록하는 올바른 위치나 방식이 아닙니다.
+- **Option C (오답)**: 프로젝트 스코프(`.mcp.json`)는 팀원 공유 목적으로 사용되며, 모든 프로젝트에서 전역 적용되지 않습니다.
+
+---
+
+### 41번 문제
+
+**1. 문제 원문**
+
+A document-processing agent has both an `extract_metadata` tool and several enrichment tools (`add_tags`, `link_related`, `generate_summary`). The enrichment tools depend on fields that only `extract_metadata` produces, and in early tests the model sometimes calls an enrichment tool first with guessed values. What is the recommended way to guarantee correct ordering for this first step?
+
+A) Remove the enrichment tools from the agent's tool list on the first turn and only provide `extract_metadata`, then after `extract_metadata` returns, re-add `add_tags`, `link_related`, and `generate_summary` for subsequent turns.
+
+B) Set `tool_choice` to `{"type": "tool", "name": "extract_metadata"}` on the turn where metadata is needed, then let the model choose from the enrichment tools with `auto` or `any` on subsequent turns.
+
+C) Set `tool_choice` to `{"type": "any"}` for the entire conversation, so the model must select a tool on every turn, relying on its training to choose `extract_metadata` first when metadata is absent.
+
+D) Add a detailed description to each enrichment tool stating that they require metadata fields only `extract_metadata` can provide, and keep `tool_choice` set to `auto` throughout the conversation.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A document-processing agent has**
+문서 처리 에이전트가 가지고 있습니다
+
+**both an `extract_metadata` tool**
+`extract_metadata` 도구와
+
+**and several enrichment tools**
+그리고 여러 보강(enrichment) 도구들을
+
+**(`add_tags`, `link_related`, `generate_summary`).**
+(`add_tags`, `link_related`, `generate_summary`).
+
+**The enrichment tools depend on fields**
+보강 도구들은 필드들에 의존합니다
+
+**that only `extract_metadata` produces,**
+오직 `extract_metadata`만 생성하는,
+
+**and in early tests**
+그리고 초기 테스트에서
+
+**the model sometimes calls**
+모델은 때때로 호출합니다
+
+**an enrichment tool first**
+보강 도구를 먼저
+
+**with guessed values.**
+추측된 값들을 가지고.
+
+**What is the recommended way**
+권장되는 방법은 무엇입니까
+
+**to guarantee correct ordering**
+올바른 순서를 보장하기 위한
+
+**for this first step?**
+이 첫 번째 단계에 대해?
+
+---
+
+**Options:**
+
+**A)**
+**Remove the enrichment tools**
+보강 도구들을 제거하는 것
+
+**from the agent's tool list**
+에이전트의 도구 목록에서
+
+**on the first turn**
+첫 번째 턴에
+
+**and only provide `extract_metadata`,**
+그리고 `extract_metadata`만 제공하는 것,
+
+**then after `extract_metadata` returns,**
+그런 다음 `extract_metadata`가 반환된 후에,
+
+**re-add `add_tags`, `link_related`,**
+`add_tags`, `link_related`,
+
+**and `generate_summary`**
+그리고 `generate_summary`를 다시 추가하는 것
+
+**for subsequent turns.**
+이후 턴들에 대해.
+
+**B)**
+**Set `tool_choice`**
+`tool_choice`를 설정하는 것
+
+**to `{"type": "tool", "name": "extract_metadata"}`**
+`{"type": "tool", "name": "extract_metadata"}`로
+
+**on the turn where metadata is needed,**
+메타데이터가 필요한 턴에,
+
+**then let the model choose**
+그런 다음 모델이 선택하도록 하는 것
+
+**from the enrichment tools**
+보강 도구들 중에서
+
+**with `auto` or `any`**
+`auto` 또는 `any`를 가지고
+
+**on subsequent turns.**
+이후 턴들에 대해.
+
+**C)**
+**Set `tool_choice` to `{"type": "any"}`**
+`tool_choice`를 `{"type": "any"}`로 설정하는 것
+
+**for the entire conversation,**
+전체 대화 동안,
+
+**so the model must select a tool**
+모델이 매 턴마다 도구를 선택해야 하도록,
+
+**on every turn,**
+매 턴마다,
+
+**relying on its training**
+모델의 학습에 의존하면서
+
+**to choose `extract_metadata` first**
+`extract_metadata`를 먼저 선택하도록
+
+**when metadata is absent.**
+메타데이터가 없을 때.
+
+**D)**
+**Add a detailed description**
+상세한 설명을 추가하는 것
+
+**to each enrichment tool**
+각 보강 도구에
+
+**stating that they require metadata fields**
+그들이 메타데이터 필드를 요구한다고 명시하는
+
+**only `extract_metadata` can provide,**
+오직 `extract_metadata`만 제공할 수 있는,
+
+**and keep `tool_choice` set to `auto`**
+그리고 `tool_choice`를 `auto`로 유지하는 것
+
+**throughout the conversation.**
+전체 대화 동안.
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**B번**: Set `tool_choice` to `{"type": "tool", "name": "extract_metadata"}` on the turn where metadata is needed, then let the model choose from the enrichment tools with `auto` or `any` on subsequent turns.
+
+**정답 및 해설:**
+
+**핵심 개념**: 
+Claude API의 `tool_choice` 파라미터는 에이전트의 도구 호출 실행 순서를 제어(Tool Use Control)할 때 가장 효과적인 메커니즘입니다. 특정 단계에서 선행되어야 하는 선결 조건 도구가 존재하는 경우, 해당 턴에서 `tool_choice: {"type": "tool", "name": "<tool_name>"}`으로 명시하면 모델이 값 추측(Guessing)이나 다른 도구의 오호출 없이 **해당 특정 도구를 무조건 최우선으로 호출하도록 결정론적으로 강제(Guarantee/Enforce)**할 수 있습니다.
+
+**문제 상황 분석:**
+- 에이전트에 메타데이터 추출 도구(`extract_metadata`)와 데이터 보강 도구들(`add_tags` 등)이 존재함.
+- 보강 도구들은 `extract_metadata`가 생성한 결과 데이터에 절대적으로 의존함.
+- 프롬프트/자율성에 맡길 경우, 첫 턴에서 모델이 값을 임의로 추측하여 보강 도구를 먼저 호출하는 순서 오류(Ordering Issue)가 발생함.
+- 첫 단계에서 메타데이터 추출 도구가 반드시 가장 먼저 실행되도록 선결 실행 보장이 필요한 상황임.
+
+**B번이 정답인 이유:**
+첫 번째 턴(또는 메타데이터가 필요한 턴)에서 API 요청 시 `tool_choice`를 `{"type": "tool", "name": "extract_metadata"}`로 지정하면, 모델은 다른 어떤 행동도 하지 않고 무조건 해당 도구를 가장 먼저 실행합니다. 그 후 실행 결과가 돌아온 다음 턴부터는 `tool_choice`를 `auto` 또는 `any`로 전환하여 자율적으로 보강 도구를 선택하게 하므로 실행 순서를 100% 보장하는 가장 정석적이고 명확한 솔루션입니다.
+
+**오답 분석:**
+- **Option A (오답)**: 턴마다 API에 전달하는 도구 정의(`tools` 배열) 자체를 삭제하고 재등록하는 방식은 유연성이 떨어지며, 도구 정의를 매번 변경하는 것은 권장되는 도구 제어 방식이 아닙니다. API 레벨에서는 `tool_choice`를 통해 이를 제어하는 것이 표준입니다.
+- **Option C (오답)**: `tool_choice: {"type": "any"}`는 목록 중 '아무 도구나 하나 선택'하라는 의미일 뿐, `extract_metadata`를 특정하여 강제하지 못하므로 추측값에 의한 오류 호출 문제를 해결하지 못합니다.
+- **Option D (오답)**: 도구 설명(Description)에 의존조건을 적는 것은 확률적인 가이드라인일 뿐이며, 모델이 값 추측으로 첫 턴에 보강 도구를 호출하는 현상을 완전히(100%) 보장하여 방지할 수 없습니다.
+
+---
+
+### 42번 문제
+
+**1. 문제 원문**
+
+An MCP server's `create_invoice` tool calls a downstream billing API that returns a 503 while the service is deploying. The tool wraps this in a result with `isError: true` and a text block reading only "Operation failed." The agent retries the same call five times in a row, each time failing the same way, before giving up. What is the most direct cause of the wasted retries?
+
+A) The result carries no structured metadata distinguishing transient from non-retryable failures. The agent thus has no basis for deciding whether retrying is worthwhile.
+
+B) The downstream billing API returned an HTTP status code rather than a JSON-RPC error object, so the MCP client could not parse the response and defaulted to retrying repeatedly.
+
+C) The agent's context window ran out of space to store the error text, so it could not remember that the same request had just failed and therefore repeated the call as if it were a new attempt.
+
+D) The tool set `isError` to true instead of false, which signals to the agent that unlimited retries are the correct response and prevents it from recognizing that the error is transient.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**An MCP server's `create_invoice` tool**
+MCP 서버의 `create_invoice` 도구가
+
+**calls a downstream billing API**
+하위 청구 API를 호출합니다
+
+**that returns a 503**
+503 에러를 반환하는
+
+**while the service is deploying.**
+서비스가 배포되는 동안.
+
+**The tool wraps this**
+도구는 이것을 감쌉니다
+
+**in a result with `isError: true`**
+`isError: true` 결과와 함께
+
+**and a text block**
+그리고 텍스트 블록으로
+
+**reading only "Operation failed."**
+단지 "Operation failed."라고만 적힌.
+
+**The agent retries the same call**
+에이전트는 동일한 호출을 재시도합니다
+
+**five times in a row,**
+연속으로 5번,
+
+**each time failing the same way,**
+매번 동일한 방식으로 실패하면서,
+
+**before giving up.**
+포기하기 전에.
+
+**What is the most direct cause**
+가장 직접적인 원인은 무엇입니까
+
+**of the wasted retries?**
+낭비된 재시도들의?
+
+---
+
+**Options:**
+
+**A)**
+**The result carries no structured metadata**
+결과가 구조화된 메타데이터를 전달하지 않기 때문이다
+
+**distinguishing transient**
+일시적인 오류를 구분하는
+
+**from non-retryable failures.**
+재시도 불가능한 실패와.
+
+**The agent thus has no basis**
+따라서 에이전트는 근거가 없다
+
+**for deciding whether retrying is worthwhile.**
+재시도할 가치가 있는지 결정하기 위한.
+
+**B)**
+**The downstream billing API returned an HTTP status code**
+하위 청구 API가 HTTP 상태 코드를 반환했다
+
+**rather than a JSON-RPC error object,**
+JSON-RPC 에러 객체 대신에,
+
+**so the MCP client could not parse the response**
+그래서 MCP 클라이언트가 응답을 파싱할 수 없었다
+
+**and defaulted to retrying repeatedly.**
+그리고 반복 재시도를 기본값으로 수행했다.
+
+**C)**
+**The agent's context window ran out of space**
+에이전트의 컨텍스트 윈도우 공간이 부족했다
+
+**to store the error text,**
+에러 텍스트를 저장할,
+
+**so it could not remember**
+그래서 기억할 수 없었다
+
+**that the same request had just failed**
+동일한 요청이 방금 실패했음을
+
+**and therefore repeated the call**
+그로 인해 호출을 반복했다
+
+**as if it were a new attempt.**
+새로운 시도인 것처럼.
+
+**D)**
+**The tool set `isError` to true**
+도구가 `isError`를 false 대신 true로 설정했다
+
+**instead of false,**
+,
+
+**which signals to the agent**
+이것은 에이전트에게 신호를 보낸다
+
+**that unlimited retries are the correct response**
+무제한 재시도가 올바른 응답이라는
+
+**and prevents it from recognizing**
+그리고 인식하는 것을 방지한다
+
+**that the error is transient.**
+에러가 일시적이라는 것을.
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**A번**: The result carries no structured metadata distinguishing transient from non-retryable failures. The agent thus has no basis for deciding whether retrying is worthwhile.
+
+**정답 및 해설:**
+**핵심 개념**: 
+MCP(Model Context Protocol) 및 에이전트 기반 오류 처리에서, 도구가 오류를 반환할 때 단지 "Operation failed."와 같은 모호한 불투명(opaque) 텍스트만 전달하면 에러의 본질(일시적 장애 vs 재시도 불가능한 영구 장애)을 식별할 수 없습니다. 에러의 범주(errorCategory, retryability 등)에 대한 **구조화된 메타데이터(Structured Metadata)**가 없으면 에이전트는 합리적인 재시도 전략을 결정할 수 없어 불필요한 반복 재시도를 수행하게 됩니다.
+
+**문제 상황 분석:**
+- 503 Service Unavailable 오류(배포 중 일시 장애)가 발생했으나, 도구는 구체적 메타데이터 없이 단순 "Operation failed." 텍스트와 `isError: true`만 반환함.
+- 에이전트는 원인 파악 및 일시적 오류 여부, 재시도 가능 여부를 판단할 구조화된 정보가 없음.
+- 그 결과 판단 근거 부족으로 포기할 때까지 동일한 무의미한 재시도를 5회 연속 반복하여 자원을 낭비함.
+
+**A번이 정답인 이유:**
+반환된 결과에 에러가 일시적(transient)인지 재시도 불가능(non-retryable)한지를 구분해 주는 구조화된 메타데이터가 전혀 포함되어 있지 않기 때문에, 에이전트가 재시도 여부 및 전략을 판단할 근거가 부족하여 무의미한 재시도를 반복한 것이 가장 직접적인 원인입니다.
+
+**오답 분석:**
+- **Option B (오답)**: 다운스트림 HTTP 코드 수신 여부보다, MCP 도구가 클라이언트/에이전트에 래핑하여 전달한 응답 결과의 메타데이터 부재가 원인입니다. MCP 클라이언트의 파싱 오류나 기본 재시도 동작 문제가 아닙니다.
+- **Option C (오답)**: "Operation failed."라는 단문 에러 텍스트 하나로 컨텍스트 윈도우가 가득 차서 이전 실패 기록을 기억하지 못했다는 주장은 현실적이지 않습니다.
+- **Option D (오답)**: 오류가 발생했을 때 `isError`를 `true`로 설정하는 것은 정상입니다. `isError: true` 자체가 무제한 재시도를 의미하거나 일시적 오류 인식을 막는 것은 아닙니다.
+
+---
+
+### 43번 문제
+
+**1. 문제 원문**
+
+A data-pipeline monitoring agent must always respond with a structured action (`acknowledge_alert`, `escalate_alert`, or `suppress_alert`) for every incoming alert, since downstream automation parses only tool calls and cannot handle free-text replies. Which `tool_choice` value directly guarantees the model will not return plain conversational text?
+
+A) `{"type": "any"}`, since it requires the model to call one of the provided tools rather than reply in prose
+
+B) Leaving `tool_choice` unset while adding a system prompt instruction to "always respond with a tool call"
+
+C) `{"type": "auto"}`, since it is the default and applies whenever any tools are present in the request
+
+D) `{"type": "none"}`, since it disables prose generation and forces structured output by default
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A data-pipeline monitoring agent**
+데이터 파이프라인 모니터링 에이전트는
+
+**must always respond**
+항상 응답해야 합니다
+
+**with a structured action**
+구조화된 액션으로
+
+**(`acknowledge_alert`, `escalate_alert`, or `suppress_alert`)**
+(`acknowledge_alert`, `escalate_alert`, 또는 `suppress_alert`)
+
+**for every incoming alert,**
+들어오는 모든 알림에 대해,
+
+**since downstream automation**
+하위 자동화 시스템이 ~하기 때문에
+
+**parses only tool calls**
+도구 호출만을 파싱하고
+
+**and cannot handle free-text replies.**
+자유 형식 텍스트 응답을 처리할 수 없기 때문에.
+
+**Which `tool_choice` value**
+어떤 `tool_choice` 값이
+
+**directly guarantees**
+직접적으로 보장합니까
+
+**the model will not return**
+모델이 반환하지 않을 것임을
+
+**plain conversational text?**
+일반 대화형 텍스트를?
+
+---
+
+**Options:**
+
+**A)**
+**`{"type": "any"}`,**
+`{"type": "any"}`,
+
+**since it requires the model**
+모델에 요구하기 때문에
+
+**to call one of the provided tools**
+제공된 도구 중 하나를 호출하도록
+
+**rather than reply in prose**
+일반 텍스트로 응답하는 대신에
+
+**B)**
+**Leaving `tool_choice` unset**
+`tool_choice`를 설정하지 않은 채로 두는 것
+
+**while adding a system prompt instruction**
+시스템 프롬프트 지시사항을 추가하면서
+
+**to "always respond with a tool call"**
+"항상 도구 호출로 응답하라"는
+
+**C)**
+**`{"type": "auto"}`,**
+`{"type": "auto"}`,
+
+**since it is the default**
+이것이 기본값이고
+
+**and applies**
+적용되기 때문에
+
+**whenever any tools are present**
+어떤 도구든 존재할 때마다
+
+**in the request**
+요청 내에
+
+**D)**
+**`{"type": "none"}`,**
+`{"type": "none"}`,
+
+**since it disables prose generation**
+일반 텍스트 생성을 비활성화하고
+
+**and forces structured output**
+구조화된 출력을 강제하기 때문에
+
+**by default**
+기본적으로
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**A번**: `{"type": "any"}`, since it requires the model to call one of the provided tools rather than reply in prose
+
+**정답 및 해설:**
+**핵심 개념**: 
+Anthropic Claude API에서 `tool_choice` 파라미터 옵션 중 `{"type": "any"}`는 모델이 일반 대화형 텍스트(prose)만으로 응답하는 것을 금지하고, 제공된 도구 목록 중 **최소 하나 이상의 도구를 반드시 호출하도록 결정론적으로 강제**하는 설정입니다.
+
+**문제 상황 분석:**
+- 하위 자동화 파이프라인 시스템은 모델의 도구 호출(Tool call) 데이터만 파싱할 수 있고, 일반 대화 텍스트는 처리하지 못함.
+- 모델이 일반 텍스트 응답을 출력하는 상황을 100% 방지하고, 세 가지 도구 중 하나를 반드시 실행하도록 강제해야 함.
+- 따라서 API 차원에서 도구 호출을 필수화하는 `tool_choice` 설정이 필요한 상황임.
+
+**A번이 정답인 이유:**
+`tool_choice`를 `{"type": "any"}`로 지정하면 모델은 일반 텍스트 형태의 응답을 출력할 수 없고, 정의된 도구들(`acknowledge_alert`, `escalate_alert`, `suppress_alert`) 중 하나를 반드시 선택하여 호출하도록 보장됩니다.
+
+**오답 분석:**
+- **Option B (오답)**: 시스템 프롬프트에 지시사항을 작성하는 것은 확률적 가이드라인일 뿐, 모델이 일반 텍스트 응답을 출력하지 않도록 API 수준에서 100% 보장해주지 못합니다.
+- **Option C (오답)**: `{"type": "auto"}`는 기본 설정값으로, 모델이 자율적으로 도구 호출 여부나 일반 텍스트 응답 여부를 선택하므로 대화 텍스트 응답을 차단하지 못합니다.
+- **Option D (오답)**: `{"type": "none"}`은 도구 호출을 **완전히 금지**하고 오직 일반 대화 텍스트만 생성하도록 만드는 설정이므로 요구사항에 직접적으로 반대됩니다.
+
+---
+
+### 44번 문제
+
+**1. 문제 원문**
+
+A connected MCP server named `docs` exposes a resource for the authentication guide. A developer wants to have Claude directly analyze that specific document as part of their prompt, the same way they would reference a local file. What is the correct way to do this?
+
+A) Add a `resources` field naming the document inside `.mcp.json` so it loads automatically into context at the start of every session
+
+B) Call the server's `list_resources` tool manually first, then paste the raw JSON result from that call directly into the next prompt
+
+C) Ask the agent in plain language to "open the docs server" and trust that it infers which specific resource is relevant without any reference syntax
+
+D) Type an `@` mention in the prescribed form, such as `@docs:file://api/authentication`, to reference that exact resource inline in the prompt
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**A connected MCP server**
+연결된 MCP 서버인
+
+**named `docs`**
+`docs`라는 이름의
+
+**exposes a resource**
+리소스를 공개합니다
+
+**for the authentication guide.**
+인증 가이드에 대한.
+
+**A developer wants**
+한 개발자가 원합니다
+
+**to have Claude directly analyze**
+Claude가 직접 분석하도록 만들기를
+
+**that specific document**
+해당 특정 문서를
+
+**as part of their prompt,**
+자신의 프롬프트의 일부로서,
+
+**the same way**
+동일한 방식으로
+
+**they would reference a local file.**
+로컬 파일을 참조하는 것과.
+
+**What is the correct way**
+올바른 방법은 무엇입니까
+
+**to do this?**
+이를 수행하기 위한?
+
+---
+
+**Options:**
+
+**A)**
+**Add a `resources` field**
+`resources` 필드를 추가하는 것
+
+**naming the document**
+문서 이름을 지정하여
+
+**inside `.mcp.json`**
+`.mcp.json` 내부에
+
+**so it loads automatically**
+그것이 자동으로 로드되도록
+
+**into context**
+컨텍스트 안으로
+
+**at the start of every session**
+모든 세션의 시작 시점에
+
+**B)**
+**Call the server's `list_resources` tool**
+서버의 `list_resources` 도구를 호출하는 것
+
+**manually first,**
+먼저 수동으로,
+
+**then paste the raw JSON result**
+그런 다음 원시 JSON 결과를 붙여넣는 것
+
+**from that call**
+해당 호출로부터 얻은
+
+**directly into the next prompt**
+다음 프롬프트에 직접
+
+**C)**
+**Ask the agent in plain language**
+자연어로 에이전트에게 요청하는 것
+
+**to "open the docs server"**
+"docs 서버를 열라"고
+
+**and trust that it infers**
+그리고 추론할 것이라 신뢰하는 것
+
+**which specific resource is relevant**
+어떤 특정 리소스가 관련 있는지
+
+**without any reference syntax**
+어떠한 참조 구문도 없이
+
+**D)**
+**Type an `@` mention**
+`@` 멘션을 입력하는 것
+
+**in the prescribed form,**
+정해진 형식으로,
+
+**such as `@docs:file://api/authentication`,**
+`@docs:file://api/authentication`과 같은,
+
+**to reference that exact resource**
+해당 정확한 리소스를 참조하기 위해
+
+**inline in the prompt**
+프롬프트 내에 직접(inline)
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**D번**: Type an `@` mention in the prescribed form, such as `@docs:file://api/authentication`, to reference that exact resource inline in the prompt
+
+**정답 및 해설:**
+**핵심 개념**: 
+Claude Code 인터페이스 및 MCP(Model Context Protocol) 리소스 참조(Resource Mentions) 기능에서는 프롬프트 내에서 인라인으로 외부 MCP 서버의 리소스나 로컬 파일을 직접 지정하기 위해 `@` 멘션 구문을 사용합니다. MCP 리소스의 경우 `@<server_name>:<resource_uri>` 형태(예: `@docs:file://api/authentication`)로 작성하여 프롬프트 실행 시 해당 리소스의 데이터를 직접 컨텍스트에 포함시킬 수 있습니다.
+
+**문제 상황 분석:**
+- `docs`라는 MCP 서버가 인증 가이드 문서 리소스를 제공하고 있음.
+- 개발자는 로컬 파일(`@filename`)을 참조할 때와 마찬가지로, 특정 MCP 리소스를 프롬프트 작성 시 인라인으로 Claude에게 전달하여 직접 분석하게 만들고자 함.
+- MCP 리소스를 명시적으로 타겟팅하여 프롬프트 맥락으로 가져올 수 있는 올바른 CLI/프롬프트 구문이 필요함.
+
+**D번이 정답인 이유:**
+Claude CLI/인터페이스에서는 `@` 구문(At-mention)을 사용하여 파일이나 MCP 리소스를 인라인 참조합니다. MCP 서버의 리소스는 `@server_name:resource_uri` 형태(예: `@docs:file://api/authentication`)로 프롬프트에 직접 작성함으로써 해당 문서의 내용이 직접 프롬프트 맥락으로 로드되어 분석되도록 처리할 수 있습니다.
+
+**오답 분석:**
+- **Option A (오답)**: `.mcp.json` 파일은 MCP 서버 연결 및 환경 설정용 구성 파일이며, 특정 리소스 문서를 상시 로드하기 위해 내부 필드 형태로 작성하는 구조가 아닙니다.
+- **Option B (오답)**: `list_resources`를 수동 호출하여 출력된 RAW JSON 결과를 사용자가 직접 복사-붙여넣기하는 방식은 에이전트 프롬프트 참조 시스템을 제대로 활용하지 않는 수동적이며 비효율적인 방식입니다.
+- **Option C (오답)**: 구체적인 참조 구문 없이 자연어로만 요구하면 모델이 수많은 리소스 중 사용자가 원하는 정확한 리소스를 단번에 식별하지 못하거나 엉뚱한 리소스를 가져올 수 있습니다.
+
+---
+
+### 45번 문제
+
+**1. 문제 원문**
+
+An MCP server exposes `get_user_profile` and `get_user_permissions` with identical one-line descriptions: "Returns user account information." Client agents integrating this server report frequent misrouting when asked for either a display name or an access level. As the MCP server author, what is the most effective fix?
+
+A) Combine both endpoints into a single MCP resource instead of a tool, since resources are inherently immune to selection ambiguity.
+
+B) Add authentication scopes to the MCP server configuration, since permission errors are the actual cause of the reported misrouting.
+
+C) Instruct every client application connecting to the server to hardcode which tool to call for each intent, bypassing tool selection.
+
+D) Update each tool's description to name the specific fields it returns, such as display name versus roles and access scopes.
+
+---
+
+**2. 구간별 직독직해 번역**
+
+**QUESTION:**
+**An MCP server exposes**
+MCP 서버가 공개합니다
+
+**`get_user_profile` and `get_user_permissions`**
+`get_user_profile`과 `get_user_permissions`를
+
+**with identical one-line descriptions:**
+동일한 한 줄 설명과 함께:
+
+**"Returns user account information."**
+"사용자 계정 정보를 반환합니다."
+
+**Client agents integrating this server**
+이 서버를 통합하는 클라이언트 에이전트들이
+
+**report frequent misrouting**
+빈번한 라우팅 오류(오호출)를 보고합니다
+
+**when asked for**
+요청을 받을 때
+
+**either a display name or an access level.**
+표시 이름이나 접근 권한 수준 중 하나를.
+
+**As the MCP server author,**
+MCP 서버 작성자로서,
+
+**what is the most effective fix?**
+가장 효과적인 수정 방법은 무엇입니까?
+
+---
+
+**Options:**
+
+**A)**
+**Combine both endpoints**
+두 엔드포인트를 결합하는 것
+
+**into a single MCP resource**
+단일 MCP 리소스로
+
+**instead of a tool,**
+도구 대신에,
+
+**since resources are inherently immune**
+리소스를 사용하는 것이 본질적으로 면제되기 때문에
+
+**to selection ambiguity.**
+선택 모호성으로부터.
+
+**B)**
+**Add authentication scopes**
+인증 스코프를 추가하는 것
+
+**to the MCP server configuration,**
+MCP 서버 설정에,
+
+**since permission errors**
+왜냐하면 권한 에러가
+
+**are the actual cause**
+실제 원인이기 때문이다
+
+**of the reported misrouting.**
+보고된 라우팅 오류의.
+
+**C)**
+**Instruct every client application**
+모든 클라이언트 애플리케이션에 지시하는 것
+
+**connecting to the server**
+서버에 연결하는
+
+**to hardcode which tool to call**
+호출할 도구를 하드코딩하도록
+
+**for each intent,**
+각 의도에 대해,
+
+**bypassing tool selection.**
+도구 선택 과정을 우회하면서.
+
+**D)**
+**Update each tool's description**
+각 도구의 설명을 업데이트하는 것
+
+**to name the specific fields**
+구체적인 필드들을 명시하도록
+
+**it returns,**
+해당 도구가 반환하는,
+
+**such as display name**
+표시 이름 대(versus)
+
+**versus roles and access scopes.**
+역할 및 접근 스코프와 같은.
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+**D번**: Update each tool's description to name the specific fields it returns, such as display name versus roles and access scopes.
+
+**정답 및 해설:**
+**핵심 개념**: 
+LLM 기반 에이전트는 도구의 **이름(Name)**과 **설명(Description)**을 바탕으로 사용자의 요청 의도에 적합한 도구를 판단하고 선택(Tool Routing)합니다. 두 도구의 설명이 완전히 동일하거나 모호할 경우, 모델은 두 도구 간의 기능적 차이를 구별할 수 없어 오호출(Misrouting)을 일으킵니다. 이를 해결하기 위해서는 각 도구가 구체적으로 어떤 반환값/필드를 제공하는지 설명을 명확하고 구체적으로 갱신해야 합니다.
+
+**문제 상황 분석:**
+- `get_user_profile`과 `get_user_permissions` 두 도구 모두 설명이 "Returns user account information."으로 완전히 동일함.
+- 사용자가 표시 이름(Display name)이나 접근 권한 수준(Access level)을 요청할 때 에이전트가 어떤 도구를 호출해야 할지 구분하지 못함.
+- 동일하고 모호한 도구 설명으로 인해 도구 선택 과정에서 라우팅 오류가 지속적으로 발생함.
+
+**D번이 정답인 이유:**
+각 도구의 설명(Description)에 '표시 이름'을 반환하는지, 아니면 '역할 및 접근 권한 스코프'를 반환하는지와 같이 구체적인 데이터 필드와 역할을 명시적으로 기술하면 모델이 프롬프트를 해석할 때 모호성 없이 올바른 도구를 정확히 라우팅하여 호출할 수 있습니다.
+
+**오답 분석:**
+- **Option A (오답)**: 도구(Tool)를 리소스(Resource)로 변경한다고 해서 모호성이 자동으로 해결되지 않으며, 서버 동작 방식을 잘못 변경하는 해결책입니다.
+- **Option B (오답)**: 라우팅 오류의 원인은 인증/권한 부족 문제가 아니라 동일한 도구 설명으로 인한 LLM의 판별 불능입니다.
+- **Option C (오답)**: 모든 클라이언트 코드에서 도구 호출을 하드코딩하라고 요구하는 것은 LLM의 동적 도구 선택 기능 및 에이전트 아키텍처를 무력화하는 잘못된 설계 방식입니다.
