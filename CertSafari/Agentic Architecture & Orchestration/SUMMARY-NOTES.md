@@ -1,6 +1,6 @@
 # Agentic Architecture & Orchestration — 학습용 핵심 요약 노트
 
-모의시험 94문항(01–50, 61–70, 81–114) 기반. 51–60, 71–80번은 원본 파일에 문항이 없습니다.
+모의시험 93문항(01–50, 61–70, 81–114) 기반. 51–60, 71–80번은 원본 파일에 문항이 없고, 86번은 출제 오류로 삭제되었습니다.
 
 **사용법**: "문제 신호"로 지문 키워드를 잡고 → "정답 키워드"를 고르고 → "함정 키워드"는 버린다.
 
@@ -279,7 +279,7 @@
 
 ## 5. 세션 관리 (Session Management)
 
-**해당 문제**: 3, 10, 12 / 10·11(21-40) / 49, 66, 67 / 82, 84, 86, 89, 92, 103, 105
+**해당 문제**: 3, 10, 12 / 10·11(21-40) / 49, 66, 67 / 82, 84, 89, 92, 103, 105
 
 ### 핵심 개념
 | 원문 | 한국어 | 핵심 |
@@ -335,35 +335,21 @@
 - **"Fork the prior session and continue from its unmodified stale history"** (오래된 히스토리 그대로 포크) — 오염 유지
 - **"Resume and issue /clear right after resuming"** (재개 직후 /clear) — 재개 의미 없음
 
-### ⚠️ 67번 vs 86번 — 같은 지문, 정답 충돌 (공식 문서로 검증 완료)
-
-두 문항의 지문과 보기 4개가 **완전히 동일**한데 정답이 서로 다릅니다. 공식 문서 확인 결과 **67번의 답(재개 + 파일이 바뀌었다고 알려 재읽기)이 맞고, 86번의 답(새 세션 + 요약)은 오답**입니다.
+### 67번 — 설정 파일이 바뀐 뒤 세션 이어가기 (공식 문서 검증 완료)
 
 **정답**: "Resume the session and explicitly tell the agent the configuration file changed, prompting it to re-read that file"
 (세션을 재개하고, 설정 파일이 변경되었음을 명시적으로 알려 재읽기를 유도한다)
 
-**근거 1 — 파일은 매 도구 호출마다 새로 읽습니다** ([Common workflows](https://code.claude.com/docs/en/common-workflows))
-> "Claude reads files fresh on each tool call, so it sees edits you make in another application the next time it reads that file."
-> (Claude는 매 도구 호출마다 파일을 새로 읽으므로, 다른 앱에서 한 수정도 다음에 그 파일을 읽을 때 반영됩니다.)
+**왜 재개가 맞는가**
+- 파일은 매 도구 호출마다 새로 읽습니다 ([Common workflows](https://code.claude.com/docs/en/common-workflows)) — *"Claude reads files fresh on each tool call, so it sees edits you make in another application the next time it reads that file."* 따라서 "재개하면 옛 캐시가 남아 새 내용과 충돌한다"는 논리는 성립하지 않습니다.
+- 재개는 도구 호출과 결과를 포함한 **전체 이력**을 복원하므로 ([Manage sessions](https://code.claude.com/docs/en/sessions)) 문제가 요구한 "accumulated reasoning 보존"을 가장 잘 만족합니다.
+- 반대로 요약본을 새 세션에 넣는 방식은 문서가 손실을 명시합니다 — *"whatever the summary leaves out is no longer in Claude's context."*
 
-즉 "재개하면 옛 캐시가 남아 새 내용과 충돌한다"는 86번의 오답 근거는 **사실이 아닙니다**. 대화 이력에 옛 내용이 남아 있을 뿐, 다시 읽으라고 지시하면 디스크의 최신 내용을 그대로 가져옵니다.
+**함정 보기 2개**
+- **"캐시된 이해를 그대로 신뢰"** — 재개가 파일 내용까지 최신화해주지는 않으므로, 변경 사실을 알려주지 않으면 옛 내용으로 추론합니다.
+- **"재개 직후 /compact"** — 압축은 대화 이력을 요약할 뿐, 디스크의 파일을 새로 읽지 않습니다.
 
-**근거 2 — 재개는 추론 맥락을 온전히 복원합니다** ([Manage sessions](https://code.claude.com/docs/en/sessions))
-> "A resumed session restores the conversation along with the state saved in it: Conversation history: the full history, including tool calls and results."
-> (재개된 세션은 도구 호출과 결과를 포함한 **전체 이력**을 복원합니다.)
-
-문제가 요구하는 "accumulated reasoning 보존"을 가장 잘 만족하는 것이 재개입니다. 반면 요약본을 새 세션에 넣는 방식은 문서상 **정보 손실을 감수하는 트레이드오프**로 설명됩니다:
-> "Resuming from the summary costs less on each later request... but whatever the summary leaves out is no longer in Claude's context."
-> (요약으로 재개하면 요청당 비용은 줄지만, 요약이 빠뜨린 것은 더 이상 컨텍스트에 없습니다.)
-
-**근거 3 — 86번이 인용한 "Anthropic Compaction 권장 방식"은 문서에 없습니다**
-[Best practices](https://code.claude.com/docs/en/best-practices)가 `/clear`·새 세션을 권하는 경우는 **무관한 작업 전환, 반복된 교정 실패, 컨텍스트 과다** 세 가지뿐이고, "설정 파일이 바뀌면 새 세션을 시작하라"는 권고는 존재하지 않습니다. CLAUDE.md에 대해서도 오히려 **디스크에서 다시 읽어 재주입한다**고 명시합니다 ([Memory](https://code.claude.com/docs/en/memory)):
-> "Project-root CLAUDE.md survives compaction: after /compact, Claude re-reads it from disk and re-injects it into the session."
-
-**시험에서의 처리**
-- 두 문항 모두 **"재개 + 명시적 재읽기 지시"**를 고르세요.
-- 86번은 출제 오류로 보이나, 만약 그 보기가 아예 없는 변형이 나오면 차선은 "새 세션 + 요약"입니다.
-- 어느 문항이든 확실한 오답: **"캐시된 이해를 그대로 신뢰"**(재개가 파일까지 최신화해주지 않음), **"재개 직후 /compact"**(압축은 요약일 뿐 파일을 새로 읽지 않음).
+> 참고: 동일 지문에 "새 세션 + 요약"을 정답으로 제시하던 86번은 출제 오류로 확인되어 원본에서 삭제되었습니다.
 
 ---
 
@@ -381,7 +367,7 @@
 | 서브에이전트 중첩 깊이 → **최대 5단계** | 95번, 106번 |
 | 40개 파일 PR → **파일별 분석 후 통합 패스** | 20번(21-40), 91번 |
 | 다중 의도 티켓 → **분해 후 병렬 조사 → 종합** | 14번, 41번 |
-| 설정 파일 재작성 후 재개 → **재개 + 재읽기 지시** | 67번 정답 / 86번은 출제 오류 (5장 참고) |
+
 
 ---
 
