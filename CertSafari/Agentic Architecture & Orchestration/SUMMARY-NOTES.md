@@ -50,31 +50,46 @@
 | agentic loop | 에이전틱 루프 | 요청→도구→결과→재요청 반복 |
 
 ### 정답 키워드 (Correct)
-- **"stop_reason directly reports whether Claude finished its turn"** (stop_reason이 턴 완료 여부를 직접 보고) — 문서화된 신호
-- **"new user-role message appended after the assistant message"** (assistant 메시지 뒤 새 user 메시지로 추가) — tool_result 위치
-- **"a separate tool_result block for each, matching each result to its own tool_use_id"** (각 결과를 자기 tool_use_id에 매핑해 개별 블록으로) — 다중 도구 호출
-- **"append tool_result and send the full updated conversation back"** (전체 갱신 대화를 되돌려 보냄)
-- **"lets Claude see the failure in context and decide the next step, such as retrying"** (실패를 맥락에 넣고 모델이 다음 단계 결정) — 에러 처리
-- **"end_turn on the first response is a valid immediate completion"** (첫 응답의 end_turn도 정상 완료) — 도구 없이 끝날 수 있음
-- **"end_turn means Claude produced a final response with no further tool request"** (더 이상 도구 요청 없는 최종 응답)
-- **"tool_result was never added to the context, so the model has no record"** (결과를 컨텍스트에 안 넣어서 모델이 기억 못함) — 반복 호출의 원인
-- **"application must execute each requested tool and submit results as tool_result"** (애플리케이션이 직접 도구 실행) — Messages API 직접 연동
-- **"cut the loop off while stop_reason is still tool_use"** (아직 tool_use인데 루프를 끊음) — 고정 반복 상한의 문제
+| 원문 키워드 | 한국어 |
+|---|---|
+| stop_reason directly reports whether Claude finished its turn | stop_reason이 턴 완료 여부를 직접 보고 |
+| which is the documented signal | 이것이 문서화된 신호 |
+| a new user-role message appended after the assistant | assistant 메시지 뒤 새 user 메시지로 |
+| matching each result to its own tool_use_id | 각 결과를 자기 tool_use_id에 매핑 |
+| append a separate tool_result block for each | 각각에 별도 tool_result 블록 추가 |
+| send the full updated conversation back to Claude | 갱신된 전체 대화를 Claude에 재전송 |
+| let Claude see the failure and decide next | Claude가 실패를 보고 다음을 결정 |
+| such as retrying with different arguments | 다른 인자로 재시도하는 등 |
+| end_turn is a valid immediate completion | end_turn은 유효한 즉시 완료 |
+| whenever Claude can answer without needing a tool | 도구 없이 답할 수 있을 때 |
+| a final response with no further tool request | 추가 도구 요청 없는 최종 응답 |
+| the tool_result was never added to the context | tool_result가 컨텍스트에 추가되지 않음 |
+| no record the file was already read | 모델에 파일을 읽은 기록이 없음 |
+| the application must execute each requested tool | 애플리케이션이 요청된 각 도구를 실행 |
+| the API never runs client-side tools itself | API는 클라이언트 측 도구를 실행하지 않음 |
+| cut the loop off while stop_reason is tool_use | stop_reason이 tool_use인데 루프를 끊음 |
+| bundles built-in tools and runs the loop internally | 내장 도구 포함, 루프를 내부 실행 |
 
 ### 함정 키워드 (Distractor)
-- **"final text block is non-empty"** (마지막 텍스트 블록이 비어있지 않음) — 도구 호출 시에도 설명 텍스트가 나오므로 신뢰 불가
-- **"total count of content blocks"** (콘텐츠 블록 총 개수) — 완료 신호 아님
-- **"stop_reason and text emptiness always change together"** (항상 함께 변함) — 거짓
-- **"metadata on the HTTP request headers"** (HTTP 헤더에 메타데이터로) — 틀림
-- **"system-role message before the original user prompt"** (원래 프롬프트 앞 system 메시지) — 틀림
-- **"inside that same assistant-role message, replacing it"** (같은 assistant 메시지 안에 넣어 대체) — 틀림
-- **"Claude executes the tools internally on Anthropic's servers"** (Anthropic 서버가 도구를 실행) — 클라이언트 도구는 절대 아님
-- **"registers a webhook URL that Anthropic calls back"** (웹훅 콜백) — 없는 기능
-- **"API automatically executes any tool whose name matches"** (이름이 맞으면 자동 실행) — 없음
-- **"is_error becomes the sole termination signal"** (is_error가 유일한 종료 신호) — 아님
-- **"error tool_results reset that tool's rate limits"** (에러 결과가 rate limit 초기화) — 거짓
-- **"context window silently resets"** / **"API automatically clears tool_use blocks every two iterations"** (컨텍스트가 조용히 초기화됨) — 존재하지 않는 동작
-- **"Messages API enforces its own hard limit of five tool calls"** (API가 5회 도구 호출 제한을 강제) — 거짓
+| 원문 키워드 | 한국어 | 왜 틀렸나 |
+|---|---|---|
+| the final text block is non-empty | 마지막 텍스트 블록이 비어있지 않음 | 도구 호출 중에도 텍스트 발생 |
+| treated as the only reliable indicator | 유일하게 신뢰할 지표로 취급 | 신뢰 불가 |
+| through the total count of content blocks | 콘텐츠 블록 총 개수를 통해 | 완료 신호 아님 |
+| stop_reason and text emptiness always change together | stop_reason과 텍스트 유무가 항상 함께 변함 | 거짓 |
+| as metadata on the HTTP request headers | HTTP 요청 헤더의 메타데이터로 | 틀림 |
+| in a separate system-role message before the prompt | 프롬프트 앞 별도 system 메시지에 | 틀림 |
+| inside that same assistant-role message, replacing it | 같은 assistant 메시지 안에 넣어 대체 | 틀림 |
+| Claude executes them internally on Anthropic's servers | Anthropic 서버에서 내부적으로 실행 | 거짓 |
+| only if the application registers a webhook URL | 애플리케이션이 웹훅 URL을 등록해야만 | 없는 기능 |
+| automatically executes any tool whose name matches | 이름이 일치하는 도구를 자동 실행 | 없음 |
+| is_error becomes the sole termination signal | is_error가 유일한 종료 신호가 됨 | 아님 |
+| error tool_results reset that tool's rate limits | 에러 결과가 그 도구의 rate limit 초기화 | 거짓 |
+| the context window silently resets | 컨텍스트 윈도우가 조용히 초기화됨 | 없는 동작 |
+| automatically clears tool_use blocks from history | 이력에서 tool_use 블록을 자동 삭제 | 없는 동작 |
+| the API enforces a hard limit of five | API가 자체 5회 하드 제한을 강제 | 거짓 |
+| Client SDK cannot return stop_reason at all | Client SDK는 stop_reason을 아예 반환 못함 | 거짓 |
+| both SDKs need identical amounts of loop code | 두 SDK 모두 동일한 양의 루프 코드 필요 | 거짓 |
 
 ### Client SDK vs Agent SDK (99번)
 - 정답: **"Agent SDK bundles built-in tools and runs the agentic loop internally, while the Client SDK requires manually inspecting stop_reason"** (Agent SDK는 내장 도구 + 루프 자체 제공 / Client SDK는 직접 stop_reason 확인 후 루프 작성)
@@ -104,38 +119,55 @@
 | `allow` | 허용 | 저위험·읽기 전용 작업 |
 
 ### 정답 키워드 (Correct)
-- **"enforces the rule entirely outside of model generation, so it cannot be bypassed"** (모델 생성 과정 밖에서 강제 → 우회 불가) ★ 훅 문제 최빈 정답
-- **"deterministically enforces the rule on every matching tool call, while the prompt clause only influences the likelihood"** (훅은 결정론적 / 프롬프트는 확률적 영향만)
-- **"registered in application code separate from the prompt, so a prompt edit cannot silently remove the enforcement"** (프롬프트와 분리된 코드에 등록 → 프롬프트 수정으로 사라지지 않음)
-- **"returns permissionDecision 'deny' with a reason whenever the amount exceeds $500"** (임계값 초과 시 이유와 함께 거부)
-- **"permissionDecision 'ask', so the operation is surfaced for approval"** (승인용으로 노출) — 인간 검토 필요 시
-- **"a single PreToolUse hook that normalizes then checks the threshold, returning updatedInput"** (하나의 훅에서 정규화 후 검증, updatedInput 반환)
-- **"permissionDecision 'allow' together with updatedInput that overwrites the customer_id with the verified ID"** (검증된 ID로 인자 덮어쓰기)
-- **"a PostToolUse hook that parses each response and returns updatedToolOutput with values rewritten into one consistent format"** (응답을 하나의 형식으로 재작성)
-- **"updatedToolOutput, because it replaces output for all tools (built-in and MCP)"** (내장·MCP 도구 **모두**에 적용) ★ updatedMCPToolOutput은 MCP 전용
-- **"Catch the timeout and return permissionDecision 'deny' with a reason"** (예외를 잡아 거부 반환) — **Fail-Closed 패턴**
-- **"the second hook operates on the first hook's updatedToolOutput"** (두 번째 훅이 첫 훅의 출력 위에서 동작) — 훅 체이닝
-- **"Inside the callback function, by reading input_data['tool_input']['category']"** (콜백 안에서 인자 검사) — matcher는 도구 **이름만** 필터
-- **"inspect the explicit verification result in the tool call parameters, instead of relying on a separate boolean flag"** (별도 플래그 대신 명시적 검증 결과 확인) — 상태 결합도 낮추기
-- **"Refunds are financial and hard to reverse, and prompt instructions have a non-zero failure rate"** (금전·비가역 + 프롬프트 실패율은 0이 아님)
-- **"the regex matcher is unanchored... the fix is to anchor with ^ and $"** (앵커 없는 정규식 → `^refund$`로 고정)
+| 원문 키워드 | 한국어 |
+|---|---|
+| enforces the rule entirely outside of model generation | 모델 생성 과정 밖에서 규칙을 강제 |
+| cannot be bypassed by unusual phrasing or injection | 특이한 표현이나 주입으로 우회 불가 |
+| deterministically enforces on every matching tool call | 매칭되는 모든 도구 호출에 결정론적 강제 |
+| the prompt only influences the likelihood | 프롬프트는 가능성에만 영향 |
+| registered in application code separate from the prompt | 프롬프트와 분리된 애플리케이션 코드에 등록 |
+| a prompt edit cannot silently remove the enforcement | 프롬프트 수정으로 강제력이 사라지지 않음 |
+| returns permissionDecision "deny" with a reason | 이유와 함께 deny 반환 |
+| whenever the amount exceeds $500 | 금액이 $500를 초과할 때마다 |
+| permissionDecision "ask" so it is surfaced for approval | 승인용으로 노출되도록 ask 반환 |
+| a single PreToolUse hook that normalizes then checks | 정규화 후 검증하는 단일 PreToolUse 훅 |
+| returning an updatedInput with the normalized value | 정규화된 값을 담은 updatedInput 반환 |
+| updatedInput that overwrites the tool's customer_id argument | 도구의 customer_id 인자를 덮어쓰는 updatedInput |
+| returns hookSpecificOutput.updatedToolOutput | updatedToolOutput으로 반환 |
+| rewritten into one consistent format | 하나의 일관된 형식으로 재작성 |
+| replaces output for all tools, built-in and MCP | 내장과 MCP 도구 모두의 출력을 교체 |
+| catch the timeout and return permissionDecision "deny" | 타임아웃을 잡아 deny 반환 |
+| the second operates on the first hook's output | 두 번째 훅이 첫 훅의 출력에서 동작 |
+| inside the callback by reading tool_input | 콜백 안에서 tool_input을 읽어 |
+| since matchers only filter by tool name | matcher는 도구 이름만 필터하므로 |
+| inspect the explicit verification result in the parameters | 파라미터의 명시적 검증 결과를 확인 |
+| instead of relying on a separate boolean flag | 별도 불리언 플래그에 의존하는 대신 |
+| prompt instructions have a non-zero failure rate | 프롬프트 지시는 실패율이 0이 아님 |
+| the regex matcher is unanchored | 정규식 matcher에 앵커가 없음 |
+| anchor the regex with ^ and $ | 정규식을 ^와 $로 고정 |
 
 ### 함정 키워드 (Distractor)
-- **"Rewrite the system prompt to state the rule three times"** (규칙을 세 번 반복 작성) — 확률적 제어, 보장 불가
-- **"Lower the model's temperature to 0.1"** (temperature 낮추기) — 결정론적 보장 아님
-- **"repeats the ordering requirement twice and adds the word 'must'"** (must로 바꾸고 두 번 반복) — 동일 함정
-- **"a larger context window so it retains the instruction"** (컨텍스트 윈도우 확대) — 무관
-- **"a PostToolUse hook that writes to an audit log after the fact"** (사후 감사 로그) — 이미 실행된 뒤라 차단 실패
-- **"catch the timeout and return 'allow'"** (타임아웃 시 허용) — **Fail-Open**, 보안 붕괴
-- **"Increase the hook's timeout to several hours"** (타임아웃을 몇 시간으로) — 해결 아님
-- **"Remove the hook during the outage"** (장애 동안 훅 제거) — 강제력 포기
-- **"a regex in the matcher string such as refund_customer.*category=restricted"** (matcher 문자열로 인자 필터) — matcher는 **도구 이름만** 필터
-- **"a second field called argument_matcher"** (argument_matcher 필드) — 존재하지 않음
-- **"updatedInput automatically propagates between PreToolUse hooks"** (훅 간 자동 전파) — 보장되지 않음
-- **"hooks sorted alphabetically by name"** / **"conflicts resolved by timeout value"** / **"hooks must share the same tool_use_id"** (이름순 정렬·타임아웃으로 충돌 해결·같은 ID 필요) — 모두 지어낸 규칙
-- **"regex matchers in hooks are automatically anchored"** (자동 앵커됨) — 거짓
-- **"Add a PostToolUse hook to reverse the transaction after the refund is initiated"** (실행 후 되돌리기) — 비가역 작업에 부적절
-- **"Replace the model with a larger model that can re-read the conversation"** (더 큰 모델로 교체) — 결정론 아님
+| 원문 키워드 | 한국어 | 왜 틀렸나 |
+|---|---|---|
+| state the rule three times using varied phrasings | 임계값 규칙을 다양한 표현으로 세 번 진술 | 확률적, 보장 불가 |
+| lower the model's temperature to 0.1 | 모델 temperature를 0.1로 낮춤 | 결정론 아님 |
+| repeats the requirement twice and adds "must" | 요구사항을 두 번 반복하고 must 추가 | 프롬프트 강화 함정 |
+| a larger context window to retain the instruction | 지시를 유지하도록 더 큰 컨텍스트 윈도우 | 무관 |
+| a PostToolUse hook writing to an audit log | 감사 로그에 기록하는 PostToolUse 훅 | 이미 실행된 뒤 |
+| triggers a post-hoc review process | 사후 검토 프로세스를 트리거 | 차단 실패 |
+| return "allow" since the outage isn't their fault | 장애는 고객 잘못이 아니므로 allow 반환 | Fail-Open, 보안 붕괴 |
+| increase the hook's timeout to several hours | 훅 타임아웃을 몇 시간으로 증가 | 해결 아님 |
+| remove the hook entirely during the outage | 장애 동안 훅을 완전히 제거 | 강제력 포기 |
+| a regex in the matcher string, category=restricted | matcher 문자열에 category=restricted 같은 정규식 | 인자는 필터 못함 |
+| a second matcher field called argument_matcher | argument_matcher라는 두 번째 필드 | 존재하지 않음 |
+| updatedInput automatically propagates between PreToolUse hooks | updatedInput이 훅 간에 자동 전파됨 | 보장 안 됨 |
+| executes hooks in alphabetical order by name | SDK가 훅을 이름 알파벳순으로 실행 | 지어낸 규칙 |
+| declared using the same HookMatcher timeout value | 동일한 HookMatcher 타임아웃 값으로 선언 | 지어낸 규칙 |
+| both hooks must share the same tool_use_id | 두 훅이 같은 tool_use_id를 공유해야 함 | 지어낸 규칙 |
+| regex matchers are automatically anchored to match exactly | 정규식 matcher가 자동으로 정확히 앵커됨 | 거짓 |
+| reverse the transaction if the flag is invalid | 플래그가 무효면 거래를 되돌림 | 비가역 작업에 부적절 |
+| replace the model with a more capable one | 더 크고 유능한 모델로 교체 | 결정론 아님 |
+| updatedMCPToolOutput is intended for cross-tool replacement | updatedMCPToolOutput이 교차 도구 교체용 | MCP 전용 |
 
 ### MCP matcher 정규식 (17·18번(21-40), 48번, 113번)
 | 패턴 | 의미 | 판정 |
@@ -168,38 +200,51 @@
 | **Routing** | 라우팅 | 요청마다 복잡도가 달라 필요한 것만 호출 |
 
 ### 정답 키워드 (Correct)
-- **"a fixed prompt chain since its steps never branch"** (분기가 없으므로 고정 체인)
-- **"adaptive decomposition based on findings"** (발견 내용에 따른 적응형 분해)
-- **"a dynamic orchestrator that generates and prioritizes new investigation subtasks based on what each prior step uncovers"** (이전 단계 결과로 새 하위작업 생성·우선순위화) ★ 조사·인시던트 단골 정답
-- **"the subtasks are independent, so parallelization improves efficiency"** (독립적이므로 병렬화)
-- **"investigate concurrently, then combine the findings into one synthesized reply"** (동시 조사 후 하나로 종합) — fan-out / fan-in
-- **"a per-file local analysis pass, then a separate cross-file integration pass"** (파일별 분석 → 파일 간 통합 분석) ★ 40개 파일 PR 문제
-- **"the first pass already dilutes attention across all files at once"** (한 번에 전부 담으면 주의력이 희석됨)
-- **"a prompt chain with a checkpoint between each stage"** (단계마다 체크포인트를 둔 체인) — 게이트 검증 포함
-- **"decomposes cleanly into fixed, predictable subtasks, giving predictability without delegation overhead"** (위임 오버헤드 없이 예측 가능)
-- **"a dynamic orchestrator adds unnecessary complexity and latency without improving the outcome"** (불필요한 복잡도·지연만 추가) — **오버엔지니어링 비판**
-- **"decomposed the query too narrowly, so the subtasks left broad areas uncovered"** (너무 좁게 쪼개서 넓은 영역이 누락됨)
-- **"Rewrite the prompt around the research goal and quality bar, rather than a fixed step sequence"** (고정 단계 대신 목표·품질 기준 중심) — **goal-oriented prompting**
-- **"Design X lets the model adapt its next action to intermediate findings, while Design Y is a fixed tree"** (동적 vs 고정 트레이드오프)
-- **"assess each ticket's complexity with a lightweight classification prompt returning structured JSON, then invoke only the required subagents"** (경량 분류로 필요한 것만 호출) — 조건부 라우팅
-- **"Orchestrator-workers, because the required investigation steps cannot be predicted upfront"** (조사 단계를 미리 예측 불가) — 보안 감사 문제
+| 원문 키워드 | 한국어 |
+|---|---|
+| a fixed prompt chain, steps never branch | 단계가 분기하지 않으므로 고정 체인 |
+| adaptive decomposition based on findings | 발견 내용에 기반한 적응형 분해 |
+| generates and prioritizes new investigation subtasks | 새 조사 하위작업을 생성·우선순위화 |
+| based on what each prior step uncovers | 각 이전 단계가 밝혀낸 것에 근거 |
+| the subtasks are independent, so parallelization improves efficiency | 하위작업이 독립적이라 병렬화가 효율을 높임 |
+| investigate concurrently rather than one after another | 순차 대신 동시에 조사 |
+| combine the findings into one synthesized reply | 결과를 하나의 종합 답변으로 결합 |
+| a per-file local analysis pass on each file | 파일마다 개별 로컬 분석 패스 |
+| then a separate cross-file integration pass | 그다음 별도의 파일 간 통합 패스 |
+| the first pass already dilutes attention across files | 첫 패스가 이미 파일 전반에 주의력을 희석 |
+| a checkpoint between each stage | 각 단계 사이의 체크포인트 |
+| so a malformed draft can be caught | 잘못된 초안을 잡아낼 수 있도록 |
+| decomposes cleanly into fixed, predictable subtasks | 고정되고 예측 가능한 하위작업으로 깔끔히 분해 |
+| predictability without delegation overhead | 위임 오버헤드 없는 예측 가능성 |
+| adds unnecessary complexity and latency without improving | 개선 없이 불필요한 복잡도와 지연만 추가 |
+| decomposed the query too narrowly | 쿼리를 너무 좁게 분해함 |
+| the subtasks left broad areas uncovered | 하위작업이 넓은 영역을 다루지 못함 |
+| rewrite around the research goal and quality bar | 목표와 품질 기준 중심으로 프롬프트 재작성 |
+| rather than a fixed step sequence | 고정된 단계 순서 대신 |
+| lets the model adapt its action to findings | 모델이 발견에 맞춰 행동을 조정 |
+| a lightweight classification prompt returning structured JSON | 구조화 JSON을 반환하는 경량 분류 프롬프트 |
+| dynamically invoke only the subagents listed | 나열된 서브에이전트만 동적으로 호출 |
+| the steps cannot be predicted upfront | 단계를 사전에 예측할 수 없음 |
 
 ### 함정 키워드 (Distractor)
-- **"dynamic orchestration is always the safer default"** (동적이 항상 더 안전한 기본값) — always가 붙으면 오답
-- **"always produces better results than any fixed order can ever achieve"** (항상 더 낫다) — 절대 단정
-- **"any workflow involving financial data must follow one predetermined sequence"** (금융 데이터면 무조건 고정 순서) — 거짓
-- **"let the model silently skip whichever rules it judges unnecessary"** (모델이 임의로 규칙 생략) — 컴플라이언스 위반
-- **"an even more granular ten-step sequence to remove ambiguity entirely"** (10단계로 더 세분화) — over-specification 함정
-- **"add a fifth step to double-check the date it already extracted"** (이미 추출한 것을 재확인) — 근본 원인 미해결
-- **"increase the required article count from five to six"** (5개→6개) — 숫자 조정은 함정
-- **"Ask the customer to submit two separate tickets"** (티켓을 나눠 재제출 요청) — 사용자에게 부담 전가
-- **"Randomize the file order"** / **"Raise the sampling temperature"** (파일 순서 무작위화·temperature 상승) — 주의력 희석 미해결
-- **"a longer system prompt that more precisely defines what an integration bug is"** (더 긴 시스템 프롬프트) — 구조 문제를 프롬프트로 덮음
-- **"Prompt chaining, because audits always follow the same three fixed steps"** (감사는 항상 3단계) — 미지의 조사에 부적합
-- **"a single-pass prompt, the model can determine exploitability from the CVE description alone"** (CVE 설명만으로 판단) — 코드베이스 미검사
-- **"Skip the address change silently"** / **"Resolve one concern, then open a new session with no memory"** (한쪽만 처리·기억 없는 새 세션) — 다중 의도 처리 실패
-
----
+| 원문 키워드 | 한국어 | 왜 틀렸나 |
+|---|---|---|
+| dynamic decomposition is always the safer default | 동적 분해가 항상 더 안전한 기본값 | always는 오답 신호 |
+| always produces better results than any fixed order | 어떤 고정 순서보다 항상 더 나은 결과 | 절대 단정 |
+| any financial workflow must follow one predetermined sequence | 금융 워크플로는 정해진 한 순서를 따라야 함 | 거짓 |
+| let the model silently skip unnecessary rules | 모델이 불필요하다 판단한 규칙을 조용히 생략 | 컴플라이언스 위반 |
+| an even more granular ten-step sequence | 훨씬 더 세분화된 10단계 순서 | over-specification |
+| to remove ambiguity entirely | 모호성을 완전히 제거하려고 | 과잉 명세 |
+| a step to double-check the date already extracted | 이미 추출한 날짜를 재확인하는 단계 추가 | 근본 원인 미해결 |
+| increase the article count from five to six | 필요 기사 수를 5개에서 6개로 증가 | 숫자 조정 함정 |
+| ask the customer to submit two separate tickets | 고객에게 티켓 두 개를 따로 제출하게 함 | 사용자에게 부담 전가 |
+| randomize the file order before each run | 실행마다 파일 순서를 무작위화 | 희석 미해결 |
+| raise the review prompt's sampling temperature | 리뷰 프롬프트의 샘플링 temperature 상승 | 희석 미해결 |
+| a longer prompt defining an integration bug | 통합 버그를 정의하는 더 긴 시스템 프롬프트 | 구조 문제를 덮음 |
+| audits always follow the same three fixed steps | 감사는 항상 같은 3단계를 따름 | 미지의 조사에 부적합 |
+| determine exploitability from the CVE description alone | CVE 설명만으로 악용 가능성 판단 | 코드 미검사 |
+| skip the address change silently | 주소 변경을 조용히 생략 | 다중 의도 실패 |
+| a new session with no memory of it | 티켓 기억이 없는 새 세션을 시작 | 맥락 손실 |
 
 ## 4. 서브에이전트 & 코디네이터 (Subagents & Coordination)
 
@@ -219,63 +264,80 @@
 | **Nesting depth** | 중첩 깊이 | **최대 5단계** (메인 에이전트를 1단계로 포함) |
 
 ### 정답 키워드 (Correct)
-- **"Emit all three Task calls within one coordinator response"** (한 응답 안에서 3개 Task 호출 발행) ★ 진짜 병렬 실행 방법
-- **"Agent teams, which support inter-agent messaging and centralized management"** (에이전트 간 메시징 + 중앙 관리)
-- **"SubagentStop, which fires on subagent completion and lets the coordinator aggregate results"** (완료 시 발화, 결과 집계)
-- **"Centralize error handling, logging, and retry policy in the coordinator"** (오류처리·로깅·재시도를 코디네이터에 중앙화)
-- **"Route all inter-subagent communication through the coordinator"** (모든 서브에이전트 간 통신을 코디네이터 경유)
-- **"structured entries that separate content from metadata, such as source URL, document name, and page number"** (내용과 메타데이터 분리) ★ 출처 귀속
-- **"matches the query against each subagent's description field and delegates automatically"** (description 매칭으로 자동 위임)
-- **"the description field is vague or missing, so Claude has no trigger signal"** (description이 모호·누락 → 트리거 없음)
-- **"Task is not listed in allowedTools; add Task to auto-approve subagent calls"** (allowedTools에 Task 추가)
-- **"Set tools to ['Read', 'Grep'] so it inherits only the listed read tools"** (읽기 전용 도구만 부여) ★ 최소 권한 원칙
-- **"Include the subagent-invocation tool in lead-investigator's tools, and omit it from final-summarizer"** (호출 도구를 한쪽에만 부여)
-- **"each invocation starts a fresh context unless a specific prior agent is explicitly resumed"** (명시적 재개 없으면 매 호출이 새 컨텍스트) — **정상 동작**
-- **"Include the complete findings directly in synthesis's prompt, since subagents never automatically inherit parent or sibling context"** (결과를 프롬프트에 직접 포함)
-- **"AgentDefinition.prompt sets the persistent system prompt, while the per-call prompt supplies the specific task details"** (영구 시스템 프롬프트 vs 호출별 작업 내용)
-- **"Subagents can nest up to a maximum of five levels deep, including the main agent as the first level"** (메인 포함 최대 5단계)
-- **"Evaluate the synthesis output for gaps, then re-delegate targeted queries before re-invoking synthesis"** (갭 평가 후 표적 재위임)
-- **"Use the Workflow tool to move orchestration into a script outside the conversation"** (200개 규모 → 외부 스크립트로 분리)
-- **"presents the conflicting reports to the end user with references to the different sources"** (상충 결과를 출처와 함께 사용자에게 제시)
-- **"The partial text output the subagent already produced, along with a note that the subagent didn't finish"** (부분 출력 + 미완료 표시)
-- **"subagents must inherit coordinator-level deny rules, so Bash would be blocked"** (코디네이터 거부 규칙 상속 → 차단)
-- **"the prompt alone is not a guaranteed invocation; it influences but does not force"** (이름을 불러도 호출은 보장되지 않음)
-- **"required structured fields for customer details, root cause, and a recommended action"** (고객정보·근본원인·권장조치 구조화 필드) ★ 핸드오프
-- **"Customer ID 88213; root cause: a duplicate authorization hold...; recommended action: void the hold"** (ID + 근본원인 + 권장조치 형태의 요약)
+| 원문 키워드 | 한국어 |
+|---|---|
+| emit all three Task calls within one response | 한 응답 안에서 Task 호출 3개를 발행 |
+| instead of spreading them across separate turns | 여러 턴에 나눠 보내는 대신 |
+| agent teams, which support inter-agent messaging | 에이전트 간 메시징을 지원하는 에이전트 팀 |
+| centralized management of multiple coordinating sessions | 여러 세션의 중앙 집중 관리 |
+| SubagentStop fires on subagent completion | 서브에이전트 완료 시 SubagentStop 발화 |
+| lets the coordinator aggregate each subagent's results | 코디네이터가 각 결과를 집계하게 함 |
+| centralize error handling, logging, and retry policy | 오류처리·로깅·재시도 정책을 중앙화 |
+| route all inter-subagent communication through the coordinator | 모든 에이전트 간 통신을 코디네이터 경유 |
+| structured entries that separate content from metadata | 내용과 메타데이터를 분리한 구조화 항목 |
+| source URL, document name, and page number | 출처 URL, 문서명, 페이지 번호 등 |
+| matches the query against each subagent's description field | 쿼리를 각 서브에이전트의 description과 매칭 |
+| delegates automatically when a match is found | 매칭되면 자동으로 위임 |
+| the description field is vague or missing | description 필드가 모호하거나 누락됨 |
+| no trigger signal for when it applies | 언제 적용할지 트리거 신호가 없음 |
+| Task is not listed in allowedTools | allowedTools에 Task가 없음 |
+| set tools to ["Read", "Grep"] on the definition | 정의의 tools를 Read, Grep으로 설정 |
+| inherits only the listed read tools | 나열된 읽기 도구만 상속 |
+| omit it from final-summarizer's definition | final-summarizer 정의에서는 제외 |
+| each invocation starts a fresh context | 각 호출이 새 컨텍스트로 시작 |
+| unless a specific prior agent is explicitly resumed | 특정 이전 에이전트를 명시적으로 재개하지 않는 한 |
+| subagents never automatically inherit parent or sibling context | 서브에이전트는 부모·형제 맥락을 자동 상속하지 않음 |
+| include the complete findings directly in the prompt | 전체 결과를 프롬프트에 직접 포함 |
+| AgentDefinition.prompt sets the persistent system prompt | AgentDefinition.prompt가 영구 시스템 프롬프트 설정 |
+| the per-call prompt supplies the specific task details | 호출별 프롬프트가 구체적 작업 내용 제공 |
+| nest up to a maximum five levels deep | 최대 5단계 깊이까지 중첩 |
+| including the main agent as the first level | 메인 에이전트를 1단계로 포함 |
+| evaluate the synthesis output for gaps | 종합 출력의 누락을 평가 |
+| re-delegate targeted queries before re-invoking synthesis | 재종합 전에 표적 쿼리를 재위임 |
+| move orchestration into a script outside the conversation | 오케스트레이션을 대화 밖 스크립트로 이동 |
+| presents the conflicting reports with references to sources | 상충 보고를 출처와 함께 제시 |
+| the partial text output the subagent already produced | 서브에이전트가 이미 생성한 부분 텍스트 |
+| along with a note that it didn't finish | 완료하지 못했다는 표시와 함께 |
+| subagents must inherit coordinator-level deny rules | 서브에이전트는 코디네이터 거부 규칙을 상속 |
+| the prompt alone is not a guaranteed invocation | 프롬프트만으로는 호출이 보장되지 않음 |
+| required structured fields for customer details | 고객 정보에 대한 필수 구조화 필드 |
+| root cause analysis and a recommended action | 근본 원인 분석과 권장 조치 |
 
 ### 함정 키워드 (Distractor)
-- **"Merge the three subagents into a single AgentDefinition"** (셋을 하나로 병합) — 병렬성 상실
-- **"Set persistSession to false"** (persistSession 끄기) — 병렬성과 무관
-- **"Increase maxTurns so they finish faster and appear to overlap"** (maxTurns 증가로 겹쳐 보이게) — 병렬 아님
-- **"Assign one subagent to monitor the others"** (한 서브에이전트가 감시역) — 허브 앤 스포크 위반
-- **"copying the identical retry code into each subagent's system prompt"** (동일 코드를 각 프롬프트에 복사) — 중앙화 아님
-- **"Give each subagent direct write access to a shared database"** (공유 DB 직접 쓰기) — 코디네이터 가시성 상실
-- **"poll a shared task queue directly and notify the coordinator only after completion"** (직접 큐 폴링, 완료 후에만 통보) — 실패 가시성 없음
-- **"requires the query to include the subagent's exact name"** (정확한 이름 필수) — 거짓
-- **"invokes subagents in the fixed order they were defined"** (정의된 순서대로 호출) — 거짓
-- **"always invokes every defined subagent and discards irrelevant output"** (전부 호출 후 버림) — 거짓
-- **"rely on the description field to signal that the subagent is read-only"** (설명으로 읽기 전용임을 알림) — 강제력 없음
-- **"instruct it in the prompt never to call Edit or Write"** (프롬프트로 금지 지시) — 확률적, 보장 불가
-- **"Lower the subagent's model tier so it is less capable of generating file-modification calls"** (모델 등급 낮추기) — 넌센스
-- **"Set background to true, since background execution grants the ability to spawn subagents"** (background가 생성 권한 부여) — 거짓
-- **"only larger models are capable of nested delegation"** (큰 모델만 중첩 위임 가능) — 거짓
-- **"Nesting is unlimited as long as each subagent has the Agent tool"** (무제한 중첩) — 거짓 (5단계 제한)
-- **"all subagents in the same coordinator session share one combined context window"** (하나의 컨텍스트 공유) — 거짓
-- **"subagent definitions cache their reasoning across calls"** (추론을 호출 간 캐싱) — 거짓
-- **"Increase synthesis's maxTurns so it can rediscover the same sources"** (재발견하도록 턴 증가) — 낭비
-- **"Switch to a larger model so it infers the missing context"** (큰 모델이 알아서 추론) — 격리 문제 미해결
-- **"Grant synthesis the same search tools so it can re-run the queries"** (같은 도구 부여해 재검색) — 중복 작업
-- **"Whichever sub-agent returned first takes precedence"** (먼저 응답한 쪽이 우선) — 거짓
-- **"discard the conflicting results and provide no answer"** (상충 결과 폐기, 무응답) — 거짓
-- **"a subagent's own tools field independently grants access regardless of deny rules"** (deny 규칙 무시하고 독립 부여) — 거짓
-- **"Run all five subagents in parallel for every ticket"** (모든 티켓에 5개 전부 병렬) — 불필요한 호출 자체가 문제
-- **"Remove the coordinator entirely"** (코디네이터 제거) — 허브 앤 스포크 파괴
-- **"increase the coordinator's maxTurns to accommodate more invocations"** (턴 상한 증가로 대응) — 200개 규모엔 부적합
-- **"See the attached conversation transcript"** (대화 기록 첨부 참조) — 상담원이 접근 못함
-- **"use your judgment on what discount, if any, is appropriate"** (알아서 판단하세요) — 구조화 실패
-- **"increase the free-text field's maximum character limit"** (자유 텍스트 글자수 늘리기) — 구조화 아님
-
----
+| 원문 키워드 | 한국어 | 왜 틀렸나 |
+|---|---|---|
+| merge them into a single AgentDefinition | 하나의 AgentDefinition으로 병합 | 병렬성 상실 |
+| set persistSession to false on each call | 각 호출에 persistSession을 false로 | 병렬성과 무관 |
+| increase maxTurns so they can each finish faster | 각자 더 빨리 끝나도록 maxTurns 증가 | 병렬 아님 |
+| appear to overlap more in wall-clock time | 실제 시간상 더 겹쳐 보이게 | 진짜 병렬 아님 |
+| assign one subagent to monitor the others' retries | 한 서브에이전트가 나머지의 재시도를 감시 | 허브 앤 스포크 위반 |
+| copying the identical code into each subagent's prompt | 동일 코드를 각 서브에이전트 프롬프트에 복사 | 중앙화 아님 |
+| direct write access to a shared database | 각 서브에이전트에 DB 직접 쓰기 권한 부여 | 가시성 상실 |
+| poll a shared task queue directly | 공유 작업 큐를 직접 폴링 | 실패 가시성 없음 |
+| notify the coordinator only after completion | 완료 후에만 코디네이터에 통보 | 실패 가시성 없음 |
+| requires the query to include the exact name | 쿼리에 정확한 이름이 포함되어야 함 | 거짓 |
+| invokes them in the fixed order defined | 정의된 고정 순서대로 호출 | 거짓 |
+| always invokes every defined subagent and discards output | 항상 모든 서브에이전트를 호출하고 결과를 버림 | 거짓 |
+| rely on the description field to signal read-only | 읽기 전용임을 description으로 알림 | 강제력 없음 |
+| instruct in the prompt never to call Edit | 프롬프트로 Edit 호출 금지를 지시 | 확률적, 보장 불가 |
+| lower the model tier to be less capable | 덜 유능하도록 모델 등급을 낮춤 | 넌센스 |
+| background execution grants the ability to spawn subagents | 백그라운드 실행이 생성 권한을 부여 | 거짓 |
+| only larger models are capable of nested delegation | 큰 모델만 중첩 위임이 가능 | 거짓 |
+| nesting is unlimited with the Agent tool | Agent 도구만 있으면 중첩 무제한 | 5단계 제한 |
+| all subagents share one combined context window | 모든 서브에이전트가 하나의 컨텍스트를 공유 | 거짓 |
+| subagent definitions cache their reasoning across calls | 서브에이전트 정의가 호출 간 추론을 캐싱 | 거짓 |
+| increase maxTurns so it can rediscover the sources | 출처를 재발견하도록 maxTurns 증가 | 낭비 |
+| a larger model so it infers the context | 맥락을 추론하도록 더 큰 모델로 전환 | 격리 미해결 |
+| grant the same search tools to re-run queries | 쿼리 재실행을 위해 같은 검색 도구 부여 | 중복 작업 |
+| whichever sub-agent returned first takes precedence | 먼저 응답한 서브에이전트가 우선 | 거짓 |
+| the conflicting results should be discarded | 상충하는 결과는 폐기해야 함 | 거짓 |
+| independently grants access regardless of deny rules | 거부 규칙과 무관하게 독립적으로 권한 부여 | 거짓 |
+| all five subagents in parallel every ticket | 모든 티켓에 5개 서브에이전트를 병렬 실행 | 호출 자체가 문제 |
+| remove the coordinator entirely | 코디네이터를 완전히 제거 | 패턴 파괴 |
+| increase the coordinator's maxTurns to accommodate more | 더 많은 호출을 위해 maxTurns 증가 | 대규모에 부적합 |
+| see the attached conversation transcript for details | 자세한 내용은 첨부된 대화 기록 참조 | 접근 불가 |
+| use your judgment on what discount is appropriate | 어떤 할인이 적절한지 알아서 판단 | 구조화 실패 |
+| increase its maximum character limit | 최대 글자수 제한을 늘림 | 구조화 아님 |
 
 ## 5. 세션 관리 (Session Management)
 
@@ -294,46 +356,61 @@
 | **/compact** | 압축 | 히스토리를 요약으로 대체 |
 
 ### 정답 키워드 (Correct)
-- **"The session's transcript file only exists on the original machine"** (트랜스크립트가 원래 머신에만 존재) ★ CI·다른 머신 문제
-- **"Whether the resume call ran from the same working directory"** (같은 작업 디렉터리에서 재개했는지)
-- **"Run /fork with an optional name to switch into a copy of the conversation"** (이름 지정 가능한 대화 복사본)
-- **"Resuming the same session twice appends both explorations to one shared history; forking gives two independent branches"** (재개는 누적, 포크는 독립 분기)
-- **"Resume the analysis session twice with fork_session set, producing two independent branches from the shared baseline"** (공유 베이스라인에서 두 독립 브랜치)
-- **"Sessions persist the conversation history, not a snapshot of the filesystem"** (세션은 대화 기록만 보존, 파일시스템 스냅샷 아님)
-- **"Resume the session's ID with a higher max_turns value on the follow-up query"** (턴 상한을 올려 같은 세션 재개) — 기존 분석 보존
-- **"claude --resume payment-retry-bug"** (이름으로 직접 재개)
-- **"Give the session a descriptive name at startup or via /rename"** (설명적 이름 부여)
-- **"claude -p --resume <session-id> --output-format json"** (비대화형 + JSON 출력) ★ 스크립트 파싱용
-- **"Track each user's captured session ID and pass it to resume"** (사용자별 세션 ID 추적) — 다중 사용자
-- **"Capture the earlier stage's key results as application state and pass them into a new session's opening prompt"** (결과를 앱 상태로 저장 후 새 세션 프롬프트에 주입) ★ 서버리스·컨테이너
-- **"Start a fresh session and inject the already-prepared structured summary as the opening prompt"** (준비된 구조화 요약을 새 세션에 주입) — stale 컨텍스트 회피
+| 원문 키워드 | 한국어 |
+|---|---|
+| transcript only exists on the original machine | 트랜스크립트가 원래 머신에만 존재 |
+| was never copied to the new worker | 새 워커로 복사되지 않음 |
+| ran from the same working directory | 동일한 작업 디렉터리에서 실행했는지 |
+| run /fork with an optional name | 이름을 지정할 수 있는 /fork 실행 |
+| a copy of the conversation so far | 지금까지의 대화 복사본 |
+| resuming twice appends both to one shared history | 두 번 재개하면 하나의 이력에 둘 다 추가 |
+| forking gives two independent branches | 포크는 두 개의 독립 브랜치를 제공 |
+| resume twice with fork_session set | fork_session을 설정해 두 번 재개 |
+| producing two branches from the shared baseline | 공유 베이스라인에서 두 브랜치 생성 |
+| sessions persist the conversation history | 세션은 대화 이력을 보존 |
+| not a snapshot of the filesystem | 파일시스템 스냅샷은 아님 |
+| resume the session's ID with a higher max_turns | 더 높은 max_turns로 세션 ID를 재개 |
+| claude --resume payment-retry-bug | 이름으로 그 세션을 직접 재개 |
+| give the session a descriptive name at startup | 시작 시 세션에 설명적 이름 부여 |
+| or via /rename to resume it later | 또는 /rename으로 나중에 재개 가능하게 |
+| claude -p --resume --output-format json | 비대화형으로 재개하고 JSON 출력 |
+| track each user's captured session ID | 각 사용자의 세션 ID를 기록·추적 |
+| capture the key results as application state | 핵심 결과를 애플리케이션 상태로 저장 |
+| pass them into a new session's opening prompt | 새 세션의 첫 프롬프트에 전달 |
+| inject the already-prepared structured summary | 이미 준비된 구조화 요약을 주입 |
+| explicitly tell the agent the file changed | 파일이 변경되었음을 에이전트에 명시적으로 알림 |
+| prompting it to re-read that file | 그 파일을 다시 읽도록 유도 |
 
 ### 함정 키워드 (Distractor)
-- **"CI workers are restricted from resuming interactive sessions"** (CI가 대화형 세션 재개 금지) — 거짓
-- **"the session name was too long for the lookup"** (이름이 너무 김) — 거짓
-- **"fork_session prevents cross-machine resumption"** (포크가 머신 간 재개를 막음) — 거짓
-- **"the prompt text used to resume must match the original exactly"** (프롬프트 텍스트 일치 필요) — 거짓
-- **"Run /clear to empty context"** / **"Run /compact to replace history"** (지우기·압축) — 분기가 아니고 원본 손실
-- **"Run /resume and select the same session again to duplicate it in place"** (같은 세션 재선택으로 복제) — 복제되지 않음
-- **"Resume can only ever be called once per session id"** (세션당 재개 1회 제한) — 거짓
-- **"Resuming quietly discards all prior tool results"** (재개 시 도구 결과 조용히 폐기) — 거짓
-- **"a correct resume would restore the earlier file contents automatically"** (파일 내용까지 자동 복원) — 거짓
-- **"fork_session was required to preserve the file's earlier state"** (파일 상태 보존에 포크 필요) — 거짓
-- **"Rerun the original prompt from scratch since a turn limit indicates a flawed approach"** (턴 제한 = 접근 실패이므로 처음부터) — 분석 낭비
-- **"Fork the session and set a higher max_turns only on the forked branch"** (포크 후 상한 조정) — 82번에선 불필요한 분기
-- **"paste yesterday's terminal scrollback as the first prompt"** (터미널 스크롤백 붙여넣기) — 비효율
-- **"manually scroll to find the session in the picker"** (피커에서 수동 검색) — 가장 직접적이지 않음
-- **"Rely on the default auto-generated display name"** (자동 생성 이름 사용) — 기억 불가
-- **"Note the raw session ID in a spreadsheet"** (세션 ID를 스프레드시트에 기록) — 사람이 읽기 어려움
-- **"Keep every session running continuously"** (계속 켜두기) — 비현실적
-- **"Pass continue_conversation=True on every request"** (모든 요청에 continue) — 다중 사용자 구분 불가
-- **"Set fork_session=True on every request"** (모든 요청 포크) — 사용자별 이어가기 아님
-- **"Rely on the session picker for a backend service"** (백엔드가 피커 사용) — 비대화형에서 불가
-- **"Pass the session ID to resume in the next container and expect the transcript to be found"** (새 컨테이너에서 트랜스크립트 발견 기대) — 디스크 없음
-- **"Rely on claude --continue in the next container"** (새 컨테이너에서 --continue) — 로컬 세션 없음
-- **"Resume and trust its cached understanding since resumption restores full context"** (캐시된 이해 신뢰) — stale 데이터
-- **"Fork the prior session and continue from its unmodified stale history"** (오래된 히스토리 그대로 포크) — 오염 유지
-- **"Resume and issue /clear right after resuming"** (재개 직후 /clear) — 재개 의미 없음
+| 원문 키워드 | 한국어 | 왜 틀렸나 |
+|---|---|---|
+| CI workers are restricted from resuming any session | CI 워커는 어떤 세션도 재개할 수 없음 | 거짓 |
+| the session name was too long to match | 세션 이름이 너무 길어 매칭 실패 | 거짓 |
+| fork_session prevents cross-machine resumption entirely | fork_session이 머신 간 재개를 완전히 막음 | 거짓 |
+| the prompt text matched the original exactly | 프롬프트 텍스트가 원본과 정확히 일치 | 거짓 |
+| run /clear to empty context and begin | /clear로 컨텍스트를 비우고 시작 | 분기 아님, 원본 손실 |
+| /compact to replace history with a summary | /compact로 이력을 요약으로 대체 | 파일 재읽기 안 함 |
+| select the same session again to duplicate it | 같은 세션을 다시 선택해 복제 | 복제 안 됨 |
+| resume called only once per session id | 세션 ID당 재개는 한 번만 가능 | 거짓 |
+| resuming quietly discards all prior tool results | 재개 시 이전 도구 결과를 조용히 폐기 | 거짓 |
+| a correct resume would restore the file contents | 올바른 재개라면 파일 내용도 복원 | 거짓 |
+| fork_session was required to preserve the earlier state | 이전 상태 보존에 fork_session이 필요했음 | 거짓 |
+| a turn limit indicates the approach was flawed | 턴 제한은 접근이 잘못됐음을 의미 | 분석 낭비 |
+| rerun the original prompt from scratch | 원래 프롬프트를 처음부터 다시 실행 | 분석 낭비 |
+| paste yesterday's terminal scrollback as the first prompt | 어제 스크롤백을 첫 프롬프트로 붙여넣기 | 비효율 |
+| manually scroll to find it in the picker | 피커에서 수동으로 스크롤해 세션을 찾음 | 직접적이지 않음 |
+| rely on the default auto-generated display name | 자동 생성된 기본 표시 이름에 의존 | 기억 불가 |
+| note the raw session ID in a spreadsheet | 원본 세션 ID를 스프레드시트에 기록 | 사람이 읽기 어려움 |
+| keep every session running continuously | 모든 세션을 계속 실행 상태로 유지 | 비현실적 |
+| pass continue_conversation on every incoming request | 들어오는 모든 요청에 continue를 전달 | 사용자 구분 불가 |
+| set fork_session=True on every request | 모든 요청에 fork_session을 True로 설정 | 이어가기 아님 |
+| the session picker for a backend service | 백엔드 서비스가 세션 피커에 의존 | 비대화형 불가 |
+| expect the transcript to be found automatically | 트랜스크립트가 자동으로 발견되길 기대 | 디스크 없음 |
+| rely on claude --continue in the next container | 다음 컨테이너에서 claude --continue에 의존 | 로컬 세션 없음 |
+| trust its cached understanding of the file | 파일에 대한 캐시된 이해를 신뢰 | 파일 최신화 안 됨 |
+| since resumption restores full context | 재개가 전체 컨텍스트를 복원하므로 | 파일은 아님 |
+| continue exploration from its unmodified stale history | 수정되지 않은 오래된 이력에서 탐색을 계속 | 오염 유지 |
+| issue /clear right after resuming | 재개 직후 /clear를 실행 | 재개 의미 없음 |
 
 ### 67번 — 설정 파일이 바뀐 뒤 세션 이어가기 (공식 문서 검증 완료)
 
