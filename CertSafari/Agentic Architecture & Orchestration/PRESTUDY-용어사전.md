@@ -653,7 +653,6 @@
 - 세션 식별자. `--resume`에 넘겨 특정 대화를 되살린다.  <sub>(PRESTUDY-aao-01-20.md)</sub>
 - 세션을 식별하는 고유 값. 정확한 재개를 위해 애플리케이션이 저장·추적해야 함.  <sub>(PRESTUDY-aao-81-100.md)</sub>
 
-**Session ID** — 세션 식별자
 
 **Session Persistence** — 세션이 메시지 턴과 맥락을 저장·복원하는 것. **파일 시스템 스냅샷은 포함하지 않음.**
 
