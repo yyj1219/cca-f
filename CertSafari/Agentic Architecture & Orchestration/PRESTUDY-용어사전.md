@@ -17,11 +17,10 @@
 **/clear**
 
 - 현재 컨텍스트를 완전히 비우는 명령. 이전 추론 흐름이 사라진다.  <sub>(PRESTUDY-aao-01-20.md)</sub>
-- 대화 맥락을 초기화. 베이스라인이 사라짐.  <sub>(PRESTUDY-aao-61-80.md)</sub>
 
 **/compact**
 
-- 대화 기록을 요약으로 압축해 토큰을 절약하는 명령. 분기를 만들지는 않는다.  <sub>(PRESTUDY-aao-01-20.md)</sub>
+
 - 대화 이력을 요약·압축해 토큰을 절약. 세부 맥락은 손실되며 외부 파일을 다시 읽지 않음.  <sub>(PRESTUDY-aao-61-80.md)</sub>
 
 **/fork [name]** — 대화형 세션에서 지금까지의 대화 복사본을 만들고 그쪽으로 전환하는 명령. 원본은 보존된다.
@@ -76,8 +75,7 @@
 
 **`permissionDecision`**
 
-- 훅의 판정 값: `allow`(실행) / `deny`(차단) / `ask`(사람 승인 요청)  <sub>(PRESTUDY-aao-101-114.md)</sub>
-- 훅이 반환하는 권한 결정값. `"allow"` 또는 `"deny"`  <sub>(PRESTUDY-aao-41-60.md)</sub>
+- 훅이 반환하는 권한 결정값: `allow`(실행) / `deny`(차단) / `ask`(사람 승인 요청)  <sub>(PRESTUDY-aao-101-114.md)</sub>
 
 **`permissionDecisionReason`** — 거부·질의 사유를 설명하는 문자열
 
@@ -97,7 +95,7 @@
 
 **`tool_result`**
 
-- 도구 실행 결과를 모델에게 되돌려주는 메시지 블록  <sub>(PRESTUDY-aao-101-114.md)</sub>
+
 - 도구 실행 결과를 모델에게 되돌려주는 메시지 블록. 기존 이력에 **append** 해야 함  <sub>(PRESTUDY-aao-41-60.md)</sub>
 
 **`tool_use`**
@@ -138,9 +136,9 @@
 **AgentDefinition**
 
 - 서브에이전트의 정의 객체. 설명, 시스템 프롬프트, 사용 가능 도구, 모델 등을 담는다.  <sub>(PRESTUDY-aao-01-20.md)</sub>
-- 서브에이전트 정의. `name`, `description`, `tools`, `model`, `prompt` 등을 포함.  <sub>(PRESTUDY-aao-21-40.md)</sub>
+- 서브에이전트 정의. `name`, `description`, `prompt`, `tools`, `model` 등을 포함.  <sub>(PRESTUDY-aao-21-40.md)</sub>
 - 에이전트 정의 객체. `name`, `description`, `prompt`, `tools`, `model` 등을 담음  <sub>(PRESTUDY-aao-41-60.md)</sub>
-- 서브에이전트의 정의(설명, 프롬프트, 도구, 모델 등).  <sub>(PRESTUDY-aao-61-80.md)</sub>
+
 - 서브에이전트의 정의(설명, 프롬프트, tools, model, maxTurns 등).  <sub>(PRESTUDY-aao-81-100.md)</sub>
 
 **AgentDefinition.prompt** — 서브에이전트의 **지속적 시스템 프롬프트/전문성**. 매 호출마다 항상 적용되는 고정 지침.
@@ -171,7 +169,7 @@
 
 **attribution** — 각 주장이 어느 출처에서 왔는지 정확히 귀속시키는 것.
 
-**Audit (감사)** — 도구 호출 인자 등을 외부 시스템에 기록해 추적 가능성을 확보하는 것. 허용 판단과 무관하면 비동기로 처리.
+**Audit (감사)** — 도구 호출 인자 등을 **외부 시스템**에 기록해 추적 가능성을 확보하는 것. 허용 판단과 무관하면 비동기로 처리.
 
 **Backfill (백필)** — 새로 추가된 컬럼 등에 기존 행의 값을 채워 넣는 작업. 스키마에 따라 필요 여부가 달라지는 대표적 가변 단계.
 
@@ -338,7 +336,6 @@
 
 **Fixed Tree** — 이전 결과와 무관하게 정해진 경로만 따르는 고정 구조.
 
-**Fork** — 기존 세션을 복제해 별도 갈래로 진행하는 것(히스토리도 함께 복제됨)
 
 **Fork (fork_session)** — 기존 이력을 복제해 **독립된 새 갈래**를 만드는 분기. 서로를 보지 못하는 병렬 탐색에 필요.
 
@@ -365,16 +362,10 @@
 
 **Guardrail**
 
-- 위험 행동을 사전에 막는 안전 장치  <sub>(PRESTUDY-aao-101-114.md)</sub>
+
 - 가드레일. 에이전트가 허용 범위를 벗어나지 못하게 하는 안전장치.  <sub>(PRESTUDY-aao-21-40.md)</sub>
 - 가드레일. 에이전트의 위험 행동을 막는 안전장치 전반  <sub>(PRESTUDY-aao-41-60.md)</sub>
-- 폭주·무한 재귀·자원 고갈을 막는 시스템적 안전 한계.  <sub>(PRESTUDY-aao-61-80.md)</sub>
 
-**Hallucination**
-
-- 모델이 근거 없이 그럴듯한 정보를 지어내는 현상  <sub>(PRESTUDY-aao-101-114.md)</sub>
-- 환각. 모델이 근거 없는 사실이나 값을 그럴듯하게 지어내는 현상.  <sub>(PRESTUDY-aao-21-40.md)</sub>
-- 환각. 모델이 근거 없이 그럴듯한 내용을 만들어내는 현상  <sub>(PRESTUDY-aao-41-60.md)</sub>
 
 **Handoff Protocol** — 이관 시 전달할 정보의 형식과 절차를 정한 규약.
 
@@ -390,16 +381,11 @@
 
 **High-impact Gap** — 영향도가 큰 공백. 우선적으로 다뤄야 할 취약 영역
 
-**hook**
-
-- 에이전트 생애주기의 특정 시점에 런타임이 자동 실행하는 개발자 코드.  <sub>(PRESTUDY-aao-01-20.md)</sub>
-- 에이전트 실행의 특정 시점에 실행되는 사용자 코드 콜백.  <sub>(PRESTUDY-aao-81-100.md)</sub>
 
 **Hook**
 
 - 에이전트 실행 흐름의 특정 지점에서 자동 실행되는 사용자 정의 코드  <sub>(PRESTUDY-aao-101-114.md)</sub>
 - 실행 과정의 특정 시점에 자동 실행되도록 등록해 둔 개발자 코드. 모델 생성 바깥에서 동작.  <sub>(PRESTUDY-aao-21-40.md)</sub>
-- 훅. 실행 흐름의 특정 시점에 런타임이 결정론적으로 실행하는 사용자 정의 로직  <sub>(PRESTUDY-aao-41-60.md)</sub>
 - 특정 이벤트에 자동 실행되는 사용자 코드. 프롬프트와 달리 **항상** 실행되어 결정론적 강제가 가능.  <sub>(PRESTUDY-aao-61-80.md)</sub>
 
 **hook chaining** — 여러 훅을 파이프라인처럼 연결해, 뒤 훅이 앞 훅의 결과를 이어받아 가공하는 것.
@@ -538,7 +524,6 @@
 
 **Open-ended Task** — 개방형 과제. 범위·단계 수를 사전에 확정할 수 없는 작업
 
-**Orchestrator / Coordinator** — 작업을 분해해 서브에이전트에게 배분하고 결과를 종합하는 상위 에이전트
 
 **Orchestrator-Workers**
 
@@ -571,7 +556,6 @@
 
 - 훅이 반환하는 판정 값(`allow` / `deny`). `deny`면 도구 실행이 실제로 차단된다.  <sub>(PRESTUDY-aao-01-20.md)</sub>
 - PreToolUse 훅의 반환 값. `"allow"`(허용), `"deny"`(차단), `"ask"`(사람에게 확인).  <sub>(PRESTUDY-aao-21-40.md)</sub>
-- PreToolUse 훅이 반환하는 실행 결정 값. `allow` / `ask` / `deny`.  <sub>(PRESTUDY-aao-61-80.md)</sub>
 
 **permissionDecisionReason** — 결정의 사유 문자열. `deny`/`ask` 모두에서 유효하며, **Claude에게 피드백으로 전달**되어 대안 행동을 유도.
 
@@ -579,7 +563,6 @@
 
 **PostToolUse**
 
-- 도구 실행이 끝난 후 발화하는 훅. 실행을 막을 수는 없다.  <sub>(PRESTUDY-aao-01-20.md)</sub>
 - 도구 실행 **직후**에 도는 훅. 이미 부작용이 발생한 뒤라 예방 수단이 아님.  <sub>(PRESTUDY-aao-61-80.md)</sub>
 - 도구 실행 **직후** 훅. 결과가 모델에 가기 전 출력 가공에 사용.  <sub>(PRESTUDY-aao-81-100.md)</sub>
 
