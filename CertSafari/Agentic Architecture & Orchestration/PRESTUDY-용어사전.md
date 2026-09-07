@@ -838,3 +838,77 @@
 **Workflow tool** — 오케스트레이션 로직을 대화 밖 스크립트로 옮겨 런타임이 실행하게 하는 도구. 초대형 배치용.
 
 **working directory** — CLI가 실행된 디렉터리. 프로젝트 컨텍스트와 세션 저장소의 기준이 되므로, 다르면 재개가 실패한다.
+
+---
+
+## 추가 용어 (영단어 용법 보강)
+
+**accommodate** — 수용하다. *"fundamentally unable to accommodate variable steps"* (가변적인 단계들을 근본적으로 수용할 수 없다)
+
+**articulate** — (표현이) 명료한. *"a more articulate explanation to the end user"* (최종 사용자에게 더 명료한 설명)
+
+**assuming** — ~라고 가정하고. *"assuming every task must go through a tool call"* (모든 작업이 반드시 도구 호출을 거쳐야 한다고 가정하고)
+
+**assumption** — 가정, 전제. *"which assumption does this design rely on?"* (이 설계는 어떤 가정에 의존하는가?)
+
+**be gated** — 통제/차단되어야 한다. *"refund-related tools must be gated behind identity verification"* (환불 관련 도구는 신원 확인 뒤에서 통제되어야 한다)
+
+**bypasses** — 우회하다. *"bypasses the description-based routing"* (설명 기반 라우팅을 우회한다)
+
+**checkout abandonment** — 결제(구매) 이탈. *"checkout abandonment increased by 15%"* (결제 이탈률이 15% 증가했다)
+
+**critique** — 비판, 반박. *"what is the strongest critique of this proposal?"* (이 제안에 대한 가장 강력한 비판은 무엇인가?)
+
+**decomposed** — 분해된. *"the query was decomposed too narrowly"* (쿼리가 너무 좁게 분해되었다)
+
+**dilutes** — (주의를) 분산시키다. *"a single pass across all files dilutes the model's attention"* (모든 파일을 한 번에 훑는 패스는 모델의 주의를 분산시킨다)
+
+**early findings suggest** — 초기 조사 결과가 ~을 시사하다. *"early findings suggest a promising lead to pursue"* (초기 조사 결과는 좇아볼 만한 유망한 단서를 시사한다)
+
+**explicit invocation** — (이름을 직접 지정한) 명시적 호출. *"explicit invocation by name in the prompt"* (프롬프트에서 이름으로 지정하는 명시적 호출)
+
+**exposed by** — (서버 등이) 제공/노출하는. *"every tool exposed by the billing server"* (billing 서버가 노출하는 모든 도구)
+
+**fundamentally** — 근본적으로. *"fundamentally unable to accommodate this"* (이것을 근본적으로 수용할 수 없다)
+
+**Hold off** — 보류하다, 미루다. *"hold off on executing the tool"* (도구 실행을 보류한다)
+
+**in advance** — 사전에, 미리. *"the data sources are not known in advance"* (데이터 소스가 사전에 정해져 있지 않다)
+
+**inconsistent** — 일관되지 않은. *"MCP tools return inconsistent timestamp formats"* (MCP 도구들이 일관되지 않은 타임스탬프 포맷을 반환한다)
+
+**invocation** — 호출(1회 실행). *"each subagent invocation starts with a fresh context"* (서브에이전트 호출마다 새 컨텍스트로 시작한다)
+
+**it stood before** — 이전에 있던 그대로. *"resend the conversation exactly as it stood before"* (대화를 이전에 있던 그대로 다시 보낸다)
+
+**lacks** — ~이 없다, 결여되어 있다. *"the message lacks a properly formatted is_error field"* (그 메시지에는 올바른 형식의 is_error 필드가 없다)
+
+**misreads** — 잘못 읽다, 오독하다. *"the model occasionally misreads the timestamp format"* (모델이 가끔 타임스탬프 형식을 잘못 읽는다)
+
+**occasionally** — 가끔, 때때로. *"the agent occasionally violates the rule stated only in the system prompt"* (에이전트가 시스템 프롬프트에만 명시된 규칙을 가끔 어긴다)
+
+**omitted** — 누락된, 빠진. *"fork_session was omitted from this resume call"* (이번 resume 호출에서 fork_session이 누락되었다)
+
+**outright** — 아예, 완전히. *"rather than blocking it outright"* (완전히 차단하기보다는)
+
+**predictably** — 예측 가능하게. *"the fixed chain already handles this predictably"* (고정된 체인이 이미 이것을 예측 가능하게 처리한다)
+
+**presence** — 존재(함). *"the mere presence of a validated customer_id in session state"* (세션 상태에 검증된 customer_id가 존재한다는 사실만으로는)
+
+**profanity** — 비속어. *"a profanity filter that always runs after the brand-tone checker"* (브랜드 톤 검사기 다음에 항상 실행되는 비속어 필터)
+
+**pursue** — (단서를) 좇다, 추적하다. *"generate a follow-up subtask to pursue the most promising lead"* (가장 유망한 단서를 좇는 후속 하위 작업을 생성한다)
+
+**reliably** — 확실하게, 신뢰성 있게. *"enforced so reliably that it must hold even if the prompt is edited"* (프롬프트가 수정되더라도 반드시 지켜질 만큼 확실하게 강제되어)
+
+**relevant** — 관련성 있는. *"finding credible, relevant sources"* (신뢰할 수 있고 관련성 있는 출처를 찾는 것)
+
+**republishes** — 다시 게시하다. *"republishes the normalized summary to the transcript"* (정규화된 요약을 트랜스크립트에 다시 게시한다)
+
+**revert** — (이전 상태로) 되돌리다. *"revert the file to its previous version"* (파일을 이전 버전으로 되돌린다)
+
+**substituting** — 바꿔치기하다, 대치하다. *"the model substituting a different ID it re-typed from the conversation"* (모델이 대화에서 다시 입력한 다른 ID로 바꿔치기하는 것)
+
+**tasks an agent** — 에이전트에게 (과제를) 맡기다. *"a researcher tasks an agent with answering an open-ended question"* (연구자가 에이전트에게 열린 결말형 질문에 답하는 과제를 맡긴다)
+
+**verbatim** — 토씨 하나 안 틀리고, 그대로. *"hookSpecificOutput text is always shown verbatim in the chat transcript"* (hookSpecificOutput 텍스트는 채팅 트랜스크립트에 항상 토씨 하나 안 틀리고 그대로 표시된다)
