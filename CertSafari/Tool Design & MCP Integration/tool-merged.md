@@ -689,48 +689,6 @@ MCP 사양에는 서버 측의 도구, 리소스, 프롬프트 목록에 변화�
 
 ---
 
-### 16번 문제
-
-**1. 문제 원문**
-
-A custom MCP server dynamically adds a new tool partway through a long-running session, based on state changes on its own backend. The server sends the appropriate MCP notification for this. What should the architect expect Claude Code to do, without any manual reconnect?
-
-A) Ignore the `list_changed` notification and continue with the initial tool set, as tools are only loaded at session start and no dynamic refresh is supported.  
-
-B) Disconnect from the server and silently reconnect in the background, discarding any in-flight tool calls, then rely on the reconnect to pick up the new tool list.  
-
-C) It will automatically refresh the tools from that server after receiving its `list_changed` notification, making the new tool usable without a disconnect.  
-
-D) Require the user to run `/mcp` and manually select "Refresh tools" before the newly added tool becomes available, since the tool list updates only on manual refresh.  
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**  
-**C번**: It will automatically refresh the tools from that server after receiving its `list_changed` notification, making the new tool usable without a disconnect.
-
-**정답 및 해설:**  
-**핵심 개념**: MCP (Model Context Protocol) 및 `notifications/tools/list_changed`  
-MCP 규격에서는 서버의 도구 목록이 변경되었을 때 클라이언트에 알림(Notification)을 보낼 수 있는 event 기반 알림 체계를 정의합니다. Claude Code와 같은 MCP 클라이언트는 서버로부터 `notifications/tools/list_changed` 알림을 받으면 연결을 끊지 않고 동적으로 도구 목록을 재요청(tools/list)하여 최신 상태로 갱신합니다.
-
-**문제 상황 분석:**
-- 장시간 실행되는 세션 중 MCP 서버의 백엔드 상태 변경으로 인해 신규 도구가 동적으로 추가되었습니다.
-- 서버는 표준 MCP 알림인 `notifications/tools/list_changed`를 클라이언트로 전송했습니다.
-- 클라이언트(Claude Code)가 수동 재연결이나 개입 없이 이 알림을 어떻게 처리하는지 묻고 있습니다.
-
-**C번이 정답인 이유:**
-MCP 표준 프로토콜 작동 방식에 따라 클라이언트는 `list_changed` 알림을 수신하면 연결을 유지한 상태에서 즉시 `tools/list` 요청을 다시 보내 새 도구 목록을 동적으로 동기화합니다. 따라서 재연결이나 사용자 개입 없이 신규 도구를 즉시 사용할 수 있습니다.
-
-**오답 분석:**
-- Option A (오답): Claude Code 및 MCP 프로토콜은 `list_changed` 알림을 무시하지 않으며 동적 새로고침을 지원합니다.
-- Option B (오답): 도구 목록 변경 시 세션 재연결이나 진행 중인 도구 호출(in-flight tool calls)을 강제로 폐기할 필요가 없습니다. 연결을 유지한 채 알림/요청으로 업데이트합니다.
-- Option D (오답): 서버가 알림을 전송하지 않는 특수한 상황이 아니라 알림을 올바르게 발송한 상황이므로, 사용자가 수동으로 `/mcp` 명령어를 실행할 필요가 없습니다.
-
-<br>
-
----
-
 ### 17번 문제
 
 **1. 문제 원문**
@@ -1734,50 +1692,6 @@ Claude Code의 `Edit` 도구(파일 텍스트 교체 도구)는 파일 내에서
 
 ---
 
-### 40번 문제
-
-**1. 문제 원문**
-
-A developer wants to try out an experimental local MCP server that queries their personal Notion workspace. They do not want it to appear for any other teammate, and they want it available whenever they open any project on their own machine. Which configuration achieves this?
-
-A) Add the server with local scope so the entry is written to .mcp.json but excluded from git tracking via a .gitignore rule
-
-B) Add the server directly inside .claude/settings.json so it inherits the personal visibility rules of local project settings
-
-C) Add the server with project scope so the entry is written to .mcp.json and stays private until the developer marks it as personal-only
-
-D) Add the server with user scope so the entry is written to ~/.claude.json and loads across every project on that machine without being shared
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-**D번**: Add the server with user scope so the entry is written to ~/.claude.json and loads across every project on that machine without being shared
-
-**정답 및 해설:**
-
-**핵심 개념**: 
-Claude Code의 MCP(Model Context Protocol) 서버 설정 스코프는 **User Scope**와 **Project Scope**로 나뉩니다.
-* **User Scope**: 사용자 홈 디렉터리의 `~/.claude.json` 파일에 저장되며, 해당 머신에서 여는 **모든 프로젝트**에 전역 적용되고 프로젝트 Git 리포지토리에 공유되지 않아 개인 전용으로 유지됩니다.
-* **Project Scope**: 프로젝트 루트의 `.mcp.json` 파일에 저장되며, 해당 프로젝트 내에서만 적용되고 팀원들과 공유(Git 커밋)하기 위한 스코프입니다.
-
-**문제 상황 분석:**
-- 개발자가 개인 Notion 워크스페이스에 접근하는 실험적 MCP 서버를 설정하려 함.
-- 다른 팀원에게 노출되지 않아야 함 (Git 등을 통해 공유 금지).
-- 특정 프로젝트에 국한되지 않고, **자신의 머신에서 어떤 프로젝트를 열든(any project)** 항상 사용할 수 있어야 함.
-
-**D번이 정답인 이유:**
-사용자 스코프(User Scope)를 사용하면 설정이 개발자 개인의 홈 디렉터리(`~/.claude.json`)에 기록됩니다. 따라서 프로젝트 리포지토리를 통해 팀원에게 공유되지 않으면서, 해당 개발자 머신의 모든 프로젝트에 전역으로 로드되는 요구사항을 완벽히 충족합니다.
-
-**오답 분석:**
-- **Option A (오답)**: `.mcp.json`은 프로젝트 수준 스코프이며, `.gitignore`로 제외하더라도 개별 프로젝트 범위에만 국한되므로 "어떤 프로젝트에서나 사용 가능해야 한다"는 요구사항을 만족하지 못합니다.
-- **Option B (오답)**: `.claude/settings.json`은 프로젝트 전용 설정 파일이며 MCP 서버를 사용자 전역 스코프로 등록하는 올바른 위치나 방식이 아닙니다.
-- **Option C (오답)**: 프로젝트 스코프(`.mcp.json`)는 팀원 공유 목적으로 사용되며, 모든 프로젝트에서 전역 적용되지 않습니다.
-
----
-
 ### 41번 문제
 
 **1. 문제 원문**
@@ -2777,45 +2691,6 @@ D) The literal text `${API_REGION:-us-east-1}`, because default-value expansion 
 
 **오답 분석:**
 - Option A, C, D는 기본값 대체 기능을 무시하거나 잘못된 제한을 가정하므로 오답입니다.
-
----
-
-# 65번 문제
-
-**1. 문제 원문**
-
-A coordinator agent delegates a three-step data migration to a subagent: extract, transform, and load, but the load step fails twice on a database connection reset, a known transient condition, before finally succeeding on the third attempt inside the subagent's own execution. What should the subagent report back to the coordinator?
-
-A) An escalation asking the coordinator to obtain new database credentials, since two consecutive connection resets indicate the credentials have expired
-
-B) An `isError: true` result describing both connection resets in detail, so the coordinator can decide independently whether the migration should be retried
-
-C) A partial-results payload listing only the extract and transform steps as done, omitting the load step entirely since it initially failed twice
-
-D) A success result summarizing the completed migration, since the transient failures were resolved locally and never needed to surface above the subagent
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-**D번**: A success result summarizing the completed migration, since the transient failures were resolved locally and never needed to surface above the subagent
-
-**정답 및 해설:**
-
-**핵심 개념**: 로컬 일시적 오류 처리 및 서브에이전트 캡슐화(Local Transient Error Handling & Subagent Encapsulation)
-
-**문제 상황 분석:**
-- 적재 단계에서 DB 연결 리셋(일시적 오류)이 발생했으나 서브에이전트 자체 재시도로 성공함.
-- 상위 코디네이터에게 전달할 최종 보고 방식을 결정해야 함.
-
-**D번이 정답인 이유:**
-- 내부의 일시적 오류가 로컬에서 이미 해결되었으므로 상위 계층에 실패를 전파할 필요가 없습니다.
-- 마이그레이션이 최종 완료되었음을 알리는 성공 결과만 요약해 보고하는 것이 올바릅니다.
-
-**오답 분석:**
-- Option A, B, C는 불필요한 에스컬레이션, 오류 보고, 단계 누락 등을 유발하므로 오답입니다.
 
 ---
 
