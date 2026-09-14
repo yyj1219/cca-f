@@ -2729,7 +2729,7 @@ D) Add the server with user scope in `~/.claude.json`, and paste each teammate's
 
 ---
 
-## 64번 문제
+## 64번 문제 (★)
 
 **1. 문제 원문**
 
