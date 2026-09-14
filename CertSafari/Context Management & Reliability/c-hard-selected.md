@@ -1,4 +1,4 @@
-# Context Management & Reliability 어려운 문제
+# Context Management & Reliability 고난도
 
 ---
 
