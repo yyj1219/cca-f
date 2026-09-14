@@ -1793,6 +1793,8 @@ LLM에 한 번에 지나치게 많은 정보(모든 파일)를 밀어 넣으면 
 
 ---
 
+## 41번 문제
+
 **1. 문제 원문**
 
 A single support ticket reads: "I was double-charged for my subscription and I also need my shipping address updated before the next shipment." The agent has tools for billing lookups and for address changes. The architect wants both concerns resolved efficiently in one response rather than sequentially re-reading the ticket twice. What is the recommended approach?
@@ -1834,7 +1836,7 @@ C번은 티켓을 두 개의 작업(청구 문제, 주소 문제)으로 분해�
 
 ---
 
-## 41번 문제
+## 42번 문제
 
 **1. 문제 원문**
 
@@ -1877,7 +1879,7 @@ D) The task decomposes cleanly into fixed, predictable subtasks always in the sa
 
 ---
 
-## 42번 문제
+## 43번 문제
 
 **1. 문제 원문**
 
@@ -1920,7 +1922,7 @@ D) Set the coordinator's own allowedTools to just ["Read", "Grep"] for the durat
 
 ---
 
-## 43번 문제
+## 44번 문제
 
 **1. 문제 원문**
 
@@ -1963,7 +1965,7 @@ D) The coordinator's own system prompt was not updated to reference `performance
 
 ---
 
-## 44번 문제
+## 45번 문제
 
 **1. 문제 원문**
 
@@ -2006,7 +2008,7 @@ D) No, this is a bug: subagent definitions cache their reasoning across calls au
 
 ---
 
-## 45번 문제
+## 46번 문제
 
 **1. 문제 원문**
 
@@ -2049,7 +2051,7 @@ D) Lower the subagent's model tier so it is less capable of generating file-modi
 
 ---
 
-## 46번 문제
+## 47번 문제
 
 **1. 문제 원문**
 
@@ -2095,7 +2097,7 @@ Claude Code CLI에서 이미 완료된 세션을 이어받아 단발성 작업�
 
 ---
 
-## 47번 문제
+## 48번 문제
 
 **1. 문제 원문**
 
@@ -2138,7 +2140,7 @@ D) A dynamic orchestrator-workers setup that decides how many drafting stages to
 
 ---
 
-## 48번 문제
+## 49번 문제
 
 **1. 문제 원문**
 
@@ -2183,7 +2185,7 @@ A번은 단계적으로 전체 구조 및 의존성을 파악(Mapping)하고, �
 
 ---
 
-## 49번 문제
+## 50번 문제
 
 **1. 문제 원문**
 
@@ -2228,7 +2230,7 @@ D) Set `continue_conversation=True` so a follow-up could be added later without 
 
 ---
 
-## 50번 문제
+## 51번 문제
 
 **1. 문제 원문**
 
@@ -2273,7 +2275,7 @@ D) The matcher `/refund/` uses a regular expression, but regular expression matc
 
 ---
 
-## 51번 문제
+## 52번 문제
 
 **1. 문제 원문**
 
@@ -2318,7 +2320,7 @@ D) Set the model field on the strict security-reviewer's AgentDefinition to the 
 
 ---
 
-## 52번 문제
+## 53번 문제
 
 **1. 문제 원문**
 
@@ -2363,7 +2365,7 @@ D) The subagent's context starts fresh each call, so the decision must be includ
 
 ---
 
-## 53번 문제
+## 54번 문제
 
 **1. 문제 원문**
 
@@ -2408,7 +2410,7 @@ D) `renameSession()` to enumerate sessions and `tagSession()` to read a session'
 
 ---
 
-## 54번 문제
+## 55번 문제
 
 **1. 문제 원문**
 
@@ -2453,7 +2455,7 @@ D) The call is blocked, because when multiple hooks disagree the most restrictiv
 
 ---
 
-## 55번 문제
+## 56번 문제
 
 **1. 문제 원문**
 
@@ -2498,7 +2500,7 @@ D) Forking always resets the working directory, which invalidates any previously
 
 ---
 
-## 56번 문제
+## 57번 문제
 
 **1. 문제 원문**
 
@@ -2542,7 +2544,7 @@ API는 무상태 방식이므로 이전 대화 기록이 지워지면 Claude는 
 
 ---
 
-## 57번 문제
+## 58번 문제
 
 **1. 문제 원문**
 
@@ -2587,6 +2589,8 @@ D) Resume the session with fork enabled to copy the current history into a new s
 
 ---
 
+## 59번 문제
+
 **1. 문제 원문**
 
 A developer implements a PreToolUse hook that gates the `process_refund` tool by checking a boolean flag `is_verified`. The flag is expected to be set to `true` by a separate `mark_verified` tool after a human reviewer approves a photo ID. In an incident, the `mark_verified` tool executed and the human reviewer explicitly rejected the ID, but due to a software bug the `is_verified` flag was incorrectly set to `true`. The PreToolUse hook consequently allowed `process_refund`, resulting in an unauthorized refund. What change to the PreToolUse hook would best prevent this category of failure?
@@ -2622,7 +2626,7 @@ A developer implements a PreToolUse hook that gates the `process_refund` tool by
 
 ---
 
-## 58번 문제
+## 60번 문제
 
 **1. 문제 원문**
 
@@ -2659,7 +2663,7 @@ An architect is deciding between two designs for an incident-response agent: Des
 
 ---
 
-## 59번 문제
+## 61번 문제
 
 **1. 문제 원문**
 
@@ -2696,7 +2700,7 @@ An architect is drafting the handoff protocol for cases where an agent must esca
 
 ---
 
-## 60번 문제
+## 62번 문제
 
 **1. 문제 원문**
 
@@ -2732,7 +2736,7 @@ Claude API 사양에 따르면, 하나의 응답에서 여러 개의 `tool_use` 
 
 ---
 
-## 61번 문제
+## 63번 문제
 
 **1. 문제 원문**
 
@@ -2770,7 +2774,7 @@ An agent handles two kinds of unverified requests: viewing a masked order histor
 
 ---
 
-## 62번 문제
+## 64번 문제
 
 **1. 문제 원문**
 
@@ -2807,7 +2811,7 @@ A team has finished a shared analysis of a monolith's test suite in one session 
 
 ---
 
-## 63번 문제
+## 65번 문제
 
 **1. 문제 원문**
 
@@ -2845,7 +2849,7 @@ Claude Code 세션을 재개하면 이전의 대화 이력과 시스템 추론 �
 
 ---
 
-## 64번 문제
+## 66번 문제
 
 **1. 문제 원문**
 
@@ -2882,7 +2886,7 @@ LLM 에이전트 아키텍처에서 도구 실행 결과(`tool_result`)를 대�
 
 ---
 
-## 65번 문제
+## 67번 문제
 
 **1. 문제 원문**
 
@@ -2919,7 +2923,7 @@ An architect is defining a "database-migration" AgentDefinition with a long prom
 
 ---
 
-## 66번 문제
+## 68번 문제
 
 **1. 문제 원문**
 
@@ -2962,7 +2966,7 @@ PreToolUse 훅은 매칭된 도구가 실제 호출되는 시점에 구동되며
 
 ---
 
-## 67번 문제
+## 69번 문제
 
 **1. 문제 원문**
 
@@ -3005,7 +3009,7 @@ Notification 훅은 상태 메시지 수신 및 로그 기록 용도로만 작�
 
 ---
 
-## 68번 문제
+## 70번 문제
 
 **1. 문제 원문**
 
@@ -3048,7 +3052,7 @@ D) A PreToolUse hook that fires the audit request and returns {"async": true, "a
 
 ---
 
-## 69번 문제
+## 71번 문제
 
 **1. 문제 원문**
 
@@ -3091,7 +3095,7 @@ D) An adaptive investigation plan that generates new subtasks based on which lan
 
 ---
 
-## 70번 문제
+## 72번 문제
 
 **1. 문제 원문**
 
@@ -3134,7 +3138,7 @@ D) The fixed chain was correct, and the team should add a sixth hardcoded backfi
 
 ---
 
-## 71번 문제
+## 73번 문제
 
 **1. 문제 원문**
 
@@ -3177,7 +3181,7 @@ Anthropic Claude Code의 2026년 6월 공식 문서 및 업데이트 내역에 �
 
 ---
 
-## 72번 문제
+## 74번 문제
 
 **1. 문제 원문**
 
@@ -3220,7 +3224,7 @@ D) Increase the maxTurns setting on each subagent so that each one finishes its 
 
 ---
 
-## 73번 문제
+## 75번 문제
 
 **1. 문제 원문**
 
@@ -3263,7 +3267,7 @@ Claude Messages API에서 `stop_reason`이 `"max_tokens"`로 반환되는 것은
 
 ---
 
-## 74번 문제
+## 76번 문제
 
 **1. 문제 원문**
 
@@ -3319,7 +3323,7 @@ Claude 에이전트 SDK의 `PreToolUse` 훅은 도구가 실행되기 전에 호
 
 ---
 
-## 75번 문제
+## 77번 문제
 
 ### 1. 문제 원문
 
@@ -3361,7 +3365,7 @@ SDK의 훅 시스템에서 `matcher` 파라미터는 도구 이름만을 대상�
 
 ---
 
-## 76번 문제
+## 78번 문제
 
 ### 1. 문제 원문
 
@@ -3403,7 +3407,7 @@ D) Resume the session's ID with a higher max_turns value configured on the new f
 
 ---
 
-## 77번 문제
+## 79번 문제
 
 ### 1. 문제 원문
 
@@ -3445,7 +3449,7 @@ D) The Messages API automatically clears tool_use blocks from history every two 
 
 ---
 
-## 78번 문제
+## 80번 문제
 
 ### 1. 문제 원문
 
@@ -3487,7 +3491,7 @@ Claude Code CLI에서는 작업 세션에 이름을 부여할 수 있으며, 이
 
 ---
 
-## 79번 문제
+## 81번 문제
 
 ### 1. 문제 원문
 
@@ -3529,7 +3533,7 @@ D) Whether both hooks share the same tool_use_id, because the SDK requires hooks
 
 ---
 
-## 80번 문제
+## 82번 문제
 
 ### 1. 문제 원문
 
@@ -3571,7 +3575,7 @@ D) Give each subagent direct write access to a shared database so they can excha
 
 ---
 
-## 81번 문제
+## 83번 문제
 
 ### 1. 문제 원문
 
@@ -3613,7 +3617,7 @@ D) additionalContext, because it provides a way to add extra information that ov
 
 ---
 
-## 82번 문제
+## 84번 문제
 
 ### 1. 문제 원문
 
@@ -3655,7 +3659,7 @@ D) Pass continue_conversation=True (or continue: true) on every incoming request
 
 ---
 
-## 83번 문제
+## 85번 문제
 
 ### 1. 문제 원문
 
@@ -3697,7 +3701,7 @@ D) Orchestrator-workers, because the required investigation steps cannot be pred
 
 ---
 
-## 84번 문제
+## 86번 문제
 
 **1. 문제 원문**
 
@@ -3738,7 +3742,7 @@ D) Raise the review prompt's sampling temperature so the single combined pass co
 
 ---
 
-## 85번 문제
+## 87번 문제
 
 **1. 문제 원문**
 
@@ -3779,7 +3783,7 @@ D) Rely on claude --continue in the next container to pick up the most recent lo
 
 ---
 
-## 86번 문제
+## 88번 문제
 
 **1. 문제 원문**
 
@@ -3820,7 +3824,7 @@ D) Grant synthesis the same search tools as web-researcher so it can re-run the 
 
 ---
 
-## 87번 문제
+## 89번 문제
 
 **1. 문제 원문**
 
@@ -3861,7 +3865,7 @@ D) Give both agents identical tools arrays, but set a lower maxTurns on final-su
 
 ---
 
-## 88번 문제
+## 90번 문제
 
 **1. 문제 원문**
 
@@ -3902,7 +3906,7 @@ LLM의 프롬프트 지시 준수는 확률적(Probabilistic)이므로 100% 이�
 
 ---
 
-## 89번 문제
+## 91번 문제
 
 **1. 문제 원문**
 
@@ -3943,7 +3947,7 @@ D) Restart the entire pipeline from scratch with a completely new set of subagen
 
 ---
 
-## 90번 문제
+## 92번 문제
 
 **1. 문제 원문**
 
@@ -3984,7 +3988,7 @@ D) A UserPromptSubmit hook that reminds the model at the start of every turn to 
 
 ---
 
-## 91번 문제
+## 93번 문제
 
 **1. 문제 원문**
 
@@ -4025,7 +4029,7 @@ Client SDK(Anthropic API Client)는 기본 API 통신 라이브러리로, LLM이
 
 ---
 
-## 92번 문제
+## 94번 문제
 
 **1. 문제 원문**
 
@@ -4065,6 +4069,8 @@ D) Split the migration across multiple coordinators that each independently main
 - Option D (오답): 중앙 조율 스크립트 없이 여러 코디네이터로 단순히 쪼개어 각각 파이프라인을 유지하도록 만들면, 코디네이터 간의 상태 동기화 및 작업 중복 관리 등 또 다른 복잡성을 야기합니다.
 
 ---
+
+## 95번 문제
 
 **1. 문제 원문**
 
@@ -4107,7 +4113,7 @@ D) The conflicting results should be discarded to maintain output consistency, a
 
 ---
 
-## 102번 문제
+## 96번 문제
 
 **1. 문제 원문**
 
@@ -4150,7 +4156,7 @@ D) Use `permissionDecision: 'ask'` to require human approval for the refund, sto
 
 ---
 
-## 103번 문제
+## 97번 문제
 
 **1. 문제 원문**
 
@@ -4193,7 +4199,7 @@ Claude Code CLI 환경에서는 진행 중인 작업 세션을 저장하고 나�
 
 ---
 
-## 104번 문제
+## 98번 문제
 
 **1. 문제 원문**
 
@@ -4236,7 +4242,7 @@ LLM 에이전트 시스템에서 프롬프트(Natural Language Prompt)는 유연
 
 ---
 
-## 105번 문제
+## 99번 문제
 
 **1. 문제 원문**
 
@@ -4279,7 +4285,7 @@ D) Fork the prior session and continue exploration straight from its unmodified 
 
 ---
 
-## 106번 문제
+## 100번 문제
 
 **1. 문제 원문**
 
@@ -4321,7 +4327,7 @@ Anthropic 공식 문서 및 릴리스 노트에 따르면, Claude Code의 중첩
 
 ---
 
-## 107번 문제
+## 101번 문제
 
 **1. 문제 원문**
 
@@ -4364,7 +4370,7 @@ Claude Code 및 Agentic Framework의 `PreToolUse` 훅에서는 도구 실행 전
 
 ---
 
-## 108번 문제
+## 102번 문제
 
 **1. 문제 원문**
 
@@ -4407,7 +4413,7 @@ D) Remove the coordinator entirely and let the classifier subagent directly invo
 
 ---
 
-## 109번 문제
+## 103번 문제
 
 **1. 문제 원문**
 
@@ -4450,7 +4456,7 @@ C번은 대화 기록이 없는 상태에서도 담당자가 즉시 조치할 �
 
 ---
 
-## 110번 문제
+## 104번 문제
 
 **1. 문제 원문**
 
@@ -4493,7 +4499,7 @@ Anthropic 공식 규격상 서브 에이전트 실행이 중간에 예외로 끊
 
 ---
 
-## 111번 문제
+## 105번 문제
 
 **1. 문제 원문**
 
@@ -4536,7 +4542,7 @@ D) It forces every one of the later requests to omit the tools parameter entirel
 
 ---
 
-## 112번 문제
+## 106번 문제
 
 **1. 문제 원문**
 
@@ -4579,7 +4585,7 @@ Claude Code 및 에이전트 오케스트레이션 프레임워크에서 서브 
 
 ---
 
-## 113번 문제
+## 107번 문제
 
 **1. 문제 원문**
 
@@ -4622,7 +4628,7 @@ Claude Code 및 SDK의 훅(Hook) 시스템에서 도구 이름을 필터링할 �
 
 ---
 
-## 114번 문제
+## 108번 문제
 
 **1. 문제 원문**
 
