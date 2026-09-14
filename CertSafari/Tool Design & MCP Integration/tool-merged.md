@@ -233,7 +233,7 @@ MCP 서버를 설정할 때, 스코프(Scope)에 따라 설정 파일의 저장 
 ---
 
 
-## 6번 문제
+## 6번 문제 (★)
 
 **1. 문제 원문**
 
@@ -277,7 +277,7 @@ D) The research agent is passing incomplete findings, so the synthesis agent sea
 ---
 
 
-## 7번 문제
+## 7번 문제 (★)
 
 **1. 문제 원문**
 
@@ -321,7 +321,7 @@ D) The fetch tool's description exceeds a fixed token threshold, causing the mod
 ---
 
 
-## 8번 문제
+## 8번 문제 (★)
 
 **1. 문제 원문**
 
@@ -366,7 +366,7 @@ Claude Code에는 시스템 내부 기능(예: `computer-use` 등)을 위해 미
 ---
 
 
-## 9번 문제
+## 9번 문제 (★)
 
 **1. 문제 원문**
 
@@ -459,7 +459,7 @@ LLM이 도구(Tool/Function Calling)를 선택할 때 가장 핵심적으로 참
 ---
 
 
-## 11번 문제
+## 11번 문제 (★)
 
 **1. 문제 원문**
 
@@ -734,7 +734,7 @@ D) Replace `fetch_url` with a `load_document` tool that validates the URL agains
 
 ---
 
-## 17번 문제
+## 17번 문제 (★)
 
 **1. 문제 원문**
 
@@ -824,7 +824,7 @@ D) Tools beyond an agent's specialization tend to get misused when available, so
 
 ---
 
-## 19번 문제
+## 19번 문제 (★)
 
 **1. 문제 원문**
 
@@ -1223,7 +1223,7 @@ D) Sort the 18 tools alphabetically in the tools array so the model scans them i
 
 ---
 
-## 28번 문제
+## 28번 문제 (★)
 
 **1. 문제 원문**
 
@@ -1313,7 +1313,7 @@ MCP(Model Context Protocol) 및 에이전트 개발에서 도구 실행 에러(`
 
 ---
 
-## 30번 문제
+## 30번 문제 (★)
 
 **1. 문제 원문**
 
@@ -1355,7 +1355,7 @@ D) Validation fails because the account ID in the request is the specific field 
 
 ---
 
-## 31번 문제
+## 31번 문제 (★)
 
 **1. 문제 원문**
 
@@ -1566,7 +1566,7 @@ LLM의 도구 사용(Tool Use / Function Calling)에서 모델은 도구의 이�
 
 ---
 
-## 36번 문제
+## 36번  (★)
 
 **1. 문제 원문**
 
@@ -1608,7 +1608,7 @@ LLM의 도구 선택(Tool Selection) 과정에서 시스템 프롬프트(System 
 
 ---
 
-## 37번 문제
+## 37번 문제 (★)
 
 **1. 문제 원문**
 
@@ -1736,7 +1736,7 @@ Claude API의 `tool_choice` 파라미터는 에이전트의 도구 호출 실행
 
 ---
 
-## 40번 문제
+## 40번 문제 (★)
 
 **1. 문제 원문**
 
@@ -1988,7 +1988,7 @@ LLM 기반 에이전트 도구(Tool/Function Calling)에서 도구의 `descripti
 
 ---
 
-## 46번 문제
+## 46번 문제 (★)
 
 **1. 문제 원문**
 
@@ -2030,7 +2030,7 @@ Claude Code의 `Edit` 도구는 파일 내에서 교체하고자 하는 대상 �
 
 ---
 
-## 47번 문제
+## 47번 문제 (★)
 
 **1. 문제 원문**
 
@@ -2156,7 +2156,7 @@ D) Give the coordinator agent a verify_fact tool but not the synthesis agent, so
 
 ---
 
-## 50번 문제
+## 50번 문제 (★)
 
 **1. 문제 원문**
 
@@ -2198,7 +2198,7 @@ Claude Code 도구 생태계에서 `Grep`은 파일 **내부 텍스트 내용(Co
 
 ---
 
-## 51번 문제
+## 51번 문제 (★)
 
 **1. 문제 원문**
 
@@ -2282,7 +2282,7 @@ MCP의 **Resource** 사상을 활용하여 이슈 요약 카탈로그를 리소�
 
 ---
 
-## 53번 문제
+## 53번 문제 (★)
 
 **1. 문제 원문**
 
@@ -2492,7 +2492,7 @@ LLM 기반 에이전트 시스템에서 단일 에이전트에 제공되는 도�
 
 ---
 
-## 58번 문제
+## 58번 문제 (★)
 
 **1. 문제 원문**
 
