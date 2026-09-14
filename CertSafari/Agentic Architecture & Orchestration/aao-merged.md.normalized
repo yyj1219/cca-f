@@ -2,7 +2,7 @@
 
 ---
 
-## 1번 문제
+## 1번 문제: 에이전틱 루프 종료 조건 (Termination Logic)
 
 **1. 문제 원문**
 
@@ -49,7 +49,7 @@ Anthropic Claude API 공식 문서에 따르면, 모델 응답의 완료 신호�
 
 ---
 
-## 2번 문제
+## 2번 문제: 병렬 도구 호출 (Parallel Tool Execution)
 
 **1. 문제 원문**
 
@@ -96,7 +96,7 @@ Claude 및 관련 에이전트 프레임워크(Claude Code SDK 등)에서는 단
 
 ---
 
-## 3번 문제
+## 3번 문제: CI 환경 세션 재개 (Session Resume in Ephemeral Environment)
 
 **1. 문제 원문**
 
@@ -143,7 +143,7 @@ Claude Code CLI 및 에이전트 환경에서 대화 세션 기록(Transcript/Hi
 
 ---
 
-## 4번 문제
+## 4번 문제: 에이전트 간 통신 패턴 (Agent Teams vs Coordinator Subagents)
 
 **1. 문제 원문**
 
@@ -190,7 +190,7 @@ Claude Code 에이전트 아키텍처에서 **표준 코디네이터-서브에�
 
 ---
 
-## 5번 문제
+## 5번 문제: Messages API 내 Tool Result 데이터 위치
 
 **1. 문제 원문**
 
@@ -237,7 +237,7 @@ Anthropic Claude API 공식 스펙에 따르면, 어시스턴트 메시지(`role
 
 ---
 
-## 6번 문제
+## 6번 문제: PreToolUse 훅을 통한 입력 정규화 및 검증
 
 **1. 문제 원문**
 
@@ -284,7 +284,7 @@ D) Register two PreToolUse hooks in any order, as updatedInput automatically pro
 
 ---
 
-## 7번 문제
+## 7번 문제: 결정론적 훅 vs 확률적 프롬프트
 
 **1. 문제 원문**
 
@@ -331,7 +331,7 @@ D) The hook only affects what the user sees in the transcript, so the underlying
 
 ---
 
-## 8번 문제
+## 8번 문제: 메타데이터 구조화를 통한 출처 귀속 (Structured Citation Data)
 
 **1. 문제 원문**
 
@@ -380,7 +380,7 @@ D) Pass the findings as one continuous block of prose combining every source's t
 
 ---
 
-## 9번 문제
+## 9번 문제: SubagentStop 훅을 통한 결과 집계
 
 **1. 문제 원문**
 
@@ -427,7 +427,7 @@ Claude Agent SDK 생태계에서 서브에이전트(Subagent)의 라이프사이
 
 ---
 
-## 10번 문제
+## 10번 문제: 작업 디렉터리와 세션 재개 (Working Directory Scope)
 
 **1. 문제 원문**
 
@@ -475,7 +475,7 @@ Claude CLI는 실행된 작업 디렉터리를 기반으로 프로젝트 컨텍�
 
 ---
 
-## 11번 문제
+## 11번 문제: 허브 앤 스포크 패턴의 중앙화 (Hub-and-Spoke Centralization)
 
 **1. 문제 원문**
 
@@ -522,7 +522,7 @@ D) Assign one subagent the role of monitoring the others' retries and logs so th
 
 ---
 
-## 12번 문제
+## 12번 문제: 터미널 세션 분기 (`/fork` Command)
 
 **1. 문제 원문**
 
@@ -569,7 +569,7 @@ Claude Code 대화형 CLI 세션에서는 현재 진행 중인 대화 컨텍스�
 
 ---
 
-## 13번 문제
+## 13번 문제: 작업 분해 전략 비교 (Fixed Prompt Chain vs Adaptive Decomposition)
 
 **1. 문제 원문**
 
@@ -617,7 +617,7 @@ D) Both workflows should use a dynamic orchestrator, since dynamic decomposition
 
 ---
 
-## 14번 문제
+## 14번 문제: 다중 요청 처리 및 동시성 (Parallel Fan-out / Fan-in)
 
 **1. 문제 원문**
 
@@ -664,7 +664,7 @@ D) Investigate the shipment concern to full resolution and reply to the customer
 
 ---
 
-## 15번 문제
+## 15번 문제: 프롬프트 설계의 자율성과 유연성 (Goal-Oriented Prompting)
 
 **1. 문제 원문**
 
@@ -711,7 +711,7 @@ LLM 기반 에이전트에게 지나치게 경직되고 고정된 절차(Over-sp
 
 ---
 
-## 16번 문제
+## 16번 문제: 동적 오케스트레이션 (Dynamic Orchestration)
 
 **1. 문제 원문**
 
@@ -758,7 +758,7 @@ D) A dynamic orchestrator that generates and prioritizes new investigation subta
 
 ---
 
-## 17번 문제
+## 17번 문제: 훅 내 예외 처리 및 장애 시 안전성 (Fail-Closed Pattern)
 
 **1. 문제 원문**
 
@@ -805,7 +805,7 @@ D) Remove the hook entirely for the duration of any outage of the verification s
 
 ---
 
-## 18번 문제
+## 18번 문제: 하드 게이트웨이를 통한 실행 순서 보장 (Hard Gating)
 
 **1. 문제 원문**
 
@@ -852,7 +852,7 @@ D) A follow-up user-facing reminder message injected after every ticket that res
 
 ---
 
-## 19번 문제
+## 19번 문제: Direct Messages API 수동 도구 실행 (Direct Integration Responsibilities)
 
 **1. 문제 원문**
 
@@ -899,7 +899,7 @@ D) Claude executes the ticketing system and knowledge base calls internally on A
 
 ---
 
-## 20번 문제
+## 20번 문제: 독립적 작업의 병렬 실행 패턴 (Parallelization Pattern)
 
 **1. 문제 원문**
 
@@ -1032,7 +1032,7 @@ LLM에 전달하는 자연어 프롬프트나 온도(temperature) 조절만으�
 
 ---
 
-## 23번 문제
+## 23번 문제 (★)
 
 ### 1. 문제 원문
 
@@ -1751,7 +1751,7 @@ LLM에게 프롬프트 텍스트로 특정 서브에이전트를 사용하라고
 
 ---
 
-## 40번 문제
+## 40번 문제 (★)
 
 ### 1. 문제 원문
 
@@ -1834,7 +1834,7 @@ C번은 티켓을 두 개의 작업(청구 문제, 주소 문제)으로 분해�
 
 ---
 
-## 41번 문제
+### [41번 문제]
 
 **1. 문제 원문**
 
@@ -1877,7 +1877,7 @@ D) The task decomposes cleanly into fixed, predictable subtasks always in the sa
 
 ---
 
-## 42번 문제
+### [42번 문제]
 
 **1. 문제 원문**
 
@@ -1920,7 +1920,7 @@ D) Set the coordinator's own allowedTools to just ["Read", "Grep"] for the durat
 
 ---
 
-## 43번 문제
+### [43번 문제]
 
 **1. 문제 원문**
 
@@ -1963,7 +1963,7 @@ D) The coordinator's own system prompt was not updated to reference `performance
 
 ---
 
-## 44번 문제
+### [44번 문제]
 
 **1. 문제 원문**
 
@@ -2006,7 +2006,7 @@ D) No, this is a bug: subagent definitions cache their reasoning across calls au
 
 ---
 
-## 45번 문제
+### [45번 문제]
 
 **1. 문제 원문**
 
@@ -2049,7 +2049,7 @@ D) Lower the subagent's model tier so it is less capable of generating file-modi
 
 ---
 
-## 46번 문제
+### [46번 문제]
 
 **1. 문제 원문**
 
@@ -2095,7 +2095,7 @@ Claude Code CLI에서 이미 완료된 세션을 이어받아 단발성 작업�
 
 ---
 
-## 47번 문제
+### [47번 문제]
 
 **1. 문제 원문**
 
@@ -4107,7 +4107,7 @@ D) The conflicting results should be discarded to maintain output consistency, a
 
 ---
 
-## 102번 문제
+# 102. $500 초과 환불 재시도 루프 차단을 위한 PreToolUse 훅 제어
 
 **1. 문제 원문**
 
@@ -4150,7 +4150,7 @@ D) Use `permissionDecision: 'ask'` to require human approval for the refund, sto
 
 ---
 
-## 103번 문제
+# 103. 병렬 조사 세션을 기억하기 쉬운 이름으로 저장 및 재개하는 방법
 
 **1. 문제 원문**
 
@@ -4193,7 +4193,7 @@ Claude Code CLI 환경에서는 진행 중인 작업 세션을 저장하고 나�
 
 ---
 
-## 104번 문제
+# 104. 프롬프트 변경에도 규칙을 유지하기 위한 PreToolUse 훅의 설계 특성
 
 **1. 문제 원문**
 
@@ -4236,7 +4236,7 @@ LLM 에이전트 시스템에서 프롬프트(Natural Language Prompt)는 유연
 
 ---
 
-## 105번 문제
+# 105. 코드베이스 리팩토링 후 이전 세션 결론만 활용하는 가장 신뢰할 수 있는 전략
 
 **1. 문제 원문**
 
@@ -4279,7 +4279,7 @@ D) Fork the prior session and continue exploration straight from its unmodified 
 
 ---
 
-## 106번 문제
+# 106. Claude Code 서브 에이전트의 최대 중첩 깊이(Nesting depth)
 
 **1. 문제 원문**
 
@@ -4321,7 +4321,7 @@ Anthropic 공식 문서 및 릴리스 노트에 따르면, Claude Code의 중첩
 
 ---
 
-## 107번 문제
+# 107. $500~$1000 환불 건에 대해 사람 검토자의 승인/거절을 유도하는 훅 설정
 
 **1. 문제 원문**
 
@@ -4364,7 +4364,7 @@ Claude Code 및 Agentic Framework의 `PreToolUse` 훅에서는 도구 실행 전
 
 ---
 
-## 108번 문제
+# 108. 들어오는 모든 티켓에 5개 서브에이전트를 무조건 전체 호출할 때 코디네이터 재설계 방안
 
 **1. 문제 원문**
 
@@ -4407,7 +4407,7 @@ D) Remove the coordinator entirely and let the classifier subagent directly invo
 
 ---
 
-## 109번 문제
+# 109. 대화 기록 접근권이 없는 사람 상담원에게 전달할 최적의 인수인계 요약
 
 **1. 문제 원문**
 
@@ -4450,7 +4450,7 @@ C번은 대화 기록이 없는 상태에서도 담당자가 즉시 조치할 �
 
 ---
 
-## 110번 문제
+# 110. 서버 과부하로 포그라운드 서브에이전트 응답이 중단되었을 때 수신하는 Agent 도구 결과
 
 **1. 문제 원문**
 
@@ -4493,7 +4493,7 @@ Anthropic 공식 규격상 서브 에이전트 실행이 중간에 예외로 끊
 
 ---
 
-## 111번 문제
+# 111. 고정된 5회 도구 호출 반복 제한을 주 정지 메커니즘으로 삼을 때의 아키텍처 문제
 
 **1. 문제 원문**
 
@@ -4536,7 +4536,7 @@ D) It forces every one of the later requests to omit the tools parameter entirel
 
 ---
 
-## 112번 문제
+# 112. 코디네이터 레벨의 settings.local.json에 Bash 거부 규칙이 있을 때 서브에이전트의 Bash 실행 여부
 
 **1. 문제 원문**
 
@@ -4579,7 +4579,7 @@ Claude Code 및 에이전트 오케스트레이션 프레임워크에서 서브 
 
 ---
 
-## 113번 문제
+# 113. /refund/ 정규표현식이 issue_refund_note 도구까지 매칭되는 원인과 해결책
 
 **1. 문제 원문**
 
@@ -4622,7 +4622,7 @@ Claude Code 및 SDK의 훅(Hook) 시스템에서 도구 이름을 필터링할 �
 
 ---
 
-## 114번 문제
+# 114. 에이전트 ID 재개 없이 endpoint-finder 연속 호출 시 이전 메모리를 기억하지 못하는 이유
 
 **1. 문제 원문**
 
