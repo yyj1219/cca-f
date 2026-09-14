@@ -1,6 +1,4 @@
-# 어려운 문제 모음 (패턴 기반 선별)
-
-원본: c-merged.md / 문제 번호는 원본과 동일하게 유지
+# Context Management & Reliability 어려운 문제
 
 ---
 
