@@ -42,11 +42,11 @@ What is the runtime effect?
 
 A) The session terminates with an error because permissionDecisionReason is only valid with permissionDecision: "ask".
 
-B) The tool call is cancelled, and the reason is provided to Claude to inform subsequent actions.
+**B) The tool call is cancelled, and the reason is provided to Claude to inform subsequent actions.**
 
-C) The tool call is allowed, and the permissionDecisionReason is logged as a warning.
+~C) The tool call is allowed, and the permissionDecisionReason is logged as a warning.~
 
-D) The user is shown an interactive approval prompt asking to allow or deny the tool call.
+~D) The user is shown an interactive approval prompt asking to allow or deny the tool call.~
 
 ---
 
@@ -67,13 +67,13 @@ Claude 에이전트 SDK의 `PreToolUse` 훅은 도구가 실행되기 전에 호
 - 이 결과가 에이전트 런타임 및 Claude의 동작에 어떤 영향을 미치는지 묻는 상황임
 
 **B번이 정답인 이유:**
-`permissionDecision`을 `"deny"`로 설정하면, 런타임은 예정된 도구 실행을 즉시 취소(Cancel)합니다. 동시에 `permissionDecisionReason`에 적힌 사유("Use the sandboxed low-privilege wrapper script instead")가 모델(Claude)에게 도구 실행 결과 형태의 피드백으로 전달됩니다. 이를 통해 Claude는 자신이 요청한 도구 호출이 왜 거부되었는지 이해하고, 샌드박스화된 저권한 래퍼 스크립트를 대신 사용하는 식의 후속 대안 행동을 취할 수 있게 됩니다.
+`permissionDecision`을 `"deny"`로 설정하면, 런타임은 예정된 **도구 실행을 즉시 취소** (Cancel)합니다. 동시에 `permissionDecisionReason`에 적힌 사유("Use the sandboxed low-privilege wrapper script instead")가 모델(Claude)에게 도구 실행 결과 형태의 피드백으로 전달됩니다. 이를 통해 Claude는 자신이 요청한 도구 호출이 왜 거부되었는지 이해하고, 샌드박스화된 저권한 래퍼 스크립트를 대신 사용하는 식의 **후속 대안 행동을 취할 수 있게 됩니다.**
 
 **오답 분석:**
 
 - Option A (오답): `permissionDecisionReason`은 `"deny"` 및 `"ask"` 등 거부 또는 확인 요청 사유를 전달할 때 모두 유효하게 사용할 수 있으며, 세션 오류 종료를 발생시키지 않습니다.
-- Option C (오답): `"permissionDecision": "deny"`는 명시적으로 도구 실행을 막는 결정이므로 도구 호출이 허용(allowed)되지 않습니다.
-- Option D (오답): 대화형 승인 프롬프트를 띄우려면 `"permissionDecision": "ask"`를 반환해야 합니다. `"deny"`는 차단 및 거부 사유를 모델에게 즉시 전달합니다.
+- ~Option C (오답): `"permissionDecision": "deny"`는 명시적으로 도구 실행을 막는 결정이므로 도구 호출이 허용(allowed)되지 않습니다.~
+- ~Option D (오답): 대화형 승인 프롬프트를 띄우려면 `"permissionDecision": "ask"`를 반환해야 합니다. `"deny"`는 차단 및 거부 사유를 모델에게 즉시 전달합니다.~
 
 ---
 
@@ -87,11 +87,11 @@ For refunds between $500 and $1000, policy requires the agent to pause and let a
 
 A) permissionDecision set to "deny", paired with a permissionDecisionReason that instructs the model to contact a human reviewer on its own
 
-B) permissionDecision set to "allow", combined with an additionalContext note asking the model to mention the amount to the user afterward
+~B) permissionDecision set to "allow", combined with an additionalContext note asking the model to mention the amount to the user afterward~
 
-C) permissionDecision set to "ask", so the operation is surfaced for approval instead of executing automatically or being silently rejected
+**C) permissionDecision set to "ask", so the operation is surfaced for approval instead of executing automatically or being silently rejected**
 
-D) async set to true with asyncTimeout raised to 60000, so the hook has enough time to reach a human reviewer before the call proceeds
+~D) async set to true with asyncTimeout raised to 60000, so the hook has enough time to reach a human reviewer before the call proceeds~
 
 ---
 
@@ -108,17 +108,17 @@ Claude Code 및 Agentic Framework의 `PreToolUse` 훅에서는 도구 실행 전
 
 **문제 상황 분석:**
 - 500달러~1000달러 사이의 환불 요청 발생.
-- 완전 차단(`deny`)하거나 자동 실행(`allow`)하는 대신, 작업을 일시 정지하고 사람(Human Reviewer)의 승인/거절 판단을 받아야 함.
-- 사람의 직접적인 개입(Human-in-the-loop)을 유도하는 훅 설정값을 찾아야 함.
+- 완전 차단(`deny`)하거나 자동 실행(`allow`)하는 대신, **작업을 일시 정지**하고 사람(Human Reviewer)의 승인/거절 판단을 받아야 함.
+- 사람의 직접적인 개입(**Human-in-the-loop**)을 유도하는 **훅 설정값**을 찾아야 함.
 
 **C번이 정답인 이유:**
-`permissionDecision: 'ask'`로 설정하면 도구의 자동 실행이 일시 정지되고 사용자/검토자 UI 상에 승인 요청이 노출(Surface)됩니다. 이를 통해 사람이 직접 검토하여 승인(Approve)하거나 거절(Reject)할 때까지 도구 호출을 대기시킬 수 있으므로 정책 요구사항에 완벽하게 부합합니다.
+`permissionDecision: 'ask'`로 설정하면 **도구의 자동 실행이 일시 정지되고 사용자/검토자 UI 상에 승인 요청이 노출** (Surface)됩니다. 이를 통해 사람이 직접 검토하여 승인(Approve)하거나 거절(Reject)할 때까지 도구 호출을 대기시킬 수 있으므로 정책 요구사항에 완벽하게 부합합니다.
 
 **오답 분석:**
 
-- Option A (오답): `'deny'`는 도구 실행을 완전히 거부 및 차단하는 설정입니다. 거부 사유를 프롬프트로 전달하더라도 사람의 승인 인터페이스를 띄워 진행 여부를 정하는 메커니즘이 아닙니다.
-- Option B (오답): `'allow'`는 환불을 즉시 승인 및 실행해 버리므로 human reviewer의 사전 승인 정책을 위반합니다.
-- Option D (오답): `async` 및 `asyncTimeout`은 훅 실행의 비동기 타임아웃을 조절하는 설정일 뿐, 사람에게 승인 요청을 전달하는 인터랙션 제어 권한(Permission Decision)을 구성하지 못합니다.
+- Option A (오답): `'deny'`는 **도구 실행을 완전히 거부 및 차단**하는 설정입니다. 거부 사유를 프롬프트로 전달하더라도 사람의 승인 인터페이스를 띄워 진행 여부를 정하는 메커니즘이 아닙니다.
+- ~Option B (오답): `'allow'`는 환불을 즉시 승인 및 실행해 버리므로 human reviewer의 사전 승인 정책을 위반합니다.~
+- ~Option D (오답): `async` 및 `asyncTimeout`은 훅 실행의 비동기 타임아웃을 조절하는 설정일 뿐, 사람에게 승인 요청을 전달하는 인터랙션 제어 권한(Permission Decision)을 구성하지 못합니다.~
 
 ---
 
@@ -126,13 +126,11 @@ Claude Code 및 Agentic Framework의 `PreToolUse` 훅에서는 도구 실행 전
 
 **어려운 이유** [덜 틀린 답 고르기, 부분적으로만 맞는 오답] — 재시도 루프를 끊는 방법으로 deny 메시지 수정(C)이 그럴듯하나, 정책상 인간 승인이 필요한 ask로 전환하는 것이 결정론적 통제를 유지하는 답이다.
 
-> **⚠ 해설 확인 필요** — 정답란은 B(allow + no-op updatedInput)인데, 위 "어려운 이유" 메모는 D(ask)를 정답으로 서술해 서로 모순된다. 또한 B는 에이전트에게 환불이 성공한 것처럼 보이게 하는 우회 처리라, 같은 그룹의 원본 101번(사람 승인 대기는 ask) 및 76번(deny + reason은 취소 후 이유 전달)의 원칙과 충돌한다. 원본 aao-merged.md의 96번 정답과 공식 문서를 대조해 정답이 B인지 D인지 확정할 것.
-
 **1. 문제 원문**
 
 An architect is implementing a PreToolUse hook to control `issue_refund` calls. The hook currently denies any refund over $500 with `permissionDecision: 'deny'` and a `permissionDecisionReason`. However, the agent retries the same refund multiple times, causing a poor user experience. Which change best addresses this retry behavior while maintaining deterministic control in the hook?
 
-A) Switch the hook from `PreToolUse` to `PostToolUse` so the refund executes once; then automatically reverse the transaction if it exceeds $500.
+~A) Switch the hook from `PreToolUse` to `PostToolUse` so the refund executes once; then automatically reverse the transaction if it exceeds $500.~
 
 B) Change the hook to return `permissionDecision: 'allow'` and provide an `updatedInput` that replaces the `issue_refund` call with a safe operation (e.g., a no-op `echo` command) so the tool call succeeds without performing the refund.
 
@@ -146,26 +144,31 @@ D) Use `permissionDecision: 'ask'` to require human approval for the refund, sto
 
 **정답:**
 
-**B번**: Change the hook to return `permissionDecision: 'allow'` and provide an `updatedInput` that replaces the `issue_refund` call with a safe operation (e.g., a no-op `echo` command) so the tool call succeeds without performing the refund.
+**D번**: Use `permissionDecision: 'ask'` to require human approval for the refund, stopping the retry loop and providing explicit oversight for irreversible actions.
 
 **정답 및 해설:**
 
-**핵심 개념**: 훅을 통한 입력 변환(Input Rewriting) 및 에이전트 무한 재시도 차단
-에이전트(LLM)는 도구 실행이 `deny`되면 이를 해결 가능한 오류로 받아들이고 계속해서 재시도하는 특성이 있습니다. 에이전트의 무한 재시도를 차단하면서 훅 시스템 레벨에서 자동화된 결정론적 제어(Deterministic Control)를 유지하기 위한 공식 패턴은, 에이전트에게는 성공(`allow`) 응답을 주되 `updatedInput`을 통해 실제 무해한 명령어(no-op/echo)로 우회 처리하는 것입니다.
+**핵심 개념**: 훅의 세 가지 결정(allow / deny / ask)과 재시도 루프 차단, 되돌릴 수 없는 작업에 대한 Human-in-the-loop
+
+`PreToolUse` 훅의 `deny`는 종료 신호가 아니라 모델에게 전달되는 피드백입니다. 공식 문서에 따르면 Claude Code는 도구 호출을 차단하고 Claude에게 그 이유를 보여주며, 모델은 이를 해결 가능한 실패로 해석하여 **같은 요청을 반복**할 수 있습니다. 이 재시도 루프는 공식 저장소에도 이슈로 보고된 실제 현상입니다.
+
+반면 `ask`는 결정권을 사람에게 이전합니다. 사람의 결정은 모델이 재해석해 우회할 피드백이 아니라 최종 결정이므로 **루프가 끊기고**, 어떤 호출을 넘길지는 훅 코드가 조건(금액 > 500)에 따라 결정하므로 **결정론적 제어도 유지**됩니다.
 
 **문제 상황 분석:**
-- 500달러 초과 환불 요청 시 훅에서 `deny`를 반환함.
-- 에이전트(LLM)가 거부 응답을 처리하고 종료하는 대신, 동일한 요청을 지속적으로 재시도하여 UX를 저해함.
-- **조건:** 사람이 아닌 '훅'이 스스로 무한 재시도를 막고, 자동화된 결정론적 제어(Deterministic Control)를 계속 유지해야 함.
+- 500달러 초과 환불 시 훅이 `deny`를 반환하지만, 모델이 이를 최종 결정으로 받아들이지 않고 동일 환불을 반복 요청하여 UX가 저하됨.
+- 요구 조건: 재시도 루프를 끊되 훅의 결정론적 제어를 유지할 것.
+- 환불은 되돌릴 수 없는 재무 작업이므로 실행 전 게이트를 유지하면서 사람의 최종 결정을 받아야 함.
 
-**B번이 정답인 이유:**
-`permissionDecision: 'allow'`와 함께 `updatedInput`으로 실행 명령을 안전한 작업(예: `echo` 등 no-op)으로 교체하면, 에이전트는 도구 실행이 완전히 성공했다고 판단하여 재시도 루프를 즉시 종료합니다. 동시에 실제 환불은 수행되지 않으므로 훅이 완전한 결정론적 제어권을 가지게 됩니다.
+**D번이 정답인 이유:**
+1. 재시도 차단: 고액 환불은 거부 메시지 대신 사람의 승인 프롬프트로 넘어가고, 승인이든 거부든 사람의 명시적 결정으로 종료되어 모델이 다시 시도할 여지가 없습니다.
+2. 결정론적 제어 유지: 임계값 판정과 에스컬레이션 여부는 훅 코드가 결정하며 프롬프트로 우회할 수 없습니다.
+3. 명시적 감독: 무조건 deny하면 정당한 고액 환불까지 막히지만, ask는 정당한 경우 승인하고 부당한 경우 차단할 수 있으며 감사 추적도 남습니다.
 
 **오답 분석:**
 
-- Option A (오답): `PostToolUse`는 이미 환불 명령이 수행된 이후에 동작하므로 환불 실행 자체를 차단할 수 없습니다.
-- Option C (오답): 메시지 단어 몇 개를 지우는 식의 프롬프트 수정은 LLM의 재시도 본능을 결정론적으로 제어하지 못합니다.
-- Option D (오답): `'ask'` 방식은 최종 결정을 사람에게 위임(Human-in-the-loop)하므로, 훅 코드 자체에서 자동화된 결정론적 제어(Deterministic Control)를 유지하라는 요구사항에 부합하지 않으며 사용자 피로도를 증가시킵니다.
+- Option A (오답): PostToolUse는 실행 후에 호출되므로 환불 자체를 막을 수 없고, 사후 반전은 반전 실패 등 새로운 실패 지점을 만듭니다.
+- Option B (오답): issue_refund를 몰래 no-op으로 바꾸면 모델은 환불이 완료된 것으로 인식하여 사용자에게 거짓 보고를 하게 됩니다. `updatedInput`은 **인자 보정 용도**이지 도구의 의미를 바꿔 **모델을 속이는 용도가 아닙니다.**
+- Option C (오답): 사유 문구를 지워도 deny가 피드백으로 전달되는 구조는 그대로이며, 오히려 실패 원인을 몰라 시행착오성 재시도가 늘어날 수 있는 확률적 완화일 뿐입니다.
 
 ---
 
