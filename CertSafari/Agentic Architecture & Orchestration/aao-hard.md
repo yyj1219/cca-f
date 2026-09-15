@@ -218,13 +218,13 @@ A) "ask" for the refund and "allow" for the masked order history lookup, because
 
 A refund workflow requires that process_refund always be called with the exact customer_id captured by an earlier verified get_customer call, never a value the model retypes from the conversation. A PreToolUse hook already blocks the call when no verified ID exists in session state. What should the hook do once a verified ID is present, to prevent the model from substituting a different ID string?
 
-A) Return an empty object so the call proceeds unchanged, since the presence of a verified ID in session state is enough evidence that the model used it
+~~A) Return an empty object so the call proceeds unchanged, since the presence of a verified ID in session state is enough evidence that the model used it~~
 
-B) Return permissionDecision "ask" so a human reviewer retypes the same ID manually before every refund, even when verification already succeeded
+~~B) Return permissionDecision "ask" so a human reviewer retypes the same ID manually before every refund, even when verification already succeeded~~
 
 C) Return permissionDecision "allow" together with updatedInput that overwrites the tool's customer_id argument with the verified ID stored in session state
 
-D) Return permissionDecision "defer" so the query pauses indefinitely until an operator resumes it with the corrected customer_id argument
+~~D) Return permissionDecision "defer" so the query pauses indefinitely until an operator resumes it with the corrected customer_id argument~~
 
 ---
 
@@ -263,11 +263,11 @@ A PreToolUse hook gating process_refund throws an unhandled exception whenever t
 
 A) Catch the timeout and return permissionDecision "allow", since a service outage is not the customer's fault and refunds should never be penalized for infrastructure issues
 
-B) Increase the hook's timeout value to several hours, so the hook keeps waiting on the verification service instead of failing quickly during a temporary outage
+~~B) Increase the hook's timeout value to several hours, so the hook keeps waiting on the verification service instead of failing quickly during a temporary outage~~
 
-C) Catch the timeout inside the hook and return permissionDecision "deny" with a reason explaining the outage, instead of letting the exception propagate and crash the session
+C) Catch the timeout inside the hook and return permissionDecision **"deny"** with a reason explaining the outage, instead of letting the exception propagate and crash the session
 
-D) Remove the hook entirely for the duration of any outage of the verification service, so refunds can proceed unblocked until that service comes back online
+~~D) Remove the hook entirely for the duration of any outage of the verification service, so refunds can proceed unblocked until that service comes back online~~
 
 ---
 
@@ -295,9 +295,7 @@ D) Remove the hook entirely for the duration of any outage of the verification s
 **오답 분석:**
 
 - Option A (오답): 장애 발생 시 허용("allow")으로 반환하면 검증되지 않은 환불 요청이 승인되어 훅의 보안/검증 강제력이 심각하게 약화됩니다 (Fail-Open 오류).
-
-- Option B (오답): 타임아웃 시간을 수 시간으로 늘리는 것은 에이전트가 무한정 대기 상태(Hang)에 빠지게 만들어 근본적인 예외 처리가 되지 못합니다.
-
+- ~~Option B (오답): 타임아웃 시간을 수 시간으로 늘리는 것은 에이전트가 무한정 대기 상태(Hang)에 빠지게 만들어 근본적인 예외 처리가 되지 못합니다.~~
 - Option D (오답): 장애 기간에 훅을 아예 제거하면 무검증 환불이 가능해지므로 훅의 통제 및 강제력을 포기하는 결과를 낳습니다.
 
 ---
@@ -310,19 +308,40 @@ D) Remove the hook entirely for the duration of any outage of the verification s
 
 A developer implements a PreToolUse hook that gates the `process_refund` tool by checking a boolean flag `is_verified`. The flag is expected to be set to `true` by a separate `mark_verified` tool after a human reviewer approves a photo ID. In an incident, the `mark_verified` tool executed and the human reviewer explicitly rejected the ID, but due to a software bug the `is_verified` flag was incorrectly set to `true`. The PreToolUse hook consequently allowed `process_refund`, resulting in an unauthorized refund. What change to the PreToolUse hook would best prevent this category of failure?
 
-A) Add a PostToolUse hook on `process_refund` that verifies the flag again after the refund has been initiated, so it can reverse the transaction if the flag is invalid.
-B) Modify the PreToolUse hook to inspect the explicit verification result included in the `process_refund` tool call parameters, confirming that the human review expressly passed, instead of relying on a separate boolean flag that can be set incorrectly.
-C) Replace the model with a larger, more capable language model that can independently re-read the entire conversation and determine whether the human review actually succeeded, overriding the flag when necessary.
-D) Increase the timeout on the PreToolUse hook to re-check the flag periodically; the hook will eventually notice the review was incorrect and block the refund.
+A) Add a **PostToolUse** hook on `process_refund` that verifies the flag again after the refund has been initiated, so it can reverse the transaction if the flag is invalid.
+
+**B) Modify the PreToolUse hook to inspect the explicit verification result included in the `process_refund` tool call parameters, confirming that the human review expressly passed, instead of relying on a separate boolean flag that can be set incorrectly.**
+
+~~C) Replace the model with a larger, more capable language model that can independently re-read the entire conversation and determine whether the human review actually succeeded, overriding the flag when necessary.~~
+
+~~D) Increase the timeout on the PreToolUse hook to re-check the flag periodically; the hook will eventually notice the review was incorrect and block the refund.~~
 
 ---
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**  
-**B번**: Modify the PreToolUse hook to inspect the explicit verification result included in the `process_refund` tool call parameters, confirming that the human review expressly passed, instead of relying on a separate boolean flag that can be set incorrectly.
+**B번**: 
+
+**Modify the PreToolUse hook**
+PreToolUse 훅을 수정하세요
+
+**to inspect the explicit verification result**
+명시적인 검증 결과를 점검하도록
+
+**included in the process_refund tool call parameters,**
+`process_refund` 툴 호출 매개변수에 포함된
+
+**confirming that the human review expressly passed,**
+사람의 검토가 명확히 통과했음을 확인하며
+
+**instead of relying on a separate boolean flag**
+별도의 불리언(Boolean) 플래그에 의존하는 대신
+
+**that can be set incorrectly.**
+잘못 설정될 수 있는
 
 **정답 및 해설:**  
+
 **핵심 개념**: Tool Hooking 및 상태 결합도 저하(Decoupling State Failure)  
 에이전트 시스템에서 도구 호출을 검증할 때는 잘못 업데이트될 가능성이 있는 외부 공유 상태(간접 플래그)에 의존하기보다, 도구 호출 시 전달되는 직접적인 인자 및 명시적 검증 파라미터를 인스펙션(입력 검증)하는 것이 보안상 안전합니다.
 
@@ -336,8 +355,8 @@ D) Increase the timeout on the PreToolUse hook to re-check the flag periodically
 
 **오답 분석:**  
 - **Option A (오답):** 이미 환불이 실행(PostToolUse)된 후 후속 조치를 취하는 방식은 부작용(Side-effect)을 수반하며, 오염된 동일한 플래그를 재검증하는 것은 근본적인 해결책이 아닙니다.
-- **Option C (오답):** 모델 크기를 늘리는 것은 결정론적인 소프트웨어 상태 버그나 입력 검증 문제를 해결해주지 못하며, 비효율적이고 비용이 큽니다.
-- **Option D (오답):** 타임아웃을 늘려 주기적으로 플래그를 다시 확인하더라도, 플래그를 만드는 소프트웨어 자체가 잘못 값을 썼다면 플래그 값은 변경되지 않으므로 문제를 해결할 수 없습니다.
+- ~~Option C (오답): 모델 크기를 늘리는 것은 결정론적인 소프트웨어 상태 버그나 입력 검증 문제를 해결해주지 못하며, 비효율적이고 비용이 큽니다.~~
+- ~~Option D (오답): 타임아웃을 늘려 주기적으로 플래그를 다시 확인하더라도, 플래그를 만드는 소프트웨어 자체가 잘못 값을 썼다면 플래그 값은 변경되지 않으므로 문제를 해결할 수 없습니다.~~
 
 ---
 
