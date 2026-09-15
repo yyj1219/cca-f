@@ -16,6 +16,33 @@
 
 ---
 
+```
+[사용자 프롬프트]
+      │
+      ▼
+   [LLM] ──── (tool_input 생성) ───┐
+      ▲                            │
+      │                            ▼
+      │                     ┌────────────┐
+      │                     │ PreToolUse │ ──► tool_input 수정 ──► [updatedInput]
+      │                     └─────┬──────┘
+      │                            │
+      │                            ▼
+      │                    [Tool 실제 실행] (updatedInput 사용)
+      │                            │
+      │                            ▼
+      │                     ┌────────────┐
+      │                     │PostToolUse │ ──► tool_output 수정 ──► [updatedToolOutput]
+      │                     └─────┬──────┘
+      │                            │
+      └───── (updatedToolOutput) ──┘
+      │
+      ▼
+[LLM 최종 응답]
+```
+
+---
+
 # A. PreToolUse permissionDecision 선택 — 같은 환불 게이트, 답은 deny / ask / allow+updatedInput
 
 76: deny + reason은 호출 취소 후 이유 전달. 101: 사람 승인 대기는 ask. 96: 재시도 루프 억제는 allow + no-op updatedInput(ask가 아님). 63: 위험도별 ask/allow. 24: 검증 ID 강제는 allow + updatedInput 덮어쓰기. 17: 훅 내부 예외는 잡아서 deny. 59: 플래그 대신 명시적 검증 결과 검사.
@@ -607,15 +634,15 @@ D) The matcher `/refund/` uses a regular expression, but regular expression matc
 
 **1. 문제 원문**
 
-An agent's inventory_lookup MCP tool returns stock levels as a numeric status code (0, 1, 2) meaning in-stock, low-stock, and out-of-stock respectively, while a separate warehouse_lookup tool returns the same concept as plain strings. The architect wants the model to reason over one consistent vocabulary for stock status regardless of which tool answered. Which hook change achieves this with a deterministic guarantee?
+An agent's inventory_lookup MCP tool returns stock levels as a numeric status code (0, 1, 2) meaning in-stock, low-stock, and out-of-stock respectively, while a separate warehouse_lookup tool returns the same concept as plain strings. The architect wants the model to reason over one **consistent vocabulary(일관된 어휘, 동일한 규격의 문자열 표현)** for stock status regardless of which tool answered. Which hook change achieves this with a deterministic guarantee?
 
-A) A SessionStart hook that documents the numeric-to-string mapping once in a system message shown to the user at the beginning of the session
+~~A) A SessionStart hook that documents the numeric-to-string mapping once in a system message shown to the user at the beginning of the session~~
 
 B) A PreToolUse hook matched to both tools that rewrites tool_input so both tools receive identical request parameters before they execute
 
 C) A PostToolUse hook matched to both tools that maps each tool's raw response onto the same set of string labels and returns it via updatedToolOutput
 
-D) A UserPromptSubmit hook that reminds the model at the start of every turn to translate numeric status codes into the equivalent string labels itself
+~~D) A UserPromptSubmit hook that reminds the model at the start of every turn to translate numeric status codes into the equivalent string labels itself~~
 
 ---
 
@@ -627,7 +654,7 @@ D) A UserPromptSubmit hook that reminds the model at the start of every turn to 
 
 **정답 및 해설:**
 
-**핵심 개념**: 결정론적 출력 정제(Deterministic Output Normalization) 및 `PostToolUse` 훅. 외부 도구가 반환하는 응답 형태가 상이할 때, 이를 결정론적(100% 확실한 코드 실행)으로 표준화하기 위해서는 도구 실행 직후 개입하여 응답 데이터를 수정하는 `PostToolUse` 훅을 사용해야 합니다.
+**핵심 개념**: 결정론적 출력 정제(Deterministic Output Normalization) 및 `PostToolUse` 훅. 외부 도구가 반환하는 응답 형태가 상이할 때, 이를 결정론적(100% 확실한 코드 실행)으로 표준화하기 위해서는 **도구 실행 직후 개입**하여 응답 데이터를 수정하는 `PostToolUse` 훅을 사용해야 합니다.
 
 **문제 상황 분석:**
 - `inventory_lookup` 도구는 숫자 상태 코드(0, 1, 2)를 반환하고, `warehouse_lookup` 도구는 문자열("in-stock" 등)을 반환함.
@@ -635,7 +662,7 @@ D) A UserPromptSubmit hook that reminds the model at the start of every turn to 
 - 확률적인 프롬프트 지시(Probabilistic)가 아닌 100% 확실한 코드 기반(Deterministic) 보장이 필요함.
 
 **C번이 정답인 이유:**
-도구 호출 결과가 모델(LLM)의 컨텍스트로 들어가기 바로 전 단계인 `PostToolUse` 라이프사이클 훅을 활용하면, 도구의 원시 응답(raw response)을 결정론적 파이프라인 코드로 인터셉트할 수 있습니다. 각 도구가 반환한 결과값을 동일한 규격의 문자열 레이블 세트로 정제(Mapping)한 뒤 `updatedToolOutput`을 통해 모델에게 전달하면, 모델은 항상 일관된 형식의 재고 상태 어휘 데이터만 수신하게 되어 100% 확실하게 추론을 수행할 수 있습니다.
+도구 호출 결과가 **모델(LLM)의 컨텍스트로 들어가기 바로 전 단계인 `PostToolUse`** 라이프사이클 훅을 활용하면, 도구의 원시 응답(raw response)을 결정론적 파이프라인 코드로 인터셉트할 수 있습니다. 각 도구가 반환한 결과값을 동일한 규격의 문자열 레이블 세트로 정제(Mapping)한 뒤 `updatedToolOutput`을 통해 모델에게 전달하면, 모델은 항상 일관된 형식의 재고 상태 어휘 데이터만 수신하게 되어 100% 확실하게 추론을 수행할 수 있습니다.
 
 **오답 분석:**
 - Option A (오답): 프롬프트/시스템 메시지에 매핑 정보를 문서화하는 것은 모델의 환각이나 확률적 실수 가능성이 남으므로 '결정론적 보장(deterministic guarantee)'을 제공하지 못합니다.
