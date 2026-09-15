@@ -360,8 +360,6 @@ PreToolUse 훅을 수정하세요
 
 ---
 
----
-
 # B. 훅 여러 개의 조합과 실행 순서
 
 6: 정규화+임계값은 단일 PreToolUse(훅 간 updatedInput 전파 없음). 55: 하나라도 deny면 차단. 68: 서로 다른 도구의 훅 간 순서는 보장 안 됨. 81: PostToolUse 체이닝 시 updatedToolOutput 전달 여부 확인.
@@ -372,11 +370,11 @@ PreToolUse 훅을 수정하세요
 
 **1. 문제 원문**
 
-A finance-operations agent uses a process_payment MCP tool. An architect wants to normalize the `amount` field, which some upstream integrations send as a string like "$1,250.00" and others send as a float like 1250.0, into a single float type, and then enforce a compliance threshold on the normalized value before the tool call proceeds. Which design best achieves this, according to Anthropic's hook system behavior?
+A finance-operations agent uses a process_payment MCP tool. An architect wants to normalize the `amount` field, which some upstream integrations send as a string like "$1,250.00" and others send as a float like 1250.0, into a single float type, and then enforce a compliance threshold on the normalized value **before the tool call proceeds(도구 실행 전)**. Which design best achieves this, according to Anthropic's hook system behavior?
 
-A) Implement a single PreToolUse hook that normalizes the amount to a float and then checks the threshold, returning an updatedInput with the normalized value if allowed, or denying the call otherwise.
+**A) Implement a single PreToolUse hook that normalizes the amount to a float and then checks the threshold, returning an updatedInput with the normalized value if allowed, or denying the call otherwise.**
 
-B) Perform both normalization and threshold checking in a single PostToolUse hook, using the tool's output to derive the normalized amount and then compare against the threshold.
+~~B) Perform both normalization and threshold checking in a single PostToolUse hook, using the tool's output to derive the normalized amount and then compare against the threshold.~~
 
 C) Use a PreToolUse hook for normalization to convert the amount and update the input, then a PostToolUse hook for threshold enforcement to verify the converted amount after the tool executes.
 
@@ -407,11 +405,9 @@ D) Register two PreToolUse hooks in any order, as updatedInput automatically pro
 
 **오답 분석:**
 
-- Option B (오답): `PostToolUse` 훅은 도구가 이미 실행을 마친 후에 호출되므로, 도구 실행 전 입력 검증 및 차단이라는 목적에 맞지 않습니다.
-
-- Option C (오답): 임계값 검증을 도구가 실행된 후(`PostToolUse`)에 진행하면 기준에 미달하는 유효하지 않은 결제 요청이 이미 처리되어 버립니다.
-
-- Option D (오답): 두 개의 별도 `PreToolUse` 훅을 순서 상관없이 등록할 경우, 훅 간의 실행 순서 보장 및 `updatedInput` 전파 시점에 의존성이 생겨 임계값 검사 훅이 정규화되지 않은 포맷을 전달받을 위험이 있습니다.
+~~- Option B (오답): `PostToolUse` 훅은 도구가 이미 실행을 마친 후에 호출되므로, 도구 실행 전 입력 검증 및 차단이라는 목적에 맞지 않습니다.~~
+- Option C (오답): 임계값 검증을 **도구가 실행된 후**(`PostToolUse`)에 진행하면 기준에 미달하는 유효하지 않은 결제 **요청이 이미 처리되어** 버립니다.
+- Option D (오답): 두 개의 별도 `PreToolUse` 훅을 순서 상관없이 등록할 경우, **훅 간의 실행 순서** 보장 및 `updatedInput` **전파 시점에 의존성**이 생겨 임계값 검사 훅이 정규화되지 않은 포맷을 전달받을 위험이 있습니다.
 
 ---
 
@@ -429,11 +425,15 @@ B) The call proceeds, because a majority of the registered hooks returned "allow
 
 C) The SDK raises a configuration error and halts the session, because hooks matched to the same tool are not permitted to return conflicting decisions
 
-D) The call is blocked, because when multiple hooks disagree the most restrictive result applies and any single "deny" overrides the other hooks' "allow" decisions
+**D) The call is blocked, because when multiple hooks disagree the most restrictive result applies and any single "deny" overrides the other hooks' "allow" decisions**
 
 ---
 
 **3. 정답 및 해설 (Answer & Explanation)**
+
+**단어**
+
+* 거부권(Veto) <-> 다수결(Simple vote)
 
 **정답:**
 
@@ -442,8 +442,8 @@ D) The call is blocked, because when multiple hooks disagree the most restrictiv
 **정답 및 해설:**
 
 **핵심 개념**: PreToolUse 훅의 가장 제한적인 결과 적용 원칙 (Most Restrictive Evaluation)
-- 동일한 도구 호출에 대해 여러 개의 `PreToolUse` 훅이 등록된 경우, 보안 및 안전성 보장을 위해 거부권(Veto) 방식 또는 "가장 제한적인 결과 적용(Most Restrictive Principle)" 정책을 따릅니다.
-- 다른 훅들이 모두 허용("allow")을 반환하더라도 단 하나의 훅이라도 거부("deny")를 반환하면 최종 권한 결정은 거부("deny")로 수렴하여 해당 도구 호출이 차단됩니다.
+- 동일한 도구 호출에 대해 **여러 개의 `PreToolUse` 훅**이 등록된 경우, 보안 및 안전성 보장을 위해 **거부권(Veto) 방식** 또는 **"가장 제한적인 결과 적용(Most Restrictive Principle)" 정책**을 따릅니다.
+- 다른 훅들이 모두 허용("allow")을 반환하더라도 **단 하나의 훅이라도 거부("deny")를 반환**하면 최종 권한 결정은 거부("deny")로 수렴하여 **해당 도구 호출이 차단**됩니다.
 
 **문제 상황 분석:**
 - `charge_card` 도구에 대해 총 3개의 독립적인 `PreToolUse` 훅이 실행되었습니다.
@@ -455,9 +455,9 @@ D) The call is blocked, because when multiple hooks disagree the most restrictiv
 
 **오답 분석:**
 
-- Option A (오답): 첫 번째 훅만 평가되고 나머지는 스킵되는 것이 아니라, 대상 도구에 매칭된 모든 훅이 평가됩니다.
-- Option B (오답): 훅 결정 간의 충돌은 다수결(Simple vote) 방식으로 해결하지 않으며, 보안 제어에서 다수결 방식은 허점이 될 수 있습니다.
-- Option C (오답): 여러 훅이 다른 결과를 내는 것은 정상적인 보안 검사 시나리오이며 설정 오류(Configuration error)를 일으키거나 세션을 중단시키지 않습니다.
+- Option A (오답): 첫 번째 훅만 평가되고 나머지는 스킵되는 것이 아니라, 대상 **도구에 매칭된 모든 훅이 평가**됩니다.
+- Option B (오답): 훅 결정 간의 충돌은 다수결(Simple vote) 방식으로 해결하지 않으며, **보안 제어에서 다수결 방식은 허점**이 될 수 있습니다.
+- Option C (오답): **여러 훅이 다른 결과**를 내는 것은 **정상**적인 보안 검사 시나리오이며 설정 오류(Configuration error)를 일으키거나 세션을 중단시키지 않습니다.
 
 ---
 
