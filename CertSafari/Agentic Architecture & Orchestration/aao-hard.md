@@ -566,7 +566,7 @@ A) The regex matcher `/refund/` is unanchored, so it matches any tool name conta
 
 B) Matchers can only target tool names that begin with the `mcp__` server prefix. A custom in-process tool like `refund` must be renamed to include this prefix before any matcher can reliably target it.
 
-C) The hook fires on every single tool call by default unless a timeout value is explicitly configured. Adding a timeout would stop it from matching `issue_refund_note`.
+~~C) The hook fires on every single tool call by default unless a timeout value is explicitly configured. Adding a timeout would stop it from matching `issue_refund_note`.~~
 
 D) The matcher `/refund/` uses a regular expression, but regular expression matchers in hooks are automatically anchored to match exactly, so it would only fire on the tool named exactly `refund`. The colleague's concern is unfounded; no fix is needed.
 
@@ -581,8 +581,8 @@ D) The matcher `/refund/` uses a regular expression, but regular expression matc
 **정답 및 해설:**
 
 **핵심 개념**: 정규표현식 앵커링(Regex Anchoring) 및 훅 매칭 패턴
-- 정규표현식에서 위치 앵커 문자(`^`: 문자열의 시작, `$`: 문자열의 끝)를 사용하지 않으면, 패턴이 포함된 모든 부분 문자열(Substring)을 매칭합니다.
-- 특정 도구의 이름과 정확히 1:1 일치(Exact Match)하도록 훅 매처를 제한하려면 `/^패턴$/` 형태로 앵커링해야 의도치 않은 도구의 오작동 및 제어를 방지할 수 있습니다.
+- **정규표현식에서 위치 앵커 문자(`^`: 문자열의 시작, `$`: 문자열의 끝)를 사용하지 않으면, 패턴이 포함된 모든 부분 문자열(Substring)을 매칭**합니다.
+- 특정 도구의 이름과 **정확히 1:1 일치(Exact Match)**하도록 훅 매처를 제한하려면 **`/^패턴$/` 형태로 앵커링**해야 의도치 않은 도구의 오작동 및 제어를 방지할 수 있습니다.
 
 **문제 상황 분석:**
 - 개발자가 `refund`라는 특정 도구의 실행을 제어(Gate)하기 위해 `/refund/` 정규표현식 매처를 등록했습니다.
@@ -590,12 +590,13 @@ D) The matcher `/refund/` uses a regular expression, but regular expression matc
 - 제어 대상이 아닌 내부 주석용 도구까지 훅에 걸려 의도치 않은 매칭 오류가 발생했습니다.
 
 **A번이 정답인 이유:**
+
 앵커가 없는 `/refund/`는 부분 문자열 일치(Substring matching)를 수행하므로 `issue_refund_note`에도 조건이 들어맞게 됩니다. 문자열의 시작(`^`)과 끝(`$`)을 나타내는 앵커를 명시하여 `/^refund$/` 형태로 정규표현식을 작성해야만 정확히 `refund` 도구에만 매칭됩니다.
 
 **오답 분석:**
 
 - Option B (오답): 훅 매처가 `mcp__` 접두사를 가진 도구만 지정할 수 있다는 제약은 존재하지 않으며, 커스텀 도구 이름을 강제로 변경할 필요가 없습니다.
-- Option C (오답): 훅 매칭 여부와 타임아웃(Timeout) 설정은 무관하며, 타임아웃을 설정한다고 해서 부분 문자열 매칭 패턴이 변경되지는 않습니다.
+- ~~Option C (오답): 훅 매칭 여부와 타임아웃(Timeout) 설정은 무관하며, 타임아웃을 설정한다고 해서 부분 문자열 매칭 패턴이 변경되지는 않습니다.~~
 - Option D (오답): 정규표현식 매처는 자동으로 앵커링되지 않으므로 개발자가 직접 `^`와 `$`를 명시해야 합니다. 따라서 동료의 우려는 타당합니다.
 
 ---
