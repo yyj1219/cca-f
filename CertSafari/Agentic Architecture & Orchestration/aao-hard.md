@@ -425,7 +425,7 @@ B) The call proceeds, because a majority of the registered hooks returned "allow
 
 C) The SDK raises a configuration error and halts the session, because hooks matched to the same tool are not permitted to return conflicting decisions
 
-**D) The call is blocked, because when multiple hooks disagree the most restrictive result applies and any single "deny" overrides the other hooks' "allow" decisions**
+**D) The call is blocked, because when multiple hooks disagree the most restrictive(제한적인) result applies and any single "deny" overrides the other hooks' "allow" decisions**
 
 ---
 
@@ -467,15 +467,15 @@ C) The SDK raises a configuration error and halts the session, because hooks mat
 
 **1. 문제 원문**
 
-A team wants to enforce that get_customer must run before process_refund, and registers two separate PreToolUse hooks: one matched to get_customer that writes a "verified" marker to a session file, and one matched to process_refund that reads that same file. A reviewer worries this design assumes the hooks run in a guaranteed order relative to each other. Is that assumption safe, and why?
+A team wants to enforce that get_customer must run before process_refund, and registers two separate PreToolUse hooks: one matched to get_customer that writes a "verified" marker to a session file, and one matched to process_refund that reads that same file. A reviewer worries this design assumes the hooks run in a guaranteed order relative to each other. Is that **assumption(가정)** safe, and why?
 
-A) It is unsafe, because each hook runs only when its matched tool is invoked, but nothing guarantees that get_customer is invoked before process_refund. The model could skip the prerequisite tool entirely, causing the process_refund hook to read a file that may not exist or contain valid data.
+A) It is unsafe, because each hook runs only when its matched tool is invoked, but nothing guarantees that get_customer is invoked before process_refund. The model could skip the **prerequisite(전제조건)** tool entirely, causing the process_refund hook to read a file that may not exist or contain valid data.
 
 B) It is unsafe, because hooks matched to different tools share no session state with each other at all, so the process_refund hook can never see a file written by the get_customer hook.
 
-C) It is safe, because the runtime automatically orders hooks alphabetically by their tool name before executing them, which guarantees get_customer's hook always runs first.
+~~C) It is safe, because the runtime automatically orders hooks alphabetically by their tool name before executing them, which guarantees get_customer's hook always runs first.~~
 
-D) It is unsafe, because every registered PreToolUse hook always executes in parallel for every tool call in the session regardless of its matcher, so the file could be read before it is ever written.
+~~D) It is unsafe, because every registered PreToolUse hook always executes in parallel for every tool call in the session regardless of its matcher, so the file could be read before it is ever written.~~
 
 ---
 
@@ -488,7 +488,7 @@ D) It is unsafe, because every registered PreToolUse hook always executes in par
 **정답 및 해설:**
 
 **핵심 개념**: 훅(PreToolUse Hooks)의 이벤트 기반 실행 구조 및 LLM 툴 호출의 비결정성(Nondeterminism).
-PreToolUse 훅은 매칭된 도구가 실제 호출되는 시점에 구동되며, LLM 모델이 툴을 어떤 순서로 호출할지(또는 생략할지)는 런타임 차원에서 강제되지 않습니다.
+PreToolUse 훅은 매칭된 도구가 실제 호출되는 시점에 구동되며, LLM 모델이 **툴을 어떤 순서로 호출할지(또는 생략할지)는 런타임 차원에서 강제되지 않습니다**.
 
 **문제 상황 분석:**
 - 팀에서는 `get_customer`가 실행될 때 세션 파일에 마커를 쓰고, `process_refund`가 실행될 때 이 마커 파일을 읽어 검증하도록 훅을 설계함
@@ -496,13 +496,13 @@ PreToolUse 훅은 매칭된 도구가 실제 호출되는 시점에 구동되며
 - LLM 모델이 `get_customer` 도구 호출을 거치지 않고 바로 `process_refund` 도구를 호출할 경우, 선행 훅이 실행되지 않아 세션 파일이 존재하지 않는 문제가 발생함
 
 **A번이 정답인 이유:**
-각 PreToolUse 훅은 지정된 매처(Matcher)에 해당하는 도구가 실제로 호출되는 순간에만 실행됩니다. 에이전트(LLM)가 순서를 어기거나 필수 선행 도구인 `get_customer`를 호출하지 않고 `process_refund`를 직접 호출하면, 파일 쓰기 작업이 일어난 적이 없으므로 `process_refund` 훅은 에러를 일으키거나 잘못된 파일 상태를 참조하게 됩니다. 따라서 이 설계는 안전하지 않습니다.
+**각 PreToolUse 훅은 지정된 매처(Matcher)에 해당하는 도구가 실제로 호출되는 순간에만 실행**됩니다. 에이전트(LLM)가 순서를 어기거나 필수 선행 도구인 `get_customer`를 호출하지 않고 `process_refund`를 직접 호출하면, 파일 쓰기 작업이 일어난 적이 없으므로 `process_refund` 훅은 에러를 일으키거나 잘못된 파일 상태를 참조하게 됩니다. 따라서 이 설계는 안전하지 않습니다.
 
 **오답 분석:**
 
-- Option B (오답): 훅들은 로컬 파일 시스템이나 동일 세션 환경에 접근하여 데이터를 공유할 수 있습니다. 상태 공유가 불가능하다는 주장은 사실이 아닙니다.
-- Option C (오답): 런타임이 도구 이름의 알파벳 순서(alphabetically)로 훅의 실행 순서를 자동 보장한다는 메커니즘은 존재하지 않습니다.
-- Option D (오답): PreToolUse 훅은 매처 조건과 상관없이 무조건 병렬 실행되는 것이 아니라, 해당 도구가 트리거될 때 선행(Pre) 실행됩니다.
+- Option B (오답): **훅들은** 로컬 파일 시스템이나 **동일 세션 환경에 접근하여 데이터를 공유**할 수 있습니다. 상태 공유가 불가능하다는 주장은 사실이 아닙니다.
+- ~~Option C (오답): 런타임이 도구 이름의 알파벳 순서(alphabetically)로 훅의 실행 순서를 자동 보장한다는 메커니즘은 존재하지 않습니다.~~
+- Option D (오답): PreToolUse 훅은 매처 조건과 상관없이 무조건 병렬 실행되는 것이 아니라, 해당 **도구가 트리거될 때 선행(Pre) 실행**됩니다.
 
 ---
 
