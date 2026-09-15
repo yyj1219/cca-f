@@ -44,9 +44,9 @@ A) The session terminates with an error because permissionDecisionReason is only
 
 **B) The tool call is cancelled, and the reason is provided to Claude to inform subsequent actions.**
 
-~C) The tool call is allowed, and the permissionDecisionReason is logged as a warning.~
+~~C) The tool call is allowed, and the permissionDecisionReason is logged as a warning.~~
 
-~D) The user is shown an interactive approval prompt asking to allow or deny the tool call.~
+~~D) The user is shown an interactive approval prompt asking to allow or deny the tool call.~~
 
 ---
 
@@ -72,8 +72,8 @@ Claude 에이전트 SDK의 `PreToolUse` 훅은 도구가 실행되기 전에 호
 **오답 분석:**
 
 - Option A (오답): `permissionDecisionReason`은 `"deny"` 및 `"ask"` 등 거부 또는 확인 요청 사유를 전달할 때 모두 유효하게 사용할 수 있으며, 세션 오류 종료를 발생시키지 않습니다.
-- ~Option C (오답): `"permissionDecision": "deny"`는 명시적으로 도구 실행을 막는 결정이므로 도구 호출이 허용(allowed)되지 않습니다.~
-- ~Option D (오답): 대화형 승인 프롬프트를 띄우려면 `"permissionDecision": "ask"`를 반환해야 합니다. `"deny"`는 차단 및 거부 사유를 모델에게 즉시 전달합니다.~
+- ~~Option C (오답): `"permissionDecision": "deny"`는 명시적으로 도구 실행을 막는 결정이므로 도구 호출이 허용(allowed)되지 않습니다.~~
+- ~~Option D (오답): 대화형 승인 프롬프트를 띄우려면 `"permissionDecision": "ask"`를 반환해야 합니다. `"deny"`는 차단 및 거부 사유를 모델에게 즉시 전달합니다.~~
 
 ---
 
@@ -87,11 +87,11 @@ For refunds between $500 and $1000, policy requires the agent to pause and let a
 
 A) permissionDecision set to "deny", paired with a permissionDecisionReason that instructs the model to contact a human reviewer on its own
 
-~B) permissionDecision set to "allow", combined with an additionalContext note asking the model to mention the amount to the user afterward~
+~~B) permissionDecision set to "allow", combined with an additionalContext note asking the model to mention the amount to the user afterward~~
 
 **C) permissionDecision set to "ask", so the operation is surfaced for approval instead of executing automatically or being silently rejected**
 
-~D) async set to true with asyncTimeout raised to 60000, so the hook has enough time to reach a human reviewer before the call proceeds~
+~~D) async set to true with asyncTimeout raised to 60000, so the hook has enough time to reach a human reviewer before the call proceeds~~
 
 ---
 
@@ -117,8 +117,8 @@ Claude Code 및 Agentic Framework의 `PreToolUse` 훅에서는 도구 실행 전
 **오답 분석:**
 
 - Option A (오답): `'deny'`는 **도구 실행을 완전히 거부 및 차단**하는 설정입니다. 거부 사유를 프롬프트로 전달하더라도 사람의 승인 인터페이스를 띄워 진행 여부를 정하는 메커니즘이 아닙니다.
-- ~Option B (오답): `'allow'`는 환불을 즉시 승인 및 실행해 버리므로 human reviewer의 사전 승인 정책을 위반합니다.~
-- ~Option D (오답): `async` 및 `asyncTimeout`은 훅 실행의 비동기 타임아웃을 조절하는 설정일 뿐, 사람에게 승인 요청을 전달하는 인터랙션 제어 권한(Permission Decision)을 구성하지 못합니다.~
+- ~~Option B (오답): `'allow'`는 환불을 즉시 승인 및 실행해 버리므로 human reviewer의 사전 승인 정책을 위반합니다.~~
+- ~~Option D (오답): `async` 및 `asyncTimeout`은 훅 실행의 비동기 타임아웃을 조절하는 설정일 뿐, 사람에게 승인 요청을 전달하는 인터랙션 제어 권한(Permission Decision)을 구성하지 못합니다.~~
 
 ---
 
@@ -130,7 +130,7 @@ Claude Code 및 Agentic Framework의 `PreToolUse` 훅에서는 도구 실행 전
 
 An architect is implementing a PreToolUse hook to control `issue_refund` calls. The hook currently denies any refund over $500 with `permissionDecision: 'deny'` and a `permissionDecisionReason`. However, the agent retries the same refund multiple times, causing a poor user experience. Which change best addresses this retry behavior while maintaining deterministic control in the hook?
 
-~A) Switch the hook from `PreToolUse` to `PostToolUse` so the refund executes once; then automatically reverse the transaction if it exceeds $500.~
+~~A) Switch the hook from `PreToolUse` to `PostToolUse` so the refund executes once; then automatically reverse the transaction if it exceeds $500.~~
 
 B) Change the hook to return `permissionDecision: 'allow'` and provide an `updatedInput` that replaces the `issue_refund` call with a safe operation (e.g., a no-op `echo` command) so the tool call succeeds without performing the refund.
 
@@ -166,7 +166,7 @@ D) Use `permissionDecision: 'ask'` to require human approval for the refund, sto
 
 **오답 분석:**
 
-- Option A (오답): PostToolUse는 실행 후에 호출되므로 환불 자체를 막을 수 없고, 사후 반전은 반전 실패 등 새로운 실패 지점을 만듭니다.
+~~- Option A (오답): PostToolUse는 실행 후에 호출되므로 환불 자체를 막을 수 없고, 사후 반전은 반전 실패 등 새로운 실패 지점을 만듭니다.~~
 - Option B (오답): issue_refund를 몰래 no-op으로 바꾸면 모델은 환불이 완료된 것으로 인식하여 사용자에게 거짓 보고를 하게 됩니다. `updatedInput`은 **인자 보정 용도**이지 도구의 의미를 바꿔 **모델을 속이는 용도가 아닙니다.**
 - Option C (오답): 사유 문구를 지워도 deny가 피드백으로 전달되는 구조는 그대로이며, 오히려 실패 원인을 몰라 시행착오성 재시도가 늘어날 수 있는 확률적 완화일 뿐입니다.
 
@@ -180,10 +180,13 @@ D) Use `permissionDecision: 'ask'` to require human approval for the refund, sto
 
 An agent handles two kinds of unverified requests: viewing a masked order history (read-only, low risk) and issuing a refund (financial, irreversible). The architect wants to gate both with PreToolUse hooks but use different permission decisions based on risk. Which pairing of returned `permissionDecision` values best fits the two cases before identity is verified?
 
-* A) "ask" for the refund and "allow" for the masked order history lookup, because the irreversible refund needs human confirmation before proceeding, while the masked, read-only lookup is low risk and can be permitted automatically.
-* B) "allow" for both the masked order history lookup and the refund, since neither action can realistically be reversed once the workflow reaches the hook stage.
-* C) "deny" for both the masked order history lookup and the refund, since any unverified request should be treated identically regardless of the underlying tool.
-* D) "ask" for the masked order history lookup and "deny" for the refund, since the reversible read can tolerate a manual check while the irreversible refund should not proceed at all.
+A) "ask" for the refund and "allow" for the masked order history lookup, because the irreversible refund needs human confirmation before proceeding, while the masked, read-only lookup is low risk and can be permitted automatically.
+
+~~B) "allow" for both the masked order history lookup and the refund, since neither action can realistically be reversed once the workflow reaches the hook stage.~~
+
+~~C) "deny" for both the masked order history lookup and the refund, since any unverified request should be treated identically regardless of the underlying tool.~~
+
+~~D) "ask" for the masked order history lookup and "deny" for the refund, since the reversible read can tolerate a manual check while the irreversible refund should not proceed at all.~~
 
 ---
 
@@ -204,11 +207,6 @@ An agent handles two kinds of unverified requests: viewing a masked order histor
 
 **A번이 정답인 이유:**  
 마스킹 처리된 읽기 전용 데이터 조회는 보안 위험이 매우 낮으므로 별도의 확인 없이 자동 허용(`allow`)해도 안전합니다. 반면 금전적 손실을 발생시키고 되돌릴 수 없는 환불 작업은 신원 미검증 상태에서 즉시 실행되면 안 되므로, 사람(사용자/관리자)의 직접적인 확인 및 개입을 요구하는 `ask` 정책을 적용하는 것이 가장 적합합니다.
-
-**오답 분석:**  
-- **Option B (오답):** 미검증 상태에서 위험도가 높고 되돌릴 수 없는 환불 작업까지 전부 자동 허용(`allow`)하는 것은 심각한 보안 및 재무적 위험을 초래합니다.
-- **Option C (오답):** 도구의 위험도와 상관없이 모든 요청을 거부(`deny`)하면 유연한 위험 기반 권한 제어(Risk-based permission) 정책을 구현하고자 하는 목적에 부합하지 않으며 사용자 경험(UX)을 극도로 저해합니다.
-- **Option D (오답):** 위험도가 낮은 읽기 작업에 수동 확인(`ask`)을 붙이고 고위험 작업만 거부하는 조합은 단순/안전한 작업을 불필요하게 지연시킬 뿐만 아니라, `ask`의 용도(확인 후 실행)를 잘못 적용한 설명입니다.
 
 ---
 
@@ -312,10 +310,10 @@ D) Remove the hook entirely for the duration of any outage of the verification s
 
 A developer implements a PreToolUse hook that gates the `process_refund` tool by checking a boolean flag `is_verified`. The flag is expected to be set to `true` by a separate `mark_verified` tool after a human reviewer approves a photo ID. In an incident, the `mark_verified` tool executed and the human reviewer explicitly rejected the ID, but due to a software bug the `is_verified` flag was incorrectly set to `true`. The PreToolUse hook consequently allowed `process_refund`, resulting in an unauthorized refund. What change to the PreToolUse hook would best prevent this category of failure?
 
-* A) Add a PostToolUse hook on `process_refund` that verifies the flag again after the refund has been initiated, so it can reverse the transaction if the flag is invalid.
-* B) Modify the PreToolUse hook to inspect the explicit verification result included in the `process_refund` tool call parameters, confirming that the human review expressly passed, instead of relying on a separate boolean flag that can be set incorrectly.
-* C) Replace the model with a larger, more capable language model that can independently re-read the entire conversation and determine whether the human review actually succeeded, overriding the flag when necessary.
-* D) Increase the timeout on the PreToolUse hook to re-check the flag periodically; the hook will eventually notice the review was incorrect and block the refund.
+A) Add a PostToolUse hook on `process_refund` that verifies the flag again after the refund has been initiated, so it can reverse the transaction if the flag is invalid.
+B) Modify the PreToolUse hook to inspect the explicit verification result included in the `process_refund` tool call parameters, confirming that the human review expressly passed, instead of relying on a separate boolean flag that can be set incorrectly.
+C) Replace the model with a larger, more capable language model that can independently re-read the entire conversation and determine whether the human review actually succeeded, overriding the flag when necessary.
+D) Increase the timeout on the PreToolUse hook to re-check the flag periodically; the hook will eventually notice the review was incorrect and block the refund.
 
 ---
 
@@ -686,10 +684,10 @@ D) additionalContext, because it provides a way to add extra information that ov
 
 A Claude Code session from three days ago read and cached the contents of a configuration file (e.g., a CLAUDE.md or agent definition). Since then, another engineer has substantially rewritten that file in a separate branch that was just merged. The architect needs to continue work while accounting for the file rewrite and preserving the accumulated reasoning about the surrounding system. What is the best approach?
 
-* A) Resume the session and trust its cached understanding of the configuration file since resumption restores full context.
-* B) Resume the session and run /compact immediately before asking any follow-up question about the file.
-* C) Start a new session and provide it with a concise summary of the previous session's findings and reasoning.
-* D) Resume the session and explicitly tell the agent the configuration file changed, prompting it to re-read that file.
+A) Resume the session and trust its cached understanding of the configuration file since resumption restores full context.
+B) Resume the session and run /compact immediately before asking any follow-up question about the file.
+C) Start a new session and provide it with a concise summary of the previous session's findings and reasoning.
+D) Resume the session and explicitly tell the agent the configuration file changed, prompting it to re-read that file.
 
 ---
 
