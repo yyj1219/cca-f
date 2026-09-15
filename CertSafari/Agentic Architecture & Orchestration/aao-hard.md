@@ -79,9 +79,7 @@ A) The session terminates with an error because permissionDecisionReason is only
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**B번**: The tool call is cancelled, and the reason is provided to Claude to inform subsequent actions.
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -124,9 +122,7 @@ A) permissionDecision set to "deny", paired with a permissionDecisionReason that
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**C번**: permissionDecision set to "ask", so the operation is surfaced for approval instead of executing automatically or being silently rejected
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -169,9 +165,7 @@ D) Use `permissionDecision: 'ask'` to require human approval for the refund, sto
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**D번**: Use `permissionDecision: 'ask'` to require human approval for the refund, stopping the retry loop and providing explicit oversight for irreversible actions.
+**정답: D번**
 
 **정답 및 해설:**
 
@@ -219,10 +213,10 @@ A) "ask" for the refund and "allow" for the masked order history lookup, because
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**  
-**A번**: "ask" for the refund and "allow" for the masked order history lookup, because the irreversible refund needs human confirmation before proceeding, while the masked, read-only lookup is low risk and can be permitted automatically.
+**정답: A번**
 
 **정답 및 해설:**  
+
 **핵심 개념**: PreToolUse Hook 및 위험 기반 권한 제어 (Risk-based Permission Decision)  
 에이전트 시스템에서 PreToolUse 훅은 도구가 실행되기 전에 접근 권한을 결정(`permissionDecision`)하는 정책 인터페이스입니다. 대표적인 결정 제어 값으로 자동 허용(`allow`), 사람에게 승인 요청(`ask`), 완전 거부(`deny`) 등이 있으며, 도구 실행의 리스크와 가역성(Reversibility)에 따라 차등 부여합니다.
 
@@ -257,8 +251,7 @@ C) Return permissionDecision "allow" together with updatedInput that overwrites 
 
 ### 3. 정답 및 해설 (Answer & Explanation)
 
-**정답:**  
-**C번**: Return permissionDecision "allow" together with updatedInput that overwrites the tool's customer_id argument with the verified ID stored in session state
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -300,9 +293,7 @@ C) Catch the timeout inside the hook and return permissionDecision **"deny"** wi
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**C번**: Catch the timeout inside the hook and return permissionDecision "deny" with a reason explaining the outage, instead of letting the exception propagate and crash the session
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -411,9 +402,7 @@ D) Register two PreToolUse hooks in any order, as updatedInput automatically pro
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**A번**: Implement a single PreToolUse hook that normalizes the amount to a float and then checks the threshold, returning an updatedInput with the normalized value if allowed, or denying the call otherwise.
+**정답: A번**
 
 **정답 및 해설:**
 
@@ -462,9 +451,7 @@ C) The SDK raises a configuration error and halts the session, because hooks mat
 
 * 거부권(Veto) <-> 다수결(Simple vote)
 
-**정답:**
-
-**D번**: The call is blocked, because when multiple hooks disagree the most restrictive result applies and any single "deny" overrides the other hooks' "allow" decisions
+**정답: D번**
 
 **정답 및 해설:**
 
@@ -508,9 +495,7 @@ B) It is unsafe, because hooks matched to different tools share no session state
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**A번**: It is unsafe, because each hook runs only when its matched tool is invoked, but nothing guarantees that `get_customer` is invoked before `process_refund`. The model could skip the prerequisite tool entirely, causing the `process_refund` hook to read a file that may not exist or contain valid data.
+**정답: A번**
 
 **정답 및 해설:**
 
@@ -553,9 +538,7 @@ D) Whether both hooks share the same tool_use_id, because the SDK requires hooks
 
 ### 3. 정답 및 해설 (Answer & Explanation)
 
-**정답:**
-
-**B번**: Whether the hooks run in a way that lets the second hook operate on the first hook's updatedToolOutput, since if both run independently against the original response only one transformation may be applied.
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -601,9 +584,7 @@ D) The matcher `/refund/` uses a regular expression, but regular expression matc
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**A번**: The regex matcher `/refund/` is unanchored, so it matches any tool name containing the substring 'refund'. The fix is to anchor the regex with `^` and `$`: `/^refund$/`, ensuring it only matches the exact tool name `refund`.
+**정답: A번**
 
 **정답 및 해설:**
 
@@ -640,7 +621,7 @@ An agent's inventory_lookup MCP tool returns stock levels as a numeric status co
 
 B) A PreToolUse hook matched to both tools that rewrites tool_input so both tools receive identical request parameters before they execute
 
-C) A PostToolUse hook matched to both tools that maps each tool's raw response onto the same set of string labels and returns it via updatedToolOutput
+**C) A PostToolUse hook matched to both tools that maps each tool's raw response onto the same set of string labels and returns it via updatedToolOutput**
 
 ~~D) A UserPromptSubmit hook that reminds the model at the start of every turn to translate numeric status codes into the equivalent string labels itself~~
 
@@ -648,9 +629,7 @@ C) A PostToolUse hook matched to both tools that maps each tool's raw response o
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**C번**: A PostToolUse hook matched to both tools that maps each tool's raw response onto the same set of string labels and returns it via updatedToolOutput
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -665,9 +644,9 @@ C) A PostToolUse hook matched to both tools that maps each tool's raw response o
 도구 호출 결과가 **모델(LLM)의 컨텍스트로 들어가기 바로 전 단계인 `PostToolUse`** 라이프사이클 훅을 활용하면, 도구의 원시 응답(raw response)을 결정론적 파이프라인 코드로 인터셉트할 수 있습니다. 각 도구가 반환한 결과값을 동일한 규격의 문자열 레이블 세트로 정제(Mapping)한 뒤 `updatedToolOutput`을 통해 모델에게 전달하면, 모델은 항상 일관된 형식의 재고 상태 어휘 데이터만 수신하게 되어 100% 확실하게 추론을 수행할 수 있습니다.
 
 **오답 분석:**
-- Option A (오답): 프롬프트/시스템 메시지에 매핑 정보를 문서화하는 것은 모델의 환각이나 확률적 실수 가능성이 남으므로 '결정론적 보장(deterministic guarantee)'을 제공하지 못합니다.
+- ~~Option A (오답): 프롬프트/시스템 메시지에 매핑 정보를 문서화하는 것은 모델의 환각이나 확률적 실수 가능성이 남으므로 '결정론적 보장(deterministic guarantee)'을 제공하지 못합니다.~~
 - Option B (오답): `PreToolUse` 훅은 도구가 실행되기 전에 요청 입력값(`tool_input`)을 변경하는 훅입니다. 문제에서 원하는 것은 도구 실행 후 결과값의 정제이므로 시점이 맞지 않습니다.
-- Option D (오답): 매 턴 프롬프트로 변환 지시를 상기시키는 방식 역시 확률적인 프롬프트 지시일 뿐이며, 코드 수준의 결정론적 보장을 제공하지 못합니다.
+- ~~Option D (오답): 매 턴 프롬프트로 변환 지시를 상기시키는 방식 역시 확률적인 프롬프트 지시일 뿐이며, 코드 수준의 결정론적 보장을 제공하지 못합니다.~~
 
 ---
 
@@ -679,26 +658,24 @@ C) A PostToolUse hook matched to both tools that maps each tool's raw response o
 
 An architect is consolidating tool-output normalization into a single PostToolUse hook that must work for both MCP tools and built-in tools. Currently, a legacy MCP tool uses updatedMCPToolOutput and a newer built-in tool uses updatedToolOutput. Which field should the shared hook use to replace the output for both tool types?
 
-A) updatedToolOutput, because it replaces output for all tools (built-in and MCP) in the PostToolUse hook, while updatedMCPToolOutput only works for MCP tools.
+**A) updatedToolOutput, because it replaces output for all tools (built-in and MCP) in the PostToolUse hook, while updatedMCPToolOutput only works for MCP tools.**
 
-B) systemMessage, because it can be used to display the normalized output to the user for all tools.
+~~B) systemMessage, because it can be used to display the normalized output to the user for all tools.~~
 
 C) updatedMCPToolOutput, because it is the field intended for cross-tool output replacement.
 
-D) additionalContext, because it provides a way to add extra information that overrides the original tool output.
+~~D) additionalContext, because it provides a way to add extra information that overrides the original tool output.~~
 
 ---
 
 ### 3. 정답 및 해설 (Answer & Explanation)
 
-**정답:**
-
-**A번**: updatedToolOutput, because it replaces output for all tools (built-in and MCP) in the PostToolUse hook, while updatedMCPToolOutput only works for MCP tools.
+**정답: A번**
 
 **정답 및 해설:**
 
 **핵심 개념**: Agent SDK PostToolUse Hook의 표준 출력 교체 필드  
-`PostToolUse` 훅 반환 객체에서 `updatedToolOutput`은 표준(Standardized/General) 필드로서 내장 도구(built-in tools)와 MCP 도구(MCP tools) 모두의 출력을 대체/교체할 수 있습니다. 과거 구버전 필드인 `updatedMCPToolOutput`은 MCP 도구에만 한정되지만, `updatedToolOutput`은 범용 필드로 호환성을 제공합니다.
+`PostToolUse` 훅 반환 객체에서 **`updatedToolOutput`은 표준(Standardized/General) 필드로서 내장 도구(built-in tools)와 MCP 도구(MCP tools) 모두의 출력을 대체/교체할 수 있습니다**. 과거 구버전 필드인 `updatedMCPToolOutput`은 MCP 도구에만 한정되지만, `updatedToolOutput`은 **범용 필드로 호환성을 제공합니다.**
 
 **문제 상황 분석:**
 - MCP 도구와 내장 도구 모두의 출력을 정규화하는 단일 `PostToolUse` 훅을 통합 작성 중임.
@@ -715,8 +692,6 @@ D) additionalContext, because it provides a way to add extra information that ov
 
 ---
 
----
-
 # D. 세션 이어가기 — resume / fresh / fork
 
 65: 파일 변경 알리고 resume. 99: 요약이 이미 있으면 새 세션. 56: fork 시 세션 권한 승인 미승계.
@@ -727,21 +702,21 @@ D) additionalContext, because it provides a way to add extra information that ov
 
 **1. 문제 원문**
 
-A Claude Code session from three days ago read and cached the contents of a configuration file (e.g., a CLAUDE.md or agent definition). Since then, another engineer has substantially rewritten that file in a separate branch that was just merged. The architect needs to continue work while accounting for the file rewrite and preserving the accumulated reasoning about the surrounding system. What is the best approach?
+A Claude Code session from three days ago read and cached the contents of a configuration file (e.g., a CLAUDE.md or agent definition). Since then, another engineer has substantially rewritten that file in a separate branch that was just merged. The architect needs to continue work while **accounting(고려하면서)** for the file rewrite and preserving the **accumulated(축적된)** reasoning about the surrounding system. What is the **best approach**?
 
-A) Resume the session and trust its cached understanding of the configuration file since resumption restores full context.
-B) Resume the session and run /compact immediately before asking any follow-up question about the file.
-C) Start a new session and provide it with a concise summary of the previous session's findings and reasoning.
-D) Resume the session and explicitly tell the agent the configuration file changed, prompting it to re-read that file.
+A) Resume the session and trust its cached understanding of the configuration file since **resumption(재개,되찾음)** restores full context.
+~~B) Resume the session and run /compact immediately before asking any follow-up question about the file.~~
+C) Start a new session and provide it with a **concise(간결한)** summary of the previous session's findings and reasoning.
+**D) Resume the session and explicitly(명시적으로) tell the agent the configuration file changed, prompting it to re-read that file.**
 
 ---
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**  
-**D번**: Resume the session and explicitly tell the agent the configuration file changed, prompting it to re-read that file.
+**정답: D번**
 
 **정답 및 해설:**  
+
 **핵심 개념**: 캐시 오염 방지(Cache Invalidation) 및 세션 재개(Session Resumption)  
 Claude Code 세션을 재개하면 이전의 대화 이력과 시스템 추론 맥락이 유지됩니다. 하지만 세션 진행 중 읽었던 외부 파일 내용이 실제 디스크 상에서 수정되었을 경우, 모델은 과거 대화 맥락에 담긴 캐시 데이터를 계속 신뢰할 수 있으므로 명시적으로 파일 재조회(Re-read)를 유도해야 합니다.
 
@@ -751,7 +726,7 @@ Claude Code 세션을 재개하면 이전의 대화 이력과 시스템 추론 �
 - 기존 주변 시스템에 대해 축적된 추론 맥락(Accumulated Reasoning)은 그대로 유지하면서, 수정된 파일 내용만 새로 반영하고자 함.
 
 **D번이 정답인 이유:**  
-문제의 핵심 요구사항은 **"축적된 추론(accumulated reasoning)을 보존"**하면서 **"파일 재작성을 반영"**하는 것입니다.  
+문제의 핵심 요구사항은 "축적된 추론(accumulated reasoning)을 보존"하면서 "파일 재작성을 반영"하는 것입니다.  
 세션을 재개(`Resume`)하면 이전 세션의 수많은 복잡한 추론 과정, 맥락, 변수 관계가 100% 온전히 유지됩니다. 이때 파일이 바뀌었음을 에이전트에게 알려주면(`explicitly tell the agent... prompting it to re-read`), 에이전트는 기존의 깊은 추론 맥락을 유지한 채 해당 파일만 다시 읽어와(Re-read) 캐시를 최신화하므로 문제의 조건들을 완벽히 충족합니다.
 
 **오답 분석:**  
@@ -767,23 +742,21 @@ Claude Code 세션을 재개하면 이전의 대화 이력과 시스템 추론 �
 
 **1. 문제 원문**
 
-A prior session spent many turns reading and cross-referencing a large data-pipeline codebase, and most of its tool results are now stale because the pipeline was heavily refactored afterward. The architect has already captured the session's final conclusions in a structured summary (such as progress notes or a summary document) and only needs those conclusions—not the intermediate tool calls—to continue the next phase of work. Which continuation strategy is more reliable here?
+A prior session spent many turns reading and cross-referencing a large data-pipeline codebase, and most of its tool results are now **stale(유효하지 않은)** because the pipeline was heavily refactored afterward. The architect has already captured the session's final conclusions in a structured summary (such as progress notes or a summary document) and only needs those conclusions—not the intermediate tool calls—to continue the next phase of work. Which continuation strategy is more reliable here?
 
 A) Resume the prior session and issue /clear right after resuming to reset its context window
 
-B) Start a fresh session and inject the already-prepared structured summary of the prior conclusions as the opening prompt
+**B) Start a fresh session and inject the already-prepared structured summary of the prior conclusions as the opening prompt**
 
 C) Resume the prior session so the agent inherits every cached tool result automatically as-is
 
-D) Fork the prior session and continue exploration straight from its unmodified stale history
+~~D) Fork the prior session and continue exploration straight from its unmodified stale history~~
 
 ---
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**B번**: Start a fresh session and inject the already-prepared structured summary of the prior conclusions as the opening prompt
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -802,7 +775,7 @@ D) Fork the prior session and continue exploration straight from its unmodified 
 
 - Option A (오답): 이전 세션을 재개(Resume)한 뒤 `/clear`를 실행하는 것보다 처음부터 새 세션을 열고 요약본을 주입하는 것이 더 간결하고 확실하며, 세션 관리 측면에서 오버헤드가 없습니다.
 - Option C (오답): 이전 세션을 그대로 재개하면 리팩토링 전의 오래된 캐시 결과(Stale tool result)를 에이전트가 참조하게 되어 잘못된 답변을 생성합니다.
-- Option D (오답): 이전 세션을 포크하더라도 유효하지 않은 이전 히스토리가 그대로 유지되므로 에이전트가 오작동할 위험이 큽니다.
+- ~~Option D (오답): 이전 세션을 포크하더라도 유효하지 않은 이전 히스토리가 그대로 유지되므로 에이전트가 오작동할 위험이 큽니다.~~
 
 ---
 
@@ -814,21 +787,19 @@ D) Fork the prior session and continue exploration straight from its unmodified 
 
 While a session is resumed via `--continue --fork-session` to try a riskier approach, the architect notices that a permission the original session had approved with 'allow for this session' is being re-prompted in the new branch. Why does this happen?
 
-A) Session-scoped permission approvals do not carry over from the original session into a newly forked branch
+**A) Session-scoped permission approvals do not carry over from the original session into a newly forked branch**
 
-B) Permission approvals expire automatically after a fixed number of turns, independent of forking
+~~B) Permission approvals expire automatically after a fixed number of turns, independent of forking~~
 
-C) The `--fork-session` flag was combined incorrectly with `--continue` and should have been used with `--resume` instead
+~~C) The `--fork-session` flag was combined incorrectly with `--continue` and should have been used with `--resume` instead~~
 
-D) Forking always resets the working directory, which invalidates any previously granted tool permissions
+D) Forking always **resets(초기화하다)** the working directory, which invalidates any previously granted tool permissions
 
 ---
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**A번**: Session-scoped permission approvals do not carry over from the original session into a newly forked branch
+**정답: A번**
 
 **정답 및 해설:**
 
@@ -852,8 +823,6 @@ D) Forking always resets the working directory, which invalidates any previously
 
 ---
 
----
-
 # E. 서브에이전트 위임과 권한
 
 39: 이름 언급은 보장 아님. 106: 코디네이터 deny 규칙 상속. 73: 중첩 최대 5단계. 104: 중단 시 부분 출력 + 미완료 표시.
@@ -864,11 +833,11 @@ D) Forking always resets the working directory, which invalidates any previously
 
 ### 1. 문제 원문
 
-A coordinator's prompt says only: "Use the code-reviewer agent to check the authentication module." The team wants to guarantee code-reviewer is invoked rather than risk Claude answering the review directly, since automatic delegation based on the description field has been unreliable for this task in the past. Does this prompt achieve that guarantee, and why?
+A coordinator's prompt says only: "Use the code-reviewer agent to check the authentication module." The team wants to guarantee code-reviewer is invoked rather than risk Claude answering the review directly, since automatic delegation based on the description field has been **unreliable(신뢰할 수 없는)** for this task in the past. Does this prompt **achieve(충족하다)** that guarantee, and why?
 
 A) Yes, but only if the description field is also removed from the AgentDefinition, since a populated description field always overrides an explicit name mention.
 
-B) No, the prompt alone is not a guaranteed invocation. While explicitly asking for the code-reviewer agent influences the model, it does not force its use; the system may still respond directly. To reliably enforce delegation, you must use a programmatic constraint such as setting the `tool_choice` parameter to that subagent or using the dedicated subagent invocation syntax (e.g., `@code-reviewer` in Claude Code).
+B) **No, the prompt alone is not a guaranteed invocation.** While **explicitly(명시적으로)** asking for the code-reviewer agent influences the model, it does not force its use; the system may still respond directly. To reliably enforce delegation, you must use a programmatic constraint such as setting the `tool_choice` parameter to that subagent or using the dedicated subagent invocation syntax (e.g., `@code-reviewer` in Claude Code).
 
 C) Yes, naming the subagent by name in the prompt is explicit invocation, which bypasses automatic description-based matching and directly invokes that subagent.
 
@@ -878,8 +847,7 @@ D) No, explicit invocation by name only works for built-in subagents like the ge
 
 ### 3. 정답 및 해설 (Answer & Explanation)
 
-**정답:**  
-**B번**: No, the prompt alone is not a guaranteed invocation. While explicitly asking for the code-reviewer agent influences the model, it does not force its use; the system may still respond directly. To reliably enforce delegation, you must use a programmatic constraint such as setting the `tool_choice` parameter to that subagent or using the dedicated subagent invocation syntax (e.g., `@code-reviewer` in Claude Code).
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -921,9 +889,7 @@ D) Yes, but only for the first Bash call; subsequent Bash calls would then be de
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**B번**: No, because subagents must inherit coordinator-level deny rules, so Bash calls inside test-runner would be blocked.
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -966,9 +932,7 @@ D) Subagents can nest up to a maximum of five levels deep, including the main ag
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**D번**: Subagents can nest up to a maximum of five levels deep, including the main agent as the first level.
+**정답: D번**
 
 **정답 및 해설:**
 
@@ -1011,9 +975,7 @@ D) The partial text output the subagent already produced, along with a note that
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**D번**: The partial text output the subagent already produced, along with a note that the subagent didn't finish
+**정답: D번**
 
 **정답 및 해설:**
 
@@ -1062,9 +1024,7 @@ D) A fixed prompt chain, because the subtasks are the same for every ticket and 
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**B번**: Execute the three actions in parallel using separate, concurrent LLM calls, then aggregate the results. Justification: The subtasks are independent, so parallelization improves efficiency and follows Anthropic's recommended pattern for independent subtask execution.
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -1111,9 +1071,7 @@ D) Remove the coordinator entirely and let the classifier subagent directly invo
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**C번**: Have the coordinator assess each ticket's complexity by running a dedicated lightweight classification prompt that returns a structured JSON object with fields like `complexity` (e.g., `low`, `medium`, `high`) and `required_subagents`, then dynamically invoke only the subagents listed in that output.
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -1156,9 +1114,7 @@ D) Split the migration across multiple coordinators that each independently main
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**A번**: Use the Workflow tool to move orchestration into a script the runtime executes outside the conversation itself
+**정답: A번**
 
 **정답 및 해설:**
 
