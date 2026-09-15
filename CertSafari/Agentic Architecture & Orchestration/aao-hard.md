@@ -514,11 +514,11 @@ PreToolUse 훅은 매칭된 도구가 실제 호출되는 시점에 구동되며
 
 Two different PostToolUse hooks are registered for the same query_database tool: one truncates overly long result sets to a fixed row limit, and one converts embedded timestamps into ISO 8601. Both need to apply to the same tool response in sequence for the final output the model sees to be both trimmed and normalized. What should the architect verify about how these hooks combine?
 
-A) Whether the hooks are declared using the same HookMatcher timeout value, because the SDK uses timeouts to resolve conflicts when multiple hooks register for the same event, and a mismatch causes one hook's output to be ignored if it finishes later.
+~~A) Whether the hooks are declared using the same HookMatcher timeout value, because the SDK uses timeouts to resolve conflicts when multiple hooks register for the same event, and a mismatch causes one hook's output to be ignored if it finishes later.~~
 
-B) Whether the hooks run in a way that lets the second hook operate on the first hook's updatedToolOutput, since if both run independently against the original response only one transformation may be applied.
+B) Whether the hooks run in a way that lets the second hook operate on the **first hook's updatedToolOutput**, since if both run independently against the original response only one transformation may be applied.
 
-C) Whether the SDK executes PostToolUse hooks in alphabetical order by hook name, because the hook registration system sorts callbacks by name to ensure deterministic processing, and reversing names could swap the truncation and normalization steps.
+~~C) Whether the SDK executes PostToolUse hooks in alphabetical order by hook name, because the hook registration system sorts callbacks by name to ensure deterministic processing, and reversing names could swap the truncation and normalization steps.~~
 
 D) Whether both hooks share the same tool_use_id, because the SDK requires hooks to have identical matchers in order to compose their transformations on the same response, and mismatched IDs would cause the second hook to ignore the first's output.
 
@@ -533,7 +533,7 @@ D) Whether both hooks share the same tool_use_id, because the SDK requires hooks
 **정답 및 해설:**
 
 **핵심 개념**: Agent SDK의 PostToolUse Hook 파이프라인 / 체이닝(Chaining) 메커니즘  
-동일한 도구(Tool) 호출 결과에 대해 여러 개의 `PostToolUse` 훅을 체이닝(Chaining)하여 결과를 순차적으로 가공할 때, 각 훅 단계는 이전 훅이 변경하여 파이프라인으로 전달한 `updatedToolOutput` 상태를 넘겨받아 이어서 작업해야 합니다. 훅들이 이전 훅의 출력이 아닌 원본 응답만 독립적으로 참조한다면 덮어쓰기 현상이 발생하여 최종적으로 하나의 변환 결과만 남게 됩니다.
+동일한 도구(Tool) 호출 결과에 대해 여러 개의 `PostToolUse` 훅을 체이닝(Chaining)하여 결과를 순차적으로 가공할 때, 각 훅 단계는 이전 훅이 변경하여 파이프라인으로 **전달한 `updatedToolOutput` 상태를 넘겨받아 이어서 작업**해야 합니다. 훅들이 **이전 훅의 출력**이 아닌 원본 응답만 독립적으로 참조한다면 덮어쓰기 현상이 발생하여 최종적으로 하나의 변환 결과만 남게 됩니다.
 
 **문제 상황 분석:**
 - `query_database` 도구 결과에 2개의 `PostToolUse` 훅(결과 행 잘라내기, 타임스탬프 정규화)을 등록함.
@@ -544,11 +544,9 @@ D) Whether both hooks share the same tool_use_id, because the SDK requires hooks
 여러 `PostToolUse` 훅을 사용하여 동일한 도구 출력을 순차 변환할 경우, 두 번째 훅이 첫 번째 훅의 변경 결과물인 `updatedToolOutput`을 입력받아 연산을 수행하는 구조인지 확인해야 합니다. 만약 두 훅이 서로 독립적으로 원본 데이터만 바라보고 실행된다면 마지막에 반환된 변경값만 적용되어 이전 훅의 변환 내용이 유실되기 때문입니다.
 
 **오답 분석:**
-- Option A (오답): SDK는 동일 이벤트 충돌 해결을 위해 타임아웃 값을 기준으로 삼지 않으며, 더 늦게 끝나는 훅의 출력을 무시하는 로직을 사용하지 않습니다.
-- Option C (오답): SDK의 훅 실행 순서는 알파벳 이름순 정렬에 의존하지 않으며, 등록된 파이프라인 체인의 연쇄 작업 방식을 검증하는 것이 핵심입니다.
-- Option D (오답): `tool_use_id`는 실행된 특정 도구 호출의 고유 식별자일 뿐이며, 파이프라인 합성을 위해 두 훅에 별도로 수동 지정하거나 동일하게 맞춰야 하는 파라미터가 아닙니다.
-
----
+- ~~Option A (오답): SDK는 동일 이벤트 충돌 해결을 위해 타임아웃 값을 기준으로 삼지 않으며, 더 늦게 끝나는 훅의 출력을 무시하는 로직을 사용하지 않습니다.~~
+- ~~Option C (오답): SDK의 훅 실행 순서는 알파벳 이름순 정렬에 의존하지 않으며, 등록된 파이프라인 체인의 연쇄 작업 방식을 검증하는 것이 핵심입니다.~~
+- Option D (오답): **`tool_use_id`는 실행된 특정 도구 호출의 고유 식별자**일 뿐이며, 파이프라인 합성을 위해 **두 훅에 별도로 수동 지정하거나 동일하게 맞춰야 하는 파라미터가 아닙니다**.
 
 ---
 
