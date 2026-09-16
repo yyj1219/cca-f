@@ -18,228 +18,6 @@
 
 # A. .claude/rules/ 로딩 규칙 — paths 유무, 트리거 시점, 심링크, 우선순위
 
-90: paths 없으면 무조건 로드. 46: Glob/Bash는 트리거 아님, Read만. 62: 심링크 체크아웃에서도 트리거. 4: rules 안 심링크 지원(순환 감지). 78: user/project 충돌은 우선순위 보장 없음.
-
-## 1번 문제 (원본 90번)
-
-**어려운 이유** [덜 틀린 답 고르기, 부분적으로만 맞는 오답] — paths 생략 시 `**/*` 기본값으로 동작한다는 A는 "항상 적용"이라는 결론이 거의 맞아 보이지만 로드 시점이 다르며, 무조건 런치 로드라는 C와 미세하게 갈린다.
-
-**1. 문제 원문**
-
-A team places `.claude/rules/general-style.md` in the repo without adding a `paths` field to its YAML frontmatter, alongside a separate `.claude/rules/api.md` that does declare `paths: ["src/api/**/*.ts"]`. How will Claude Code treat `general-style.md` compared to `api.md`?
-
-A) `general-style.md` loads only when Claude opens a file matching a default wildcard of `"**/*"`, functioning identically to `api.md` but with a broader glob pattern applied automatically.
-
-B) `general-style.md` is ignored entirely because every file placed in `.claude/rules/` requires a `paths` field to be recognized before Claude Code will load it, while `api.md` loads correctly at launch as configured.
-
-C) `general-style.md` loads at launch with the same priority as `.claude/CLAUDE.md`, since omitting the `paths` field makes the rule unconditional, while `api.md` only loads when Claude reads a matching file.
-
-D) `general-style.md` and `api.md` both load only when Claude edits a file located inside the `.claude/rules/` directory itself, since rules files are scoped to their own containing directory by default.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-**C번**: `general-style.md` loads at launch with the same priority as `.claude/CLAUDE.md`, since omitting the `paths` field makes the rule unconditional, while `api.md` only loads when Claude reads a matching file.
-
-**정답 및 해설:**
-
-**핵심 개념**: **Claude Code `.claude/rules/` 모듈식 규칙 및 경로 필터링 (Path-Scoped Rules)**
-Claude Code에서는 프로젝트 가이드라인을 분할하여 관리하기 위해 `.claude/rules/*.md` 경로에 규칙 파일을 추가할 수 있습니다. 
-- YAML 프론트매터에 `paths` 필드가 없으면 해당 규칙은 프로젝트 전체에 적용되는 무조건적 규칙(Unconditional Rule)이 되어 세션 시작 시(Launch) 프로젝트 루트 `CLAUDE.md`와 동일한 기본 컨텍스트로 로드됩니다.
-- 반면 `paths: [...]` 필드가 지정되어 있으면 경로 조건부 규칙(Path-Scoped Rule)이 되어, Claude가 해당 패턴에 일치하는 파일(예: `src/api/**/*.ts`)을 읽을 때 비로소 컨텍스트에 동적으로 주입됩니다.
-
-**문제 상황 분석:**
-- `general-style.md` 파일은 YAML 프론트매터에 `paths` 필드가 생략(omitted)되어 있습니다.
-- `api.md` 파일은 `paths: ["src/api/**/*.ts"]`로 특정 파일 경로가 지정되어 있습니다.
-- 두 파일이 로드되는 시점과 방식의 차이를 묻고 있습니다.
-
-**C번이 정답인 이유:**
-- `paths` 필드를 명시하지 않은 `general-style.md`는 조건 없는 일반 규칙으로 처리되어 실행 초기(at launch)에 `.claude/CLAUDE.md`와 함께 기본 컨텍스트로 로드됩니다.
-- 경로 필터가 명시된 `api.md`는 온디맨드 규칙으로 처리되어 지정된 경로(`src/api/**/*.ts`)에 해당하는 파일에 접근하여 읽을 때만 조건부로 로드되므로 C번의 설명이 완벽히 부합합니다.
-
-**오답 분석:**
-- Option A (오답): `paths`가 생략되었다고 해서 글로브 패턴(`"**/*"`) 조건부 로딩으로 전환되어 파일이 열릴 때까지 대기하는 것이 아니라, 시작 시 무조건 로드됩니다.
-- Option B (오답): `.claude/rules/` 디렉터리 내의 파일에서 `paths` 필드는 필수(required) 항목이 아닙니다. 생략할 경우 전역/무조건 규칙으로 정상 동작합니다.
-- Option D (오답): 규칙 파일이 `.claude/rules/` 디렉터리 내부 파일에 국한되어 적용된다는 스코프 규칙은 존재하지 않습니다.
-
----
-
-## 2번 문제 (원본 46번)
-
-**어려운 이유** [유사 현상 구분, 원칙이 깨지는 예외] — Glob/Bash로 경로가 노출되는 것과 파일을 실제로 Read하는 것을 구분해야 하며, "경로가 등장하면 트리거"라는 직관적 규칙을 적용하면 A로 틀린다.
-
-**1. 문제 원문**
-
-A developer configured `.claude/rules/api-security.md` scoped with paths: `["src/api/**/*.ts"]`. During a session, Claude runs `git status` and lists the repository tree with Glob, but has not yet opened any file under `src/api/`. Based on how path-scoped rules are triggered, what should the developer expect?
-
-* **A)** The api-security.md rule loaded as soon as Glob returned a listing that included files under src/api/, because any tool invocation surfacing a matching path counts as a trigger.
-* **B)** The api-security.md rule loaded automatically the moment the session started, because all rules under .claude/rules/ are loaded unconditionally regardless of their paths frontmatter.
-* **C)** The api-security.md rule has not been loaded into context yet, because path-scoped rules load when Claude reads a file matching the pattern, not merely when it uses other tools like Glob or Bash.
-* **D)** The api-security.md rule will never load during this session unless the developer explicitly runs the /memory command to force path-scoped rules to activate.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-**C번**: The api-security.md rule has not been loaded into context yet, because path-scoped rules load when Claude reads a file matching the pattern, not merely when it uses other tools like Glob or Bash.
-
-**정답 및 해설:**
-
-**핵심 개념**: 경로 범위 지정 규칙 (Path-scoped Rules)
-Claude Code 프로젝트 규칙(`.claude/rules/`)에서 `paths` 메타데이터(frontmatter)를 지정하면, Claude가 해당 경로 패턴과 일치하는 파일의 내용을 읽을 때(Read File) 비로소 해당 규칙 파일이 컨텍스트에 활성화되어 로드됩니다.
-
-**문제 상황 분석:**
-- 개발자가 `src/api/**/*.ts` 경로 패턴에만 적용되는 경로 범위 규칙(`api-security.md`)을 구성했습니다.
-- Claude는 세션 중 `git status` 명령을 실행하고 Glob을 사용해 디렉터리 구조 목록을 확인했습니다.
-- Claude는 아직 `src/api/` 경로 내부의 특정 파일 내용을 직접 읽거나 열어보지(Read) 않았습니다.
-
-**C번이 정답인 이유:**
-Claude Code에서 `paths` 조건이 걸린 규칙은 단순 디렉터리 목록 조회(Glob)나 CLI 명령어 실행(Bash) 등으로 관련 경로가 노출되는 것만으로는 활성화되지 않습니다. Claude가 해당 경로에 일치하는 파일의 실제 내용을 직접 읽는(Read/View) 작업이 발생할 때 비로소 컨텍스트에 탑재되므로 C번이 올바른 설명입니다.
-
-**오답 분석:**
-
-- Option A (오답): Glob 등의 도구 결과에 경로가 포함되었다고 해서 규칙이 로드되지 않으며, 파일의 직접적인 읽기 작업이 필요합니다.
-- Option B (오답): `paths` 조건이 명시되어 있지 않은 모듈/일반 규칙만 세션 시작 시 무조건 로드됩니다. 경로 범위 지정 규칙은 조건부 동적 로드 방식을 따릅니다.
-- Option D (오답): `/memory` 명령어를 명시적으로 실행해야만 활성화되는 것이 아니며, 해당 파일 패턴에 접근하여 읽을 때 자동으로 동적 로드됩니다.
-
-<br>
-
----
-
-## 3번 문제 (원본 62번)
-
-**어려운 이유** [원칙이 깨지는 예외] — 경로 매칭은 OS의 정규(canonical) 경로 기준이라는 일반 상식을 적용하면 B로 틀리며, 심볼릭 경로도 함께 매칭된다는 예외를 알아야 한다.
-
-**1. 문제 원문**
-
-An engineer works inside a symlinked checkout: the actual repository lives at `/Users/eng/code/service` and is symlinked to `/workspace/service`, and Claude Code is launched from the symlinked path. A path-scoped rule has paths: `["src/handlers/**/*.go"]`. The engineer edits `/workspace/service/src/handlers/middleware/auth.go`. Will the rule trigger given how Claude Code resolves paths through symlinks?
-
-A) The rule triggers only for read-only operations performed through the symlink, while edits made through the symlinked path are matched against a separate, unscoped rule set.
-
-B) The rule never triggers through a symlinked checkout, because path-scoped rules only evaluate against the canonical filesystem path returned by the operating system, bypassing any symlink entirely.
-
-C) The rule triggers normally, because Claude Code matches path-scoped rules even when a file is reached through a symlinked path to the project directory, in addition to matching direct paths.
-
-D) The rule triggers only if the engineer manually adds a second paths entry pointing at `/workspace/service/src/handlers/**/*.go`, since symlinked roots require an explicit absolute pattern.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-**C번**: The rule triggers normally, because Claude Code matches path-scoped rules even when a file is reached through a symlinked path to the project directory, in addition to matching direct paths.
-
-**정답 및 해설:**
-
-**핵심 개념**: Claude Code의 심볼릭 링크(Symlink) 경로 해석 및 상대 경로 매칭  
-Claude Code는 프로젝트 루트 디렉터리가 심볼릭 링크 경로로 접근되더라도 프로젝트 내 상대 경로 패턴(예: `src/handlers/**/*.go`)을 올바르게 계산하여 경로 지정 규칙(path-scoped rules)을 정규화하고 매칭합니다.
-
-**문제 상황 분석:**
-- 실제 프로젝트 디렉터리는 `/Users/eng/code/service`에 존재함
-- 작업 디렉터리는 `/workspace/service`라는 심볼릭 링크로 연결되어 있으며, 이 심볼릭 경로에서 Claude Code가 실행됨
-- 프로젝트 규칙에 `src/handlers/**/*.go` 상대 경로 패턴이 설정되어 있고, 엔지니어가 심볼릭 경로 내부의 해당 디렉터리 파일(`/workspace/service/src/handlers/middleware/auth.go`)을 편집함
-
-**C번이 정답인 이유:**
-Claude Code는 심볼릭 링크를 통해 프로젝트 경로에 진입했더라도 파일의 상대 경로 구조(`src/handlers/middleware/auth.go`)를 원활하게 추적 및 해결(Resolve)합니다. 따라서 직접 경로(Direct Path)뿐만 아니라 심볼릭 링크를 경유한 파일 편집 시에도 상대 경로 패턴이 정상적으로 매칭되어 규칙이 오류 없이 활성화(Trigger)됩니다.
-
-**오답 분석:**
-- Option A (오답): 읽기 작업과 수정 작업에 따라 규칙 매칭 로직이 분리되거나 별도의 비범위 규칙 세트로 전환되지 않습니다.
-- Option B (오답): 심볼릭 링크를 통했다고 해서 경로 평가를 무시하거나 규칙 발동이 완전히 차단되지 않습니다.
-- Option D (오답): 프로젝트 상대 경로 패턴이 이미 작성되어 있다면 심볼릭 루트를 위해 절댓값 패턴을 추가로 등록할 필요가 없습니다.
-
----
-
-## 4번 문제 (원본 4번)
-
-**어려운 이유** [원칙이 깨지는 예외, 덜 틀린 답 고르기] — `.claude/rules/`가 심볼릭 링크를 "일반 파일만 읽는다"고 잘못 기억하면 D를 고르게 되고, 디렉터리 링크만 된다는 A도 그럴듯해 순환 감지까지 포함한 정답을 고르기 어렵다.
-
-**A large repository has a shared set of code-review rule files that several separate repositories across the organization should reuse verbatim, updated from one source of truth so all repositories stay in sync automatically when the source changes. An architect proposes placing symlinks inside each repository's `.claude/rules/` directory pointing back to a central rules folder maintained outside those repositories. Is this a supported way to organize rules, and what should the architect verify?**
-
-A) It is supported only for whole symlinked directories, not individual files, so a single shared file like security.md cannot be linked alone
-
-B) It is supported, but only when the shared rules sit in the same git repo as a submodule; symlinks to a separate repository never resolve
-
-C) It is supported; `.claude/rules/` resolves symlinks normally with circular detection, so verify each repo's symlinks target the shared source
-
-D) It is not supported; `.claude/rules/` only discovers regular files, so symlinked entries are silently ignored, forcing physical copies
-
----
-
-**정답:**
-
-**[C]번**: It is supported; `.claude/rules/` resolves symlinks normally with circular detection, so verify each repo's symlinks target the shared source
-
-**정답 및 해설:**
-
-**핵심 개념**: Claude Code의 `.claude/rules/` 디렉터리는 심볼릭 링크(symlink)를 정상적으로 지원하며, 순환 참조(circular reference) 감지 기능도 내장되어 있어 중앙에서 관리하는 공유 규칙을 각 저장소에 심볼릭 링크로 연결하는 방식이 공식적으로 지원됩니다.
-
-**문제 상황 분석:**
-- 조직 내 여러 저장소에서 단일 소스(Source of Truth)로 관리되는 코드 리뷰 규칙을 일관되게 재사용하고자 합니다.
-- 각 저장소의 `.claude/rules/` 디렉터리 내부에 외부의 중앙 규칙 폴더를 가리키는 심볼릭 링크를 배치하는 접근 방식의 지원 여부를 확인해야 합니다.
-
-**[C]번이 정답인 이유:**
-Claude Code는 규칙 디렉터리(`.claude/rules/`) 탐색 시 심볼릭 링크를 정상적으로 추적 및 해결(resolve)하며, 무한 루프를 방지하기 위한 순환 감지 기능도 함께 제공합니다. 따라서 아키텍트는 각 저장소의 심볼릭 링크가 올바른 공유 소스를 정확히 가리키고 있는지 검증하는 것만으로 이 아키텍처를 안전하게 적용할 수 있습니다.
-
-**오답 분석:**
-
-- Option A (오답): 전체 디렉터리 링크만 지원하고 개별 파일 링크는 안 된다는 주장은 틀렸으며, **개별 파일과 폴더 모두 심볼릭 링크 연결이 가능**합니다.
-- Option B (오답): 깃 서브모듈(submodule) 환경에서만 작동한다는 설명은 사실이 아니며, **표준 파일 시스템 심볼릭 링크도 정상 처리**됩니다.
-- Option D (오답): `.claude/rules/`가 심볼릭 링크를 무시하고 일반 파일만 검색하므로 물리적 복사가 강제된다는 설명은 명백한 오답입니다.
-
----
-
-## 5번 문제 (원본 78번)
-
-**어려운 이유** [덜 틀린 답 고르기, 원칙이 깨지는 예외] — "더 구체적인 프로젝트 범위가 우선"이라는 계층 우선순위 상식을 적용하면 A를 고르지만, 로드 순서가 충돌 해소를 보장하지 않는다는 점이 정답이다.
-
-**1. 문제 원문**
-
-A developer has both a personal rule at `~/.claude/rules/formatting.md` (no `paths` field) and their team's project rule at `./.claude/rules/formatting.md` (no `paths` field) with conflicting formatting guidance. Both load unconditionally. According to Claude Code memory documentation, how should the developer understand load order and conflict resolution?
-
-A) User-level rules load before project rules, and when they conflict, project-level rules always take higher priority because they are more specific.
-
-B) Project rules load before user-level rules, so the personal `formatting.md` takes higher priority over the team's shared guidance.
-
-C) User-level rules under `~/.claude/rules/` are ignored whenever a project also defines a same-named rules file, so only the project's `formatting.md` loads.
-
-D) User-level rules load before project rules, but load order does not guarantee deterministic conflict resolution. When two unconditional rules conflict, Claude may choose one arbitrarily, so conflicting guidance should be removed rather than relying on precedence.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-**D번**: User-level rules load before project rules, but load order does not guarantee deterministic conflict resolution. When two unconditional rules conflict, Claude may choose one arbitrarily, so conflicting guidance should be removed rather than relying on precedence.
-
-**정답 및 해설:**
-
-**핵심 개념**: Claude Code의 메모리 로드 순서 및 모호한 규칙의 비결정론적 선택
-Claude Code는 사용자 레벨 규칙(`~/.claude/rules/`)을 프로젝트 레벨 규칙(`./.claude/rules/`)보다 먼저 로드합니다. 그러나 조건(`paths` 필드)이 지정되지 않은 두 무조건적 규칙이 모순/충돌하는 경우, 순서에 따라 확정적인 오버라이드가 일어나는 것이 아니라 Claude가 무작위/임의로(Arbitrarily) 어느 한쪽을 선택하게 됩니다.
-
-**문제 상황 분석:**
-
-* 사용자 규칙(`~/.claude/rules/formatting.md`)과 프로젝트 규칙(`./.claude/rules/formatting.md`)이 동시에 존재함
-* 두 규칙 모두 `paths` 조건이 없어 프롬프트 컨텍스트에 무조건(Unconditionally) 함께 로드됨
-* 두 지침이 서로 충돌할 때 로드 순서 및 디버깅 가이드라인을 바르게 이해하고 있어야 함
-
-**D번이 정답인 이유:**
-사용자 레벨 규칙이 프로젝트 레벨 규칙보다 먼저 로드되는 것은 사실이지만, 문서에서는 로드 순서가 충돌에 대한 결정론적(Deterministic) 해결을 보장하지 않는다고 밝히고 있습니다. 동일한 동작에 대해 두 파일이 상충되는 지침을 제공할 경우 Claude는 임의로 하나를 선택할 수 있으므로, 우선순위에 의존하기보다는 충돌하는 지침 자체를 찾아 제거하는 것이 공식 권장사항입니다.
-
-**오답 분석:**
-
-- Option A (오답): 사용자 레벨이 먼저 로드되는 것은 맞지만, `paths` 필드가 없는 무조건적인 규칙 충돌 시 프로젝트 레벨이 결정론적으로 무조건 우선권을 가진다고 보장할 수 없습니다. (Claude가 자의적으로 지침을 선택함)
-- Option B (오답): 로드 순서(사용자 → 프로젝트) 설명이 반대로 되었을 뿐만 아니라, 개인 규칙이 공유 지침보다 무조건 우선한다는 내용도 잘못되었습니다.
-- Option C (오답): 같은 이름의 프로젝트 규칙이 존재하더라도 사용자 레벨 규칙이 무시되거나 완전히 덮어씌워지지 않고 둘 다 컨텍스트로 로드됩니다.
-
----
-
 ---
 
 # B. CLAUDE.md 로딩 범위와 제외 — 답이 갈리는 쌍 39 vs 95
@@ -252,49 +30,13 @@ Claude Code는 사용자 레벨 규칙(`~/.claude/rules/`)을 프로젝트 레�
 
 **1. 문제 원문**
 
-An engineer launches Claude Code from the `services/billing/` directory inside a larger repository. The repository contains three CLAUDE.md files: one at the repository root, one at `services/billing/CLAUDE.md`, and one at `services/billing/reports/CLAUDE.md`. The engineer has not yet read or edited any files in the `services/billing/reports/` subdirectory. At the moment the session starts, which files are loaded into context?
-
-A) Only the root CLAUDE.md loads at launch; `services/billing/` and the `reports` subdirectory file both wait until Claude reads a file there.
-
-B) Only `services/billing/CLAUDE.md` loads, since directory-level files never combine with ancestor files unless explicitly imported first.
-
-C) All three CLAUDE.md files load immediately, because Claude Code always preloads every CLAUDE.md found anywhere under the working directory.
+An engineer **launches** Claude Code from the `services/billing/` directory inside a larger repository. (▶ 특정 경로에서 Claude Code 시작했다고 명시했다. 문제 대충 읽으면 놓침 ◀) The repository contains three CLAUDE.md files: one at the repository root, one at `services/billing/CLAUDE.md`, and one at `services/billing/reports/CLAUDE.md`. The engineer has not yet read or edited any files in the `services/billing/reports/` subdirectory. At the moment the session starts, which files are loaded into context?
 
 D) The root and `services/billing/CLAUDE.md` load at launch; `reports/CLAUDE.md` loads later, only when Claude reads a file in that subdirectory.
 
 ---
 
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-**D번**: The root and `services/billing/CLAUDE.md` load at launch; `reports/CLAUDE.md` loads later, only when Claude reads a file in that subdirectory.
-
-**정답 및 해설:**
-
-**핵심 개념**: **Claude Code의 CLAUDE.md 컨텍스트 로딩 계층 구조 및 온디맨드 로딩 (On-Demand Loading)**
-Claude Code는 세션 실행 시 작업 디렉터리(Working Directory)와 그 상위(Ancestor) 상위 디렉터리의 `CLAUDE.md` 파일들을 자동으로 병합하여 기본 컨텍스트로 로드합니다. 반면, 하위 디렉터리(Subdirectory)에 위치한 `CLAUDE.md` 파일은 세션 시작 시 즉시 로드되지 않고, 모델이 해당 하위 디렉터리 내의 파일을 접근/읽기 시작할 때 비로소 컨텍스트에 추가(On-demand)됩니다.
-
-**문제 상황 분석:**
-- 세션 시작 위치(작업 디렉터리): `services/billing/`
-- 존재 파일:
-  1. 루트 `CLAUDE.md` (상위 디렉터리)
-  2. `services/billing/CLAUDE.md` (현재 작업 디렉터리)
-  3. `services/billing/reports/CLAUDE.md` (하위 디렉터리)
-- 엔지니어는 아직 `services/billing/reports/` 하위 디렉터리 내의 어떠한 파일도 탐색하거나 편집하지 않았습니다.
-
-**D번이 정답인 이유:**
-- 세션 시작 시 Claude Code는 현재 실행 위치(`services/billing/`)의 `CLAUDE.md`와 상위 경로인 루트의 `CLAUDE.md`를 함께 초기 컨텍스트로 로드합니다.
-- 하위 경로인 `reports/CLAUDE.md`는 세션 시작 시점에는 로드되지 않으며, 향후 Claude가 해당 하위 디렉터리의 파일(예: `reports/` 내 파일)을 조작하거나 읽을 때 비로소 지연 로딩(Lazy Loading)됩니다.
-
-**오답 분석:**
-- Option A (오답): 현재 작업 디렉터리에 위치한 `services/billing/CLAUDE.md` 역시 실행 즉시 상위 루트 파일과 함께 로드되므로 루트만 로드된다는 설명은 틀렸습니다.
-- Option B (오답): Claude Code는 상위 경로의 `CLAUDE.md` 설정들을 계층적으로 계속 병합(Combine)하므로 상위 파일과 결합되지 않는다는 설명은 오답입니다.
-- Option C (오답): 작업 디렉터리 하위에 존재하는 모든 `CLAUDE.md`를 무조건 사전 로드(Preload)하지 않습니다. 하위 디렉터리의 파일은 해당 경로에 접근할 때 온디맨드로 로드됩니다.
-
----
-
-## 7번 문제 (원본 89번)
+## 7번 문제 (원본 89번) => 재확인 불필요
 
 **어려운 이유** [유사 현상 구분, 근본 원인 vs 증상 완화] — 압축 후 루트 지시는 유지되고 중첩 지시만 사라지는 동일한 증상에 대해, 파일 손상/영구 삭제 같은 설명과 "재주입 대상 차이"라는 실제 메커니즘을 구분해야 한다.
 
@@ -302,13 +44,13 @@ Claude Code는 세션 실행 시 작업 디렉터리(Working Directory)와 그 �
 
 During a long working session, an engineer triggers a context compaction. Afterward, they notice Claude has stopped following an instruction that was in a CLAUDE.md file located deep inside a subdirectory the engineer had already worked in earlier in the session, while an instruction from the project-root CLAUDE.md is still being followed correctly. What explains this difference in behavior?
 
-A) Compaction only preserves instructions in the first 200 lines of a session, so the subdirectory file's later position caused it to drop
+~~A) Compaction only preserves instructions in the first 200 lines of a session, so the subdirectory file's later position caused it to drop~~
 
 B) Root CLAUDE.md is re-read and re-injected after compaction, but nested CLAUDE.md files reload only when Claude next reads a file there
 
-C) Compaction corrupts nested CLAUDE.md files on disk, so the subdirectory file must be re-created before its instructions work again
+~~C) Compaction corrupts nested CLAUDE.md files on disk, so the subdirectory file must be re-created before its instructions work again~~
 
-D) Nested CLAUDE.md files are deleted from context permanently after compaction and can only be restored by starting an entirely new session
+~~D) Nested CLAUDE.md files are deleted from context permanently after compaction and can only be restored by starting an entirely new session~~
 
 ---
 
@@ -438,10 +180,10 @@ Claude Code에서 `.claude/rules/*.md` 내에 존재하는 규칙 파일들은 Y
 
 A repository already has an AGENTS.md file used by several other AI coding tools, containing conventions the team wants Claude Code to follow as well, plus a short list of Claude-specific instructions like 'use plan mode for changes under src/billing/'. The team wants to avoid maintaining the same conventions in two places. What is the recommended way to structure CLAUDE.md?
 
-* **A)** Manually copy the full contents of AGENTS.md into CLAUDE.md today, and remember to re-copy it by hand every time AGENTS.md changes
-* **B)** Create CLAUDE.md starting with `@AGENTS.md` as an import, followed by the Claude-specific instructions such as the plan-mode rule underneath
-* **C)** Leave CLAUDE.md absent entirely, since Claude Code silently falls back to reading AGENTS.md whenever no CLAUDE.md file is present
-* **D)** Create a symbolic link (symlink) named CLAUDE.md pointing to AGENTS.md so both files always share the same content
+* A) Manually copy the full contents of AGENTS.md into CLAUDE.md today, and remember to re-copy it by hand every time AGENTS.md changes
+* B) Create CLAUDE.md starting with `@AGENTS.md` as an import, followed by the Claude-specific instructions such as the plan-mode rule underneath
+* C) Leave CLAUDE.md absent entirely, since Claude Code silently falls back to reading AGENTS.md whenever no CLAUDE.md file is present
+* D) Create a symbolic link (symlink) named CLAUDE.md pointing to AGENTS.md so both files always share the same content
 
 ---
 
@@ -469,8 +211,6 @@ Claude Code 지침 파일(`CLAUDE.md`)에서는 `@path/to/file.md` 형태의 구
 - Option A (오답): 변경사항이 생길 때마다 수동으로 수복사하는 방식은 동기화 누락 및 유지보수 문제를 일으키는 잘못된 방식입니다.
 - Option C (오답): `CLAUDE.md`를 아예 삭제하면 Claude 전용으로 추가해야 하는 지침(플랜 모드 규칙 등)을 정의할 공간이 사라집니다.
 - Option D (오답): 심볼릭 링크를 생성하면 `CLAUDE.md`와 `AGENTS.md`가 100% 동일한 내용만 갖게 되므로, Claude 전용 지침을 별도로 추가하여 확장할 수 없습니다.
-
----
 
 ---
 
@@ -755,10 +495,10 @@ D) `CLAUDE.md` conventions are only loaded when a skill is invoked without argum
 
 A project ships a shared `.claude/skills/commit/SKILL.md` skill that writes commit messages in a style one developer finds too terse for their own habits. The developer wants a personal richer version of that skill while continuing to invoke the same `/commit` slash command themselves. Teammates should continue to see the original project skill when they run `/commit`. What should they do?
 
-* **A)** Edit `.claude/skills/commit/SKILL.md` with the richer commit guidelines, and rely on the change remaining uncommitted so only the developer's local experience uses it, while teammates' copies are unaffected.
-* **B)** Create `~/.claude/skills/commit/SKILL.md` as a personal copy with the same name to locally override the project skill for this developer only, leaving the shared project skill unchanged for teammates.
-* **C)** Add `disable-model-invocation: true` to the shared `.claude/skills/commit/SKILL.md` so that it no longer generates output and only the developer's personal instructions apply.
-* **D)** Create a differently named skill, such as `~/.claude/skills/commit-verbose/SKILL.md`, so it's invoked separately and the shared project skill remains untouched for teammates.
+* A) Edit `.claude/skills/commit/SKILL.md` with the richer commit guidelines, and rely on the change remaining uncommitted so only the developer's local experience uses it, while teammates' copies are unaffected.
+* B) Create `~/.claude/skills/commit/SKILL.md` as a personal copy with the same name to locally override the project skill for this developer only, leaving the shared project skill unchanged for teammates.
+* C) Add `disable-model-invocation: true` to the shared `.claude/skills/commit/SKILL.md` so that it no longer generates output and only the developer's personal instructions apply.
+* D) Create a differently named skill, such as `~/.claude/skills/commit-verbose/SKILL.md`, so it's invoked separately and the shared project skill remains untouched for teammates.
 
 ---
 
@@ -785,10 +525,6 @@ Claude Code의 스킬 우선순위 계층 구조는 `Enterprise > Personal (~/.c
 - Option A (오답): 프로젝트 내 파일(.claude/skills/commit/SKILL.md)을 지저분하게 uncommitted 상태로 남겨두는 것은 추후 실수로 커밋되거나 `git clean` / branch switching 시 날아갈 위험이 있어 올바른 구성 방식이 아닙니다.
 - Option C (오답): 공유 파일에 `disable-model-invocation: true`를 추가하면 변경 사항을 저장소에 올리지 않더라도 비정식 접근이며, 커밋 시 다른 팀원 전체에게 영향을 주게 됩니다.
 - Option D (오답): 개발자가 기존에 쓰던 `/commit` 슬래시 커맨드를 그대로 유지하고 싶어 한다는 요구사항에 위배됩니다. 다른 커맨드 이름(`/commit-verbose`)을 새로 만들어야 하기 때문입니다.
-
-<br>
-
----
 
 ---
 
