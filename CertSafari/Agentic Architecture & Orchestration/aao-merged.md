@@ -617,6 +617,53 @@ LLM 기반 에이전트에게 지나치게 경직되고 고정된 절차(Over-sp
 
 ---
 
+## 16번 문제
+
+**1. 문제 원문**
+
+An architect is asked to design an agent that investigates why a production incident occurred, given only a vague alert message and no prior knowledge of which service is at fault. The number of logs, services, and code paths to inspect cannot be known ahead of time. Which decomposition approach is most appropriate?
+
+A) A single prompt that asks the model to name the root cause immediately from only the wording of the alert message
+
+B) A prompt chain with a hardcoded set of five investigation steps that always runs in full regardless of what is found
+
+C) A fixed sequential chain that always inspects the database, then the cache layer, then the load balancer, in that fixed order
+
+D) A dynamic orchestrator that generates and prioritizes new investigation subtasks based on what each prior step uncovers
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답:**
+
+**D번**: A dynamic orchestrator that generates and prioritizes new investigation subtasks based on what each prior step uncovers
+
+**정답 및 해설:**
+
+**핵심 개념**: 동적 오케스트레이션 및 작업 분해 (Dynamic Orchestration & Task Decomposition)
+
+탐색 대상의 범위, 경로, 단계 수를 **사전에 예측할 수 없는 복잡한 문제** (장애 원인 분석 등)를 해결할 때는 **동적 오케스트레이터(Dynamic Orchestrator)** 패턴이 적합합니다. 이 접근 방식은 이전 실행 단계의 결과 및 조사 내용을 바탕으로 다음으로 수행해야 할 하위 작업(Subtask)을 실시간으로 동적 생성하고 우선순위를 재조정합니다.
+
+**문제 상황 분석:**
+
+* 모호한 경고 메시지만 주어진 상태이며, 어느 서비스에서 문제가 발생했는지에 대한 사전 정보가 없음
+* 검사해야 하는 로그, 대상 서비스, 코드 경로의 수를 사전에 정의하는 것이 불가능함
+* 정적인 규칙이나 고정된 단계로는 가변적인 조사 상황에 대응할 수 없는 구조임
+
+**D번이 정답인 이유:**
+사전에 탐색 경로를 알 수 없는 장애 조사의 경우, 각 단계에서 발견되는 단서(로그 메시지, 오류 코드 등)에 따라 조사 방향이 유연하게 달라져야 합니다. 동적 오케스트레이터(Dynamic Orchestrator)는 앞선 단계의 조사 결과를 해석하여 추가로 수행할 작업을 동적으로 생성하고 우선순위를 부여하므로 문제 상황의 요구조건에 완벽하게 부합합니다.
+
+**오답 분석:**
+
+- Option A (오답): 모호한 알림 문구 하나만으로 단일 프롬프트에서 즉시 근본 원인을 추론하는 것은 환각(Hallucination)을 유발하며 불가능한 요구사항입니다.
+
+- Option B (오답): 고정된 5단계 프롬프트 체인은 상황 변화에 적응하지 못하며, 불필요한 단계를 고정 실행하게 되거나 필요한 조사를 누락시킵니다.
+
+- Option C (오답): 데이터베이스 ➔ 캐시 ➔ 로드 밸런서로 고정된 순서의 체인을 사용하는 것은 문제의 원인이 다른 영역(예: 서드파티 API, 인증 서비스 등)에 있을 경우 근본 원인을 찾지 못하게 됩니다.
+
+---
+
 ## 18번 문제
 
 **1. 문제 원문**
