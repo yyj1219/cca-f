@@ -16,14 +16,22 @@
 
 ---
 
-* _rather than blocking it outright_ : 완전히 차단하기 보다는
+* _given_ : ~을 고려할 때
+* _so_ : 그래서, 따라서
+* _since_ : ~이므로 (이유)
+* _objects_ : 반대하다
+* _identically_ : 동일하게
 * _regardless of_ : ~에 상관없이
+* _rather than_ : ~ 대신
+* _rather than blocking it outright_ : 완전히 차단하기 보다는
 * _relative to each other_ : 서로간에
 * _the order of_ : 대략적인 규모
 * _the order of two hundred_ : 약 200개
 * _far more than_ : 훨씬 더
 * _the handful of_ : 소수의
 * _per turn_ : 한 턴 당
+* _unilaterally_ : 일방적으로
+* _authoritative_ : 권위
 
 ---
 
@@ -1160,5 +1168,231 @@ D) Split the migration across multiple coordinators that each independently main
 - Option B (오답): 하나의 컨텍스트 윈도우 내에서 200개 파일 작업을 순차 처리하는 것은 용량 초과(Context Window Overflow) 및 주의력 분산(Attention Dilution)을 일으키며 100% 실패하게 됩니다.
 - Option C (오답): `maxTurns`만 늘려서 대화 턴 내에서 200번 이상 서브에이전트를 계속 호출하게 만드는 것은 비효율적인 토큰 낭비와 긴 실행 지연을 초래하며, 대화 컨텍스트 오버헤드를 해결하지 못합니다.
 - Option D (오답): 중앙 조율 스크립트 없이 여러 코디네이터로 단순히 쪼개어 각각 파이프라인을 유지하도록 만들면, 코디네이터 간의 상태 동기화 및 작업 중복 관리 등 또 다른 복잡성을 야기합니다.
+
+---
+
+# G. 헷갈리는 관용구가 포함된 문제 (aao-merged.md에서 이동)
+
+25, 75, 95: fail outright / falls through ... by default / unilaterally resolving 등 관용구 학습용으로 별도 이동.
+
+## 25번 문제 (원본 31번)
+
+**어려운 이유** [유사 현상 구분] — resume을 두 번 호출하는 것과 fork의 차이를 정확히 구분해야 하며, "fail outright"라는 표현이 매력적인 오답을 만든다.
+
+### 1. 문제 원문
+
+During a design review, an engineer says: "Let's just resume the analysis session twice, once for the caching approach and once for the queueing approach, so we get two independent explorations." A colleague **objects(반대한다)**. What is the correct **concern(우려)** with this plan, **given(~을 고려할 때)** how resume and fork differ?
+
+A) Resume and fork behave **identically(동일하게)** in this scenario, so the colleague's **objection(반대)** is **unfounded(근거없는)** and either call sequence produces two independent explorations
+
+B) Resuming the same session twice appends both explorations to one shared history in sequence, so the second exploration sees the first; forking gives two independent branches
+
+~~C) Resume can only ever be called once per session id, so the second resume attempt would **fail outright(완전히/즉각 실패하다)** and the queueing exploration could never start at all~~선택한 
+
+~~D) Resuming quietly discards all prior tool results before continuing, so neither the caching nor the queueing exploration would retain the original analysis~~
+
+---
+
+### 3. 정답 및 해설 (Answer & Explanation)
+
+**정답: B번**
+
+**정답 및 해설:**
+
+**핵심 개념**: Session Resume vs Session Fork (세션 재개 대 세션 분기)
+- **Resume(재개)**: 기존 세션 ID의 단일 대화 기록(Linear History) 끝에 새로운 프롬프트와 턴을 연속해서 누적 추가하는 방식입니다. 동일 세션을 연속해서 resume하면 이전 작업 내역이 동일 맥락(Context)에 그대로 남아있게 됩니다.
+- **Fork(분기)**: 기준 시점의 대화 히스토리를 복사하여 서로 다른 세션 ID를 가지는 별개의 대화 브랜치(Branch)를 생성하는 방식입니다. 이를 사용해야 서로의 대화 기록에 영향을 주지 않는 완전한 독립적 탐색이 가능해집니다.
+
+**문제 상황 분석:**
+- 엔지니어가 하나의 분석 세션에서 두 가지 다른 접근 방식(캐싱, 큐잉)을 각각 `resume`하여 독립적인 탐색을 수행하고자 함.
+- 그러나 동일 세션 ID로 `resume`을 연속 호출하면 단일 대화 이력에 두 접근 방식에 대한 탐색 내용이 순차적으로 추가(Append)됨.
+- 이로 인해 두 번째 탐색(큐잉)을 진행할 때 LLM 맥락에 첫 번째 탐색(캐싱)의 내용이 남아있어 독립성이 오염되는 문제가 발생함.
+
+**B번이 정답인 이유:**
+동일한 세션을 두 번 `resume`할 경우 두 번째 탐색 프롬프트는 첫 번째 탐색의 대화 이력 뒤에 덧붙여집니다. 따라서 두 번째 탐색 시 모델이 첫 번째 탐색의 결과와 맥락을 참조하게 되므로 완전한 독립성이 보장되지 않습니다. 두 개의 독립된 탐색 브랜치를 만들려면 `fork`를 사용하여 히스토리를 갈라놓아야 하므로 동료의 우려가 타당하며, B번 설명이 이를 가장 명확하게 지적하고 있습니다.
+
+**오답 분석:**
+- Option A (오답): Resume과 Fork는 히스토리 병합 구조 및 독립된 브랜치 생성 여부에서 동작 방식이 전혀 다릅니다.
+- Option C (오답): Resume은 동일 세션 ID에 대해 여러 번 호출할 수 있습니다. 단지 동일한 히스토리 라인 뒤에 계속 덧붙여질 뿐, 두 번째 호출이 에러로 실패하지는 않습니다.
+- Option D (오답): Resume 수행 시 이전 도구 결과나 대화 이력을 폐기(Discard)하지 않고 모두 보존하여 전달합니다.
+
+---
+
+## 26번 문제 (원본 75번)
+
+**어려운 이유** [원칙이 깨지는 예외] — "falls through to ... by default"라는 표현이 가리키는 폴백 분기의 위험성을 정확히 이해해야 한다.
+
+**1. 문제 원문**
+
+An agent loop generating a long report hits a response where stop_reason comes back as "max_tokens" rather than "tool_use" or "end_turn", because the output was truncated before Claude could finish. The loop's control flow only branches on those two familiar values and **falls through(의도한 분기를 타지 못하고 그냥 넘어가다)** to the "end_turn" branch **by default(기본적으로)**. What is the risk of that fallback behavior?
+
+**A) The loop treats a truncated, incomplete response as if the task were finished, so it stops the agent before Claude has actually completed the work**
+
+~~B) The loop **discards(폐기하다)** the truncated response entirely and silently resends the very first request in the conversation from scratch~~
+
+~~C) The loop automatically increases the max_tokens parameter on the very next outgoing request without any code change, resolving the truncation entirely~~
+
+~~D) The loop crashes immediately with an unhandled exception, since "max_tokens" is not a value the Messages API is permitted to return~~
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답: A번**
+
+**정답 및 해설:**
+
+**핵심 개념**: API `stop_reason` 예외 처리 및 토큰 제한(Max Tokens Truncation).
+Claude Messages API에서 `stop_reason`이 `"max_tokens"`로 반환되는 것은 모델이 응답을 마쳐서 끝난 것(`"end_turn"`)이 아니라 지정된 최대 토큰 수에 도달하여 응답이 도중에 끊겼음을 의미합니다. 이를 별도로 처리하지 않고 `"end_turn"`과 동일하게 처리하면 에이전트는 미완성된 결과물을 최종 결과물로 오인하게 됩니다.
+
+**문제 상황 분석:**
+- 에이전트 루프가 대화록 또는 긴 보고서를 생성하던 중 출력 한계에 도달함
+- API 응답의 `stop_reason`이 `"max_tokens"`로 반환되어 생성이 중단됨
+- 제어 로직이 `"tool_use"`와 `"end_turn"`만 분기하도록 작성되어, 기본 폴백(fallback) 로직에 의해 `"end_turn"` 분기로 처리됨
+
+**A번이 정답인 이유:**
+
+**`stop_reason`이 `"max_tokens"`일 때 `"end_turn"` 분기로 떨어지면, 시스템은 모델이 답변 생성을 완료한 것으로 판단하여 루프를 정상 종료**합니다. 결과적으로 Claude가 작성을 채 마치지 않은 잘린(truncated) **미완성 보고서를 최종 결과로 받아들여 작업을 조기 종료**하게 되는 심각한 논리 오류가 발생합니다.
+
+**오답 분석:**
+
+- Option B (오답): 잘못된 폴백 분기로 인해 기존 응답을 버리고 처음부터 재요청하는 일은 발생하지 않으며, 단지 현재의 잘린 응답을 완성본으로 처리할 뿐입니다.
+- Option C (오답): 별도의 코드 작성이나 `max_tokens` 증가 제어 로직 없이 자동으로 다음 요청의 `max_tokens` 값이 늘어나지는 않습니다.
+- Option D (오답): `"max_tokens"`는 Messages API가 제공하는 정식 표준 `stop_reason` 값 중 하나이므로 이 값 자체가 언핸들드 예외나 시스템 래시를 일으키지는 않습니다.
+
+---
+
+## 27번 문제 (원본 95번)
+
+**어려운 이유** [원칙이 깨지는 예외] — 오케스트레이터가 상충 결과를 직접 판정해줄 것이라는 직관이 깨지고, "unilaterally resolving"(일방적으로 해결하는 것)을 피해야 한다는 원칙을 알아야 한다.
+
+**1. 문제 원문**
+
+Two sub-agents independently research the release year of a major historical event: one reports 1969, the other reports 1970, citing different sources. Under the orchestrator-subagent pattern, how should the orchestrator handle this discrepancy before presenting a final answer?
+
+**A) The orchestrator aggregates the findings and presents the conflicting reports to the end user with references to the different sources, rather than *unilaterally(일방적으로)* resolving the discrepancy.**
+
+~~B) The end user handles the discrepancy because sub-agents are not permitted to report ambiguous or conflicting findings to the orchestrator.~~
+
+~~C) Whichever sub-agent returned its result first takes precedence, since first-to-respond is authoritative in a hub-and-spoke architecture.~~
+
+~~D) The conflicting results should be discarded to maintain output consistency, and the orchestrator should provide no answer.~~
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답: A번**
+
+**정답 및 해설:**
+
+**핵심 개념**: 오케스트레이터-서브에이전트 패턴(Orchestrator-Subagent Pattern) 및 데이터 합성(Data Synthesis)
+오케스트레이터-서브에이전트 패턴에서 오케스트레이터의 역할은 하위 에이전트들의 작업 결과를 수집, 요약, 종합(Synthesize)하여 사용자에게 명확한 정보를 전달하는 것입니다. 출처가 다른 상충 정보가 발생했을 때 환각(Hallucination)이나 자의적 판단으로 특정 값을 임의 채택하지 않고, 근거와 함께 상충 상황을 투명하게 안내하는 것이 올바른 디자인 패턴입니다.
+
+**문제 상황 분석:**
+- 두 서브 에이전트가 동일한 사건에 대해 서로 다른 출처를 기반으로 1969년과 1970년이라는 불일치된 결과를 반환함.
+- 오케스트레이터는 어느 한쪽이 확실히 맞다고 단정할 수 없는 상태에 직면함.
+- 시스템의 신뢰성과 투명성을 유지하면서 최종 답변을 사용자에게 제공해야 함.
+
+**A번이 정답인 이유:**
+오케스트레이터는 자의적으로 불일치를 무시하거나 하나의 답을 임의 선택해서는 안 됩니다. 대신 두 서브 에이전트의 조사 결과를 모두 집계하고, 각각의 출처 정보와 함께 상충되는 내용을 사용자에게 있는 그대로 제시하여 사용자가 상황을 판단할 수 있도록 돕는 것이 시스템의 투명성과 정보 정확성 측면에서 가장 적절합니다.
+
+**오답 분석:**
+
+- Option B (오답): 서브 에이전트가 오케스트레이터에게 모호하거나 상충되는 결과를 보고할 수 없다는 제약 조건은 사실이 아닙니다. 서브 에이전트는 검색/조사된 결과를 있는 그대로 보고해야 합니다.
+- Option C (오답): 단순히 먼저 응답했다는 속도(First-to-respond)만으로 결과의 정확성이나 권위(Authoritative)를 담보할 수 없습니다.
+- Option D (오답): 결과가 상충된다고 해서 모든 정보를 폐기하고 아무런 답변도 제공하지 않는 것은 시스템의 유용성을 크게 저해하는 잘못된 방식입니다.
+
+---
+
+## 28번 문제 (원본 1번)
+
+**어려운 이유** [유사 현상 구분] — "identically"라는 표현으로 두 루프가 항상 같이 움직인다고 주장하는 매력적인 오답이 있어, stop_reason과 텍스트 유무가 독립적으로 변할 수 있음을 알아야 한다.
+
+**1. 문제 원문**
+
+A team is implementing termination logic for an autonomous refactoring agent. Loop A exits when `response.stop_reason == "end_turn"`. Loop B exits when the assistant's final text block is non-empty, on the **assumption(추정)** that any **explanatory(설명적인)** text means Claude is finished. Which loop correctly implements the standard termination pattern?
+
+~~A) Both loops behave **identically(동일하게)** in practice, since stop_reason and trailing text emptiness always change together on every response~~
+
+~~B) Loop B, because a populated final text block is treated as the only reliable indicator that Claude has stopped requesting further tool calls~~
+
+C) Loop A, because stop_reason directly reports whether Claude finished its turn without requesting a tool, which is the documented signal
+
+~~D) Neither loop works, because the API only signals completion through the total count of content blocks returned in the response~~
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답: C번**
+
+**정답 및 해설:**
+
+**핵심 개념**: Anthropic Claude API의 에이전틱 루프 종료 패턴 (Agent Loop Termination)
+
+Claude API에서는 모델이 턴을 완료했는지, 아니면 도구 호출(`tool_use`)을 요청하는 중인지를 판별하기 위해 공식적으로 `stop_reason` 필드를 제공합니다. `stop_reason`이 `"end_turn"`인 경우 더 이상 실행할 도구가 없으며 모델이 응답을 마쳤음을 나타냅니다. 반면 도구를 사용할 때는 `stop_reason`이 `"tool_use"`가 됩니다.
+
+**문제 상황 분석:**
+
+* 에이전트 루프 제어 시, Claude가 추가적인 Tool을 호출할지 작업이 완전히 끝났는지를 신뢰성 있게 판단해야 함
+* 루프 B는 "텍스트 존재 여부"라는 불확실한 부수 효과(Side Effect)에 의존하여 종료를 판단하려 함
+* 루프 A는 API에서 정식 명세로 제공하는 `stop_reason` 값을 활용하여 정확한 턴 종료 상태를 감지함
+
+**C번이 정답인 이유:**
+Anthropic Claude API 공식 문서에 따르면, 모델 응답의 완료 신호는 `response.stop_reason` 필드로 제공됩니다. `stop_reason == "end_turn"`은 모델이 도구 요청 없이 자연스럽게 대화 턴을 마쳤음을 의미하므로, 에이전트 루프를 안전하고 올바르게 종료하는 표준 조건입니다.
+
+**오답 분석:**
+
+- Option A (오답): 도구를 호출하는 응답(`tool_use`)에서도 텍스트 설명이 포함될 수 있으므로, `stop_reason`과 텍스트 유무는 함께 움직이지 않습니다.
+
+- Option B (오답): 텍스트 블록의 존재는 도구 호출 중에도 발생할 수 있으므로 신뢰할 수 있는 종료 지표가 아닙니다.
+
+- Option D (오답): API는 콘텐츠 블록의 총 개수가 아닌 `stop_reason` 필드를 통해 완료 상태를 전달합니다.
+
+---
+
+## 29번 문제 (원본 16번)
+
+**어려운 이유** [복합 시나리오] — "given"이 "~을 고려할 때"라는 뜻으로 쓰였음을 놓치면 문제 조건(사전 정보 없음, 경로 예측 불가) 자체를 오독하게 되어 정적 체인 계열 오답에 끌리기 쉽다.
+
+**1. 문제 원문**
+
+An architect is asked to design an agent that investigates why a production incident occurred, **given(~을 고려할 때, ~밖에 없는 상태에서)** only a **vague(희미한)** alert message and no prior knowledge of which service is at fault. The number of logs, services, and code paths to inspect cannot be known ahead of time. Which **decomposition(분해)** approach is most appropriate?
+
+~~A) A single prompt that asks the model to name the root cause immediately from only the wording of the alert message~~
+
+~~B) A prompt chain with a hardcoded set of five investigation steps that always runs in full regardless of what is found~~
+
+~~C) A fixed sequential chain that always inspects the database, then the cache layer, then the load balancer, in that fixed order~~
+
+D) A dynamic orchestrator that generates and prioritizes new investigation subtasks based on what each prior step uncovers
+
+---
+
+**3. 정답 및 해설 (Answer & Explanation)**
+
+**정답: D번**
+
+**정답 및 해설:**
+
+**핵심 개념**: 동적 오케스트레이션 및 작업 분해 (Dynamic Orchestration & Task Decomposition)
+
+탐색 대상의 범위, 경로, 단계 수를 **사전에 예측할 수 없는 복잡한 문제** (장애 원인 분석 등)를 해결할 때는 **동적 오케스트레이터(Dynamic Orchestrator)** 패턴이 적합합니다. 이 접근 방식은 이전 실행 단계의 결과 및 조사 내용을 바탕으로 다음으로 수행해야 할 하위 작업(Subtask)을 실시간으로 동적 생성하고 우선순위를 재조정합니다.
+
+**문제 상황 분석:**
+
+* 모호한 경고 메시지만 주어진 상태이며, 어느 서비스에서 문제가 발생했는지에 대한 사전 정보가 없음
+* 검사해야 하는 로그, 대상 서비스, 코드 경로의 수를 사전에 정의하는 것이 불가능함
+* 정적인 규칙이나 고정된 단계로는 가변적인 조사 상황에 대응할 수 없는 구조임
+
+**D번이 정답인 이유:**
+사전에 탐색 경로를 알 수 없는 장애 조사의 경우, 각 단계에서 발견되는 단서(로그 메시지, 오류 코드 등)에 따라 조사 방향이 유연하게 달라져야 합니다. 동적 오케스트레이터(Dynamic Orchestrator)는 앞선 단계의 조사 결과를 해석하여 추가로 수행할 작업을 동적으로 생성하고 우선순위를 부여하므로 문제 상황의 요구조건에 완벽하게 부합합니다.
+
+**오답 분석:**
+
+- Option A (오답): 모호한 알림 문구 하나만으로 단일 프롬프트에서 즉시 근본 원인을 추론하는 것은 환각(Hallucination)을 유발하며 불가능한 요구사항입니다.
+- Option B (오답): 고정된 5단계 프롬프트 체인은 상황 변화에 적응하지 못하며, 불필요한 단계를 고정 실행하게 되거나 필요한 조사를 누락시킵니다.
+- Option C (오답): 데이터베이스 ➔ 캐시 ➔ 로드 밸런서로 고정된 순서의 체인을 사용하는 것은 문제의 원인이 다른 영역(예: 서드파티 API, 인증 서비스 등)에 있을 경우 근본 원인을 찾지 못하게 됩니다.
 
 ---
