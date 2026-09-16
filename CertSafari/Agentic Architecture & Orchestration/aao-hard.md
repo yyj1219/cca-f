@@ -16,6 +16,17 @@
 
 ---
 
+* _rather than blocking it outright_ : 완전히 차단하기 보다는
+* _regardless of_ : ~에 상관없이
+* _relative to each other_ : 서로간에
+* _the order of_ : 대략적인 규모
+* _the order of two hundred_ : 약 200개
+* _far more than_ : 훨씬 더
+* _the handful of_ : 소수의
+* _per turn_ : 한 턴 당
+
+---
+
 ```
 [사용자 프롬프트]
       │
