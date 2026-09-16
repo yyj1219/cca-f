@@ -110,6 +110,9 @@ Claude 에이전트 SDK의 `PreToolUse` 훅은 도구가 실행되기 전에 호
 
 For refunds between $500 and $1000, policy requires the agent to pause and let a human reviewer approve or reject before the refund proceeds, rather than blocking it outright or letting it run automatically. Which PreToolUse hookSpecificOutput configuration matches this requirement?
 
+* _rather than blocking it outright_ : 완전히 차단하기 보다는
+
+
 A) permissionDecision set to "deny", paired with a permissionDecisionReason that instructs the model to contact a human reviewer on its own
 
 ~~B) permissionDecision set to "allow", combined with an additionalContext note asking the model to mention the amount to the user afterward~~
@@ -200,6 +203,8 @@ D) Use `permissionDecision: 'ask'` to require human approval for the refund, sto
 **1. 문제 원문**
 
 An agent handles two kinds of unverified requests: viewing a masked order history (read-only, low risk) and issuing a refund (financial, irreversible). The architect wants to gate both with PreToolUse hooks but use different permission decisions based on risk. Which pairing of returned `permissionDecision` values best fits the two cases before identity is verified?
+
+* _regardless of_ : ~에 상관없이
 
 A) "ask" for the refund and "allow" for the masked order history lookup, because the irreversible refund needs human confirmation before proceeding, while the masked, read-only lookup is low risk and can be permitted automatically.
 
@@ -483,6 +488,8 @@ C) The SDK raises a configuration error and halts the session, because hooks mat
 
 A team wants to enforce that get_customer must run before process_refund, and registers two separate PreToolUse hooks: one matched to get_customer that writes a "verified" marker to a session file, and one matched to process_refund that reads that same file. A reviewer worries this design assumes the hooks run in a guaranteed order relative to each other. Is that **assumption(가정)** safe, and why?
 
+* _relative to each other_ : 서로간에
+
 A) It is unsafe, because each hook runs only when its matched tool is invoked, but nothing guarantees that get_customer is invoked before process_refund. The model could skip the **prerequisite(전제조건)** tool entirely, causing the process_refund hook to read a file that may not exist or contain valid data.
 
 B) It is unsafe, because hooks matched to different tools share no session state with each other at all, so the process_refund hook can never see a file written by the get_customer hook.
@@ -616,6 +623,8 @@ D) The matcher `/refund/` uses a regular expression, but regular expression matc
 **1. 문제 원문**
 
 An agent's inventory_lookup MCP tool returns stock levels as a numeric status code (0, 1, 2) meaning in-stock, low-stock, and out-of-stock respectively, while a separate warehouse_lookup tool returns the same concept as plain strings. The architect wants the model to reason over one **consistent vocabulary(일관된 어휘, 동일한 규격의 문자열 표현)** for stock status regardless of which tool answered. Which hook change achieves this with a deterministic guarantee?
+
+* _regardless of_ : ~에 상관없이
 
 ~~A) A SessionStart hook that documents the numeric-to-string mapping once in a system message shown to the user at the beginning of the session~~
 
@@ -875,15 +884,17 @@ LLM에게 프롬프트 텍스트로 특정 서브에이전트를 사용하라고
 
 **1. 문제 원문**
 
-A "test-runner" subagent is defined with tools set to ["Bash", "Read", "Grep"]. The coordinator that spawns it has a settings.local.json deny rule that blocks Bash usage. When the coordinator delegates a task to test-runner, can the subagent successfully execute Bash commands?
+A "test-runner" subagent is defined with tools set to ["Bash", "Read", "Grep"]. The coordinator that spawns it has a **settings.local.json** deny rule that blocks Bash usage. When the coordinator delegates a task to test-runner, can the subagent successfully execute Bash commands?
+
+* _regardless of_ : ~에 상관없이
 
 A) Yes, because a subagent's own tools field independently grants it access to Bash regardless of coordinator-level deny rules.
 
-B) No, because subagents must inherit coordinator-level deny rules, so Bash calls inside test-runner would be blocked.
+**B) No, because subagents must inherit coordinator-level deny rules, so Bash calls inside test-runner would be blocked.**
 
 C) No, because Task must also appear in the subagent's own tools field before any of its other listed tools become usable during execution.
 
-D) Yes, but only for the first Bash call; subsequent Bash calls would then be denied.
+~~D) Yes, but only for the first Bash call; subsequent Bash calls would then be denied.~~
 
 ---
 
@@ -894,7 +905,7 @@ D) Yes, but only for the first Bash call; subsequent Bash calls would then be de
 **정답 및 해설:**
 
 **핵심 개념**: 서브 에이전트 권한 상속(Permission Inheritance) 및 설정 계층 구조
-Claude Code 및 에이전트 오케스트레이션 프레임워크에서 서브 에이전트는 상위(코디네이터) 에이전트의 보안 설정 및 접근 제어 규칙을 상속받습니다. 코디네이터 수준의 `settings.local.json`에 정의된 차단 규칙(`deny rule`)은 서브 에이전트 자체에 어떤 도구(`tools`)가 명시되어 있든 관계없이 상위 가드레일로서 최우선 적용됩니다.
+Claude Code 및 에이전트 오케스트레이션 프레임워크에서 **서브 에이전트는 상위(코디네이터) 에이전트의 보안 설정 및 접근 제어 규칙을 상속**받습니다. 코디네이터 수준의 `settings.local.json`에 정의된 차단 규칙(`deny rule`)은 서브 에이전트 자체에 어떤 도구(`tools`)가 명시되어 있든 관계없이 상위 가드레일로서 최우선 적용됩니다.
 
 **문제 상황 분석:**
 - `test-runner` 서브 에이전트는 자체 정의상 `Bash` 도구를 사용할 수 있도록 선언됨.
@@ -908,7 +919,7 @@ Claude Code 및 에이전트 오케스트레이션 프레임워크에서 서브 
 
 - Option A (오답): 서브 에이전트의 설정이 상위 코디네이터의 보안/거부 정책을 우회하거나 무시할 수는 없습니다.
 - Option C (오답): `Task` 도구 유무와 무관하게 차단의 원인은 코디네이터 레벨의 `Bash` 거부 규칙 상속 때문입니다.
-- Option D (오답): 횟수와 관계없이 코디네이터 차단 정책에 의해 첫 번째 `Bash` 호출부터 즉시 거부됩니다.
+- ~~Option D (오답): 횟수와 관계없이 코디네이터 차단 정책에 의해 첫 번째 `Bash` 호출부터 즉시 거부됩니다.~~
 
 ---
 
@@ -926,7 +937,7 @@ B) Nesting stops automatically after the second level unless the subagent's mode
 
 C) Nesting is unlimited as long as each subagent has the Agent tool included in its allowed tools list.
 
-D) Subagents can nest up to a maximum of five levels deep, including the main agent as the first level.
+**D) Subagents can nest up to a maximum of five levels deep, including the main agent as the first level.**
 
 ---
 
@@ -969,7 +980,7 @@ B) A completely empty result with no indication that an error occurred, requirin
 
 C) The full expected output, reconstructed from cached intermediate tool calls made before the overload occurred
 
-D) The partial text output the subagent already produced, along with a note that the subagent didn't finish
+**D) The partial text output the subagent already produced, along with a note that the subagent didn't finish**
 
 ---
 
@@ -980,7 +991,7 @@ D) The partial text output the subagent already produced, along with a note that
 **정답 및 해설:**
 
 **핵심 개념**: 서브 에이전트 부분 출력 반환(Partial Output Recovery) 및 에러 처리
-Claude Code의 서브 에이전트 실행 중 서버 과부하(Server Overload), 타임아웃, 중단 등 예외 상황이 발생하면, 코디네이터 에이전트가 작업 상황을 파악하고 이후 복구 전략을 결정할 수 있도록 기존까지 생성된 부분 결과물(Partial Output)과 미완료 상태 표시를 함께 반환합니다.
+Claude Code의 서브 에이전트 실행 중 서버 과부하(Server Overload), 타임아웃, 중단 등 예외 상황이 발생하면, 코디네이터 에이전트가 작업 상황을 파악하고 이후 복구 전략을 결정할 수 있도록 기존까지 생성된 **부분 결과물(Partial Output)과 미완료 상태 표시를 함께 반환**합니다.
 
 **문제 상황 분석:**
 - 서브 에이전트가 긴 분석 작업 중 여러 단락의 텍스트를 정상 생성함.
@@ -1010,15 +1021,15 @@ Anthropic 공식 규격상 서브 에이전트 실행이 중간에 예외로 끊
 
 **1. 문제 원문**
 
-A support-ticket triage system always performs the same three actions on every incoming ticket: classify category, extract customer sentiment, and generate a brief summary. None of these actions ever depend on the outcome of another action within the same ticket. Based on Anthropic's workflow patterns, which decomposition or execution pattern is most appropriate, and what is the key justification?
+A support-ticket triage system always performs the same three actions on every incoming ticket: classify category, extract customer sentiment, and generate a brief summary. None of these actions ever depend on the outcome of another action within the same ticket. Based on Anthropic's workflow patterns, which **decomposition(분해)** or execution pattern is most **appropriate(적절한)**, and what is the key **justification(정당화)**?
 
-A) An adaptive investigation plan, because triage requires generating new subtasks based on what earlier steps in the ticket discover.
+A) An adaptive(적응형) investigation plan, because triage requires generating new subtasks based on what earlier steps in the ticket discover. => 적응형 방식은 동적으로 하위 작업을 만들어냄.
 
-B) Execute the three actions in parallel using separate, concurrent LLM calls, then aggregate the results. Justification: The subtasks are independent, so parallelization improves efficiency and follows Anthropic's recommended pattern for independent subtask execution.
+B) Execute the three actions in **parallel using separate, concurrent LLM calls**, then aggregate the results. Justification: The subtasks are independent, so parallelization improves efficiency and follows Anthropic's recommended pattern for independent subtask execution.
 
-C) A dynamic orchestrator, because sentiment extraction might reveal information that changes how many classification steps are needed.
+~~C) A dynamic orchestrator, because sentiment extraction might reveal information that changes how many classification steps are needed.~~
 
-D) A fixed prompt chain, because the subtasks are the same for every ticket and can be cleanly predetermined regardless of ticket content.
+D) A fixed prompt chain, because the subtasks are the same for every ticket and can be cleanly **predetermined(미리 정해져있는)** **regardless(~에 관계없이)** of ticket content.
 
 ---
 
@@ -1043,7 +1054,7 @@ Anthropic이 제시하는 LLM 워크플로우 디자인 패턴에 따르면, **�
 
 **오답 분석:**
 
-- Option A (오답): 이전 단계의 발견 내용에 따라 새로운 하위 작업을 동적으로 계속 만들어내는 적응형 방식은 서로 독립적이고 고정된 3개 작업에 불필요한 오버헤드를 발생시킵니다.
+- Option A (오답): 이전 단계의 발견 내용에 따라 새로운 **하위 작업을 동적으로 계속 만들어내는 적응형 방식**은 서로 독립적이고 고정된 3개 작업에 불필요한 오버헤드를 발생시킵니다.
 
 - Option C (오답): 감정 추출 결과에 따라 단계가 변한다는 전제는 문제의 "어떠한 작업도 다른 작업의 결과에 의존하지 않는다"는 지문 조건에 위배됩니다.
 
@@ -1059,13 +1070,13 @@ Anthropic이 제시하는 LLM 워크플로우 디자인 패턴에 따르면, **�
 
 A support-ticket triage system always invokes a full pipeline of five subagents (classifier, sentiment analyzer, knowledge-base search, summarizer, and escalation checker) for every incoming ticket, including simple one-line requests that only need classification. Response times have become unacceptable. How should the coordinator be redesigned?
 
-A) Run all five subagents in parallel for every ticket so total latency matches the slowest subagent instead of the sum.
+~~A) Run all five subagents in parallel for every ticket so total latency matches the slowest subagent instead of the sum.~~
 
-B) Convert all five subagents into a single subagent that runs every step sequentially without coordinator involvement.
+~~B) Convert all five subagents into a single subagent that runs every step sequentially without coordinator involvement.~~
 
 C) Have the coordinator assess each ticket's complexity by running a dedicated lightweight classification prompt that returns a structured JSON object with fields like `complexity` (e.g., `low`, `medium`, `high`) and `required_subagents`, then dynamically invoke only the subagents listed in that output.
 
-D) Remove the coordinator entirely and let the classifier subagent directly invoke the remaining subagents it deems necessary.
+~~D) Remove the coordinator entirely and let the classifier subagent directly invoke the remaining subagents it deems necessary.~~
 
 ---
 
@@ -1100,13 +1111,19 @@ D) Remove the coordinator entirely and let the classifier subagent directly invo
 
 **1. 문제 원문**
 
-A coordinator needs to orchestrate a large-scale codebase migration involving on the order of two hundred independent file-level subtasks, far more than the handful of subagents a coordinator typically delegates to per turn. Which approach is best suited to this scale?
+A coordinator needs to orchestrate a large-scale codebase migration **involving on (~에 관여하다)** **the order of(대략적인 규모)** two hundred independent file-level subtasks, **far more than(훨씬 더)** / **the handful of(소수의)** subagents a coordinator **typically(일반적으로)** delegates to **per turn(한 턴 당)**. Which approach is best suited to this scale?
 
-A) Use the Workflow tool to move orchestration into a script the runtime executes outside the conversation itself
+* _the order of_ : 대략적인 규모
+* _the order of two hundred_ : 약 200개
+* _far more than_ : 훨씬 더
+* _the handful of_ : 소수의
+* _per turn_ : 한 턴 당
 
-B) Invoke a single general-purpose subagent and have it sequentially handle all subtasks within one context window
+**A) Use the Workflow tool to move orchestration into a script the runtime executes outside the conversation itself**
 
-C) Keep using turn-by-turn subagent delegation but increase the coordinator's maxTurns to accommodate more invocations
+~~B) Invoke a single general-purpose subagent and have it sequentially handle all subtasks within one context window~~
+
+~~C) Keep using turn-by-turn subagent delegation but increase the coordinator's maxTurns to accommodate more invocations~~
 
 D) Split the migration across multiple coordinators that each independently maintain their own separate pipeline
 
@@ -1118,7 +1135,7 @@ D) Split the migration across multiple coordinators that each independently main
 
 **정답 및 해설:**
 
-**핵심 개념**: 대규모 에이전트 오케스트레이션과 외부 스크립트/Workflow 분리. 200개 이상의 무거운 서브태스크를 대화형 LLM 턴(Turn) 내에서 직접 조율하면 토큰 소비, 턴 제한, 대화 컨텍스트 오버헤드가 극심해지므로 결정론적인 외부 스크립트/Workflow 기반으로 오케스트레이션 로직을 분리하는 것이 정석입니다.
+**핵심 개념**: 대규모 에이전트 오케스트레이션과 **외부 스크립트/Workflow 분리**. 200개 이상의 무거운 서브태스크를 대화형 LLM 턴(Turn) 내에서 직접 조율하면 토큰 소비, 턴 제한, 대화 컨텍스트 오버헤드가 극심해지므로 결정론적인 외부 스크립트/Workflow 기반으로 오케스트레이션 로직을 분리하는 것이 정석입니다.
 
 **문제 상황 분석:**
 - 200여 개의 파일 수준 독립 서브태스크를 다루는 대규모 마이그레이션 작업을 오케스트레이션해야 함.
