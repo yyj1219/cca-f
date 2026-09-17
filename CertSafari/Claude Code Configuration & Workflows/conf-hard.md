@@ -165,51 +165,6 @@ A contractor clones a repository containing a project skill at `.claude/skills/p
 
 ---
 
-## 14번 문제 (원본 71번)
-
-**어려운 이유** [복합 시나리오, 덜 틀린 답 고르기] — "스킬 본문은 한 번 로드되면 세션 내내 남는다"는 단서가 스킬 선택을 망설이게 만들지만, 그래도 매 세션 상시 로드보다 낫다는 상대 비교를 해야 한다.
-
-**1. 문제 원문**
-
-A large, rarely-needed compliance reference document is currently pasted into CLAUDE.md, and the team notices every session now starts with a noticeably larger context footprint even on days nobody needs the compliance information. Once loaded, a skill's body stays in context for the rest of that session too. Given this, which change reduces the typical per-session cost most, while still making the reference available when it is actually needed?
-
-A) Move the document into a `.claude/skills/compliance-reference/SKILL.md` skill, since its content is loaded only in the sessions where it's actually invoked, rather than in every session by default.
-
-B) Add `effort: low` to the YAML frontmatter of `CLAUDE.md`, which instructs Claude Code to load a reduced token-count representation of the file's instructions, leaving out the rarely-needed compliance details until explicitly requested.
-
-C) Split `CLAUDE.md` into `CLAUDE_core.md` and `CLAUDE_compliance.md`, so that Claude Code loads only the alphabetically first file's content per session, keeping the compliance content unloaded unless referenced.
-
-D) Move the document into a `.claude/commands/compliance.md` command file, since commands undergo transparent compression that leads to a smaller context footprint than raw `CLAUDE.md` instructions, without any manual intervention.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-**A번**: Move the document into a `.claude/skills/compliance-reference/SKILL.md` skill, since its content is loaded only in the sessions where it's actually invoked, rather than in every session by default.
-
-**정답 및 해설:**
-
-**핵심 개념**: Claude Code Custom Skills 온디맨드(On-demand) 로딩 매커니즘
-`CLAUDE.md`에 작성된 내용은 모든 세션이 시작될 때마다 시스템 프롬프트/기본 컨텍스트로 무조건 로드되지만, `.claude/skills/` 디렉터리에 정의된 스킬은 선언(메타데이터)만 노출되다가 사용자가 해당 스킬을 명시적으로 호출(Invoke)할 때에만 본문 내용을 컨텍스트로 불러옵니다.
-
-**문제 상황 분석:**
-- 용량이 크고 드물게 쓰이는 문서가 `CLAUDE.md`에 포함되어 있어 매 세션마다 불필요한 토큰 소비와 비용 발생
-- 규정 준수 정보가 필요한 특정 상황에만 참조할 수 있도록 유지해야함
-- 세션 기본 토큰 비용(Per-session cost)을 최적화할 수 있는 아키텍처 패턴이 필요함
-
-**A번이 정답인 이유:**
-해당 참조 문서를 커스텀 스킬(`.claude/skills/compliance-reference/SKILL.md`) 형태로 분리하면, 평소 세션에서는 로드되지 않아 세션 기본 토큰 비용이 획기적으로 절감됩니다. 실제로 규정 준수 검사나 참조가 필요한 세션에서만 호출되어 로드되므로 문제에서 요구하는 조건을 완벽히 충족합니다.
-
-**오답 분석:**
-
-- Option B (오답): YAML 프론트매터의 `effort: low` 기능은 컨텍스트 토큰을 줄여서 축약 로드해주는 설정이 아니며, 존재하지 않는 허구의 기능 설명입니다.
-- Option C (오답): Claude Code가 파일명의 알파벳순으로 첫 번째 파일만 읽고 나머지는 건너뛴다는 로직은 잘못된 설명입니다.
-- Option D (오답): 커맨드 파일이 컨텍스트를 투명하게 자동 압축(Transparent compression)하여 제공한다는 설명 역시 허구의 동작 방식입니다.
-
----
-
 ## 15번 문제 (원본 82번)
 
 **어려운 이유** [덜 틀린 답 고르기] — `.claude/agents/` 서브에이전트도 "호출될 때만 로드"라는 점에서 A가 실질적으로 맞는 방향이라, 절차적 체크리스트에는 스킬이 적합하다는 미세한 구분으로 갈린다.
