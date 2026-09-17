@@ -175,19 +175,13 @@ An engineer keeps pasting the same eight-step deployment checklist into chat whe
 
 A) Move the checklist into a subagent definition under `.claude/agents/` with the deployment steps, since subagents load conditionally only when invoked, keeping the main session focused on the current task.
 
-B) Keep expanding the `CLAUDE.md` section with detailed steps and failover instructions for multiple environments, since always-loaded content lets Claude consistently follow the full procedure on every request without prompting.
-
-C) Convert the checklist into a `hooks` entry in `settings.json` configured as a `PreToolUse` hook that runs the deployment steps before any tool invocation, since hooks execute at defined events without consuming context.
-
 D) Move the checklist into a `deploy-checklist` skill under `.claude/skills/`, since a skill's body only loads into context when it's invoked, unlike `CLAUDE.md` content which loads every session.
 
 ---
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**D번**: Move the checklist into a `deploy-checklist` skill under `.claude/skills/`, since a skill's body only loads into context when it's invoked, unlike `CLAUDE.md` content which loads every session.
+**정답: D번**
 
 **정답 및 해설:**
 
@@ -200,14 +194,11 @@ D) Move the checklist into a `deploy-checklist` skill under `.claude/skills/`, s
 * 엔지니어가 채팅에 매번 직접 붙여넣는 수고를 줄이고 필요할 때만 불러와 쓰고 싶어 함
 * 매 턴마다 토큰을 차지하지 않으면서 필요 시에만 로드하는 메커니즘을 적용해야 함
 
+**A번이 정답이 아닌 이유:**
+엔지니어는 Claude가 자기 세션 안에서 그 절차를 따라 작업하기를 원하지, 별도 인스턴스에 배포를 위임하고 요약만 받으려는 게 아닙니다. Subagent에 절차를 넣으면 실제 실행 주체가 분리되면서 메인 세션은 그 단계들을 직접 보지 못합니다.
+
 **D번이 정답인 이유:**
 체크리스트를 `.claude/skills/deploy-checklist`와 같이 커스텀 스킬로 분리하면, 평소 세션에서는 메인 컨텍스트를 전혀 압박하지 않습니다. 실제 배포 작업이 필요한 시점에 사용자가 스킬을 호출할 때만 스킬의 본문이 컨텍스트로 로드되므로, 컨텍스트 효율성과 재사용성을 동시에 확보하는 가장 정석적인 방법입니다.
-
-**오답 분석:**
-
-- Option A (오답): 서브에이전트(`.claude/agents/`)는 복잡하고 독립적인 태스크를 분리 수행할 때 사용되며, 순차적인 체크리스트 절차 지침을 온디맨드로 참조하기 위한 최선의 단위는 스킬(Skill)입니다.
-- Option B (오답): `CLAUDE.md`를 계속 확장하면 모든 세션에서 고정적으로 소비되는 토큰 양이 커져 문제의 요구사항(필요할 때만 로드)에 직접 반합니다.
-- Option C (오답): `PreToolUse` 훅은 도구가 실행되기 전에 프로그래밍 방식으로 인자를 검사하거나 차단하는 메커니즘이며, 배포 체크리스트 절차 지침을 로드하는 용도로 적절하지 않습니다.
 
 ---
 
