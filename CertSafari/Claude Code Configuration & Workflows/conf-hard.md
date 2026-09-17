@@ -244,36 +244,31 @@ Claude Code의 스킬 우선순위 계층 구조는 `Enterprise > Personal (~/.c
 
 45: 재현성은 --bare. 64: Bash 차단은 --disallowedTools. 88: plan mode는 읽기에 승인 불필요.
 
-## 18번 문제 (원본 45번)
+## 18번 문제 (원본 45번) => 문제 해석 안 됨
 
 **어려운 이유** [덜 틀린 답 고르기, 근본 원인 vs 증상 완화] — stream-json 필터링·max-turns 제한은 출력을 후처리하는 증상 완화일 뿐이고, 자동 탐색 자체를 끄는 `--bare`를 알아야 재현성 요구를 만족한다.
 
 **1. 문제 원문**
 
-A security team wants a nightly Claude Code job to behave identically no matter which self-hosted runner picks it up, without being affected by a stray MCP server defined in one runner's shared `.mcp.json` or a hook left in a teammate's `~/.claude` directory. Which combination of choices best achieves this reproducibility goal?
+A security team wants a nightly Claude Code job to behave identically(동일하게) no matter which(어느 것이든) self-hosted runner picks it up, **without being affected** by a stray MCP server defined in one runner's shared `.mcp.json` or a hook left in a teammate's `~/.claude` directory. Which combination of choices best achieves this reproducibility goal?
 
-A) Invoke claude with `--output-format stream-json`, and pipe the event stream through a filter that discards any hook or MCP-related events from `.mcp.json` or `~/.claude`, so only the intended assistant content appears in the final output.
+A) Invoke claude with `--output-format stream-json`, and pipe the event stream through a filter that discards any hook or MCP-related events from `.mcp.json` or `~/.claude`, so only the **intended assistant content (의도한 보조 콘텐츠)** appears in the final output. => 이미 실행 중에 영향을 받고 난 이후에 처리하는 거라서 오답이다.
 
 B) Invoke claude with `--bare` in print mode and pass only the explicit flags needed (such as `--append-system-prompt` or `--settings`) so nothing is auto-discovered from the working directory or home folder.
-
-C) Invoke claude in ordinary `-p` mode, and set `--max-turns` to a low number such as 2, which limits any hook or MCP server from `.mcp.json` or `~/.claude` to at most two interactions, preventing them from altering the final output.
-
-D) Invoke claude with `--continue` and provide a pre-recorded session file that was created in a clean environment, so the job picks up that exact conversation state instead of auto-discovering any hooks or MCP servers from the runner.
 
 ---
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**B번**: Invoke claude with `--bare` in print mode and pass only the explicit flags needed (such as `--append-system-prompt` or `--settings`) so nothing is auto-discovered from the working directory or home folder.
+**정답: B번**
 
 **정답 및 해설:**
 
 **핵심 개념**: `--bare` 플래그를 통한 격리 및 자동 탐지 비활성화 (Environment Isolation)
-Claude Code CLI 실행 시 `--bare` 플래그를 지정하면 로컬 작업 디렉터리나 홈 디렉터리(`~/.claude`, `.mcp.json` 등)에서 자동으로 환경 설정, 훅(Hooks), MCP 서버, 프로젝트 전용 규칙 등을 탐지하고 로드하는 동작을 완전히 차단합니다. 이를 통해 외부 환경 요소를 격리하여 일관되고 재현 가능한(Reproducible) 실행 상태를 보장할 수 있습니다.
+Claude Code CLI 실행 시 `--bare` 플래그를 지정하면 로컬 작업 디렉터리나 홈 디렉터리(`~/.claude`, `.mcp.json` 등)에서 **자동으로 환경 설정, 훅(Hooks), MCP 서버, 프로젝트 전용 규칙 등을 탐지하고 로드하는 동작을 완전히 차단**합니다. 이를 통해 **외부 환경 요소를 격리**하여 일관되고 **재현 가능한(Reproducible)** 실행 상태를 보장할 수 있습니다.
 
 **문제 상황 분석:**
+
 - 여러 자체 호스팅 러너(Self-hosted runners) 환경에서 CI/CD 배치 작업을 수행할 때 환경에 따른 불일치가 발생할 수 있습니다.
 - 러너 기기의 공유 `.mcp.json`이나 개발자 홈 디렉터리(`~/.claude`)에 남아있는 임의의 훅 및 MCP 서버가 실행 과정에 개입하여 출력을 오염시킬 위험이 있습니다.
 - 실행 환경의 외부 요소 자동 탐지를 원천적으로 차단하고, 필요한 명시적 플래그만 지정하여 작업을 독립적으로 수행할 수 있는 방법이 필요합니다.
@@ -285,8 +280,6 @@ Claude Code CLI 실행 시 `--bare` 플래그를 지정하면 로컬 작업 디�
 
 - Option A (오답): 출력을 후처리(Post-filtering)하는 방식은 이미 실행 중에 훅이나 MCP 서버가 도구 실행 및 동작을 변경했거나 부작용(Side effect)을 일으킨 이후이므로 근본적인 동작 오염을 막지 못합니다.
 - Option B (정답): `--bare` 플래그를 사용해 로컬 설정 파일 및 훅의 자동 탐지를 차단합니다.
-- Option C (오답): `--max-turns`로 대화 회수를 제한하더라도 턴 내에서 여전히 로드된 훅이나 MCP 서버가 동작하므로 불필요한 개입이나 오류를 완전히 방지할 수 없습니다.
-- Option D (오답): `--continue` 옵션은 기존 대화 기록을 이어서 진행할 뿐, 현재 실행되는 러너 환경의 훅이나 MCP 서버 자동 로드를 차단해 주지 않습니다.
 
 ---
 
