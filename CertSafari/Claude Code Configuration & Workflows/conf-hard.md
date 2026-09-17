@@ -171,7 +171,7 @@ A contractor clones a repository containing a project skill at `.claude/skills/p
 
 **1. 문제 원문**
 
-An engineer keeps pasting the same eight-step deployment checklist into chat whenever they ask Claude to help ship a release, and the same steps have started to also live as a growing section in the project's `CLAUDE.md`. They want the procedure available on demand without it consuming context on every single turn of every session. What should they do?
+An engineer keeps pasting the same eight-step deployment checklist **into chat** whenever they ask Claude to help ship a release, and the same steps have started to also **live(존재하다)** as a **growing(점점 커지는)** section in the project's `CLAUDE.md`. They want the procedure available on demand without it consuming context on every single turn of every session. What should they do?
 
 A) Move the checklist into a subagent definition under `.claude/agents/` with the deployment steps, since subagents load conditionally only when invoked, keeping the main session focused on the current task.
 
