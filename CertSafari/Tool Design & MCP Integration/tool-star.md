@@ -1,6 +1,4 @@
-# Tool Design & MCP Integration — ★ 표시 문제 모음
-
-원본: tool-merged.md (★ 표시 20문제)
+# Tool Design & MCP Integration — ★ 표시
 
 ---
 
@@ -26,7 +24,6 @@ D) The research agent is passing incomplete findings, so the synthesis agent sea
 
 **정답 및 해설:**
 
-
 **핵심 개념**: 멀티 에이전트 역할 분리 및 최소 권한 도구 노출 (Least Privilege / Tool Scoping)  
 멀티 에이전트 시스템(Multi-Agent Architecture) 설계 시 각 에이전트에 필요한 도구만 선택적으로 전달(Tool Scoping)해야 합니다. 수행할 필요가 없는 도구(예: 종합 단계에서의 검색 도구)에 접근 권한이 열려 있으면 에이전트가 불필요하게 해당 도구를 호출하여 환각(Hallucination)을 일으키거나 출처의 일관성을 깨뜨릴 수 있습니다.
 
@@ -42,10 +39,6 @@ D) The research agent is passing incomplete findings, so the synthesis agent sea
 - Option B (오답): 온도를 낮춘다고 해서 불필요하게 노출된 도구에 대한 오호출을 근본적으로 막을 수 없으며, 확률적인 미봉책에 불과합니다.
 - Option C (오답): 도구 설명(Description)에 "종합 시 사용하지 말 것"이라는 텍스트 지침을 넣더라도, 프롬프트 지시를 우회하거나 무시하는 LLM의 특성상 도구 자체를 차단하는 것보다 불안정합니다.
 - Option D (오답): 문제의 원인은 리서치 결과의 완전성 부족이 아니라, 필요 없는 검색 도구가 종합 에이전트에 제공되었기 때문입니다.
-
-
----
-
 
 ---
 
@@ -71,7 +64,6 @@ D) The fetch tool's description exceeds a fixed token threshold, causing the mod
 
 **정답 및 해설:**
 
-
 **핵심 개념**: 프롬프트 엔지니어링 및 편향(Prompt Bias / Keyword Association)  
 시스템 프롬프트에 작성된 특정 키워드 문구("searching")는 모델이 도구를 선택할 때 강한 정렬 편향(Alignment Bias)을 유발할 수 있습니다. 도구 설명(Tool Description)이 아무리 정확하더라도, 상위 수준인 시스템 프롬프트의 강한 지시어와 특정 도구명(`search_web`) 간의 키워드 연관성이 도구 설명에 의한 합리적 판단을 덮어버릴(Override) 수 있습니다.
 
@@ -87,10 +79,6 @@ D) The fetch tool's description exceeds a fixed token threshold, causing the mod
 - Option A (오답): 특정 도구가 병렬 도구 사용 시 자동으로 필터링되어 고려 대상에서 제외되는 메커니즘은 존재하지 않습니다.
 - Option C (오답): 도구 스키마 내부에는 별도의 `temperature` 설정값이 존재하지 않으며, 온도는 모델 호출 단위의 생성 파라미터입니다.
 - Option D (오답): 설명 길이가 길다고 해서 모델이 해당 도구를 체계적으로 회피한다는 임계값 설정이나 동작 방식은 사실이 아닙니다.
-
-
----
-
 
 ---
 
@@ -116,7 +104,6 @@ D) Claude Code merges the tools from the custom server directly into the built-i
 
 **정답 및 해설:**
 
-
 **핵심 개념**: Claude Code 내장 예약어(Reserved Names) 및 MCP 서버 네이밍 충돌  
 Claude Code에는 시스템 내부 기능(예: `computer-use` 등)을 위해 미리 지정된 내장 MCP 서버 예약 명칭이 존재합니다. 커스텀 MCP 서버를 등록할 때 내부 예약어와 동일한 식별자 이름을 사용할 경우, 이름 충돌 방지 및 시스템 안정성을 위해 해당 서버 등록을 거부(Reject)하거나 스킵(Skip)하도록 설계되어 있습니다.
 
@@ -133,10 +120,6 @@ Claude Code에는 시스템 내부 기능(예: `computer-use` 등)을 위해 미
 - Option A (오답): 서버를 로드한 뒤 도구만 일부 몰래 제거(silently strip)하는 부분적인 비정상 로드 동작을 수행하지 않습니다.
 - Option C (오답): 사용자 정의 커스텀 서버가 기본 내장(Built-in) 서버의 기능을 덮어씌워 숨기는 것(Override/Hide)을 허용하지 않습니다.
 - Option D (오답): 사용자 정의 커스텀 도구를 내장 서버의 내부 도구 세트로 임의 병합(Merge)하지 않으며, 네이밍이 충돌하면 로드 자체를 거부합니다.
-
-
----
-
 
 ---
 
@@ -162,7 +145,6 @@ D) Give the processing agent a copy of the intake agent's status check tool, so 
 
 **정답 및 해설:**
 
-
 **핵심 개념**: 범위 지정 도구 접근 권한 (Scoped Tool Access) 및 최소 권한의 원칙 (Principle of Least Privilege)
 멀티 에이전트 아키텍처에서는 각 에이전트가 자신의 본래 역할에 필요한 최소한의 도구에만 접근할 수 있도록 도구 스코프(Scope)를 제한해야 합니다. 다른 에이전트의 역할 영역에 속하는 작업이 예외적으로 필요하더라도 전체 도구 세트를 부여하는 대신, 해당 목적에 국한된 좁은 범위(Narrow Scope)의 특정 도구만 제한적으로 허용하는 것이 보안 및 시스템 안정성 측면에서 올바른 설계입니다.
 
@@ -180,10 +162,6 @@ D) Give the processing agent a copy of the intake agent's status check tool, so 
 - Option A (오답): 단지 상태 조회가 필요하다는 이유로 처리 에이전트의 전체 도구 세트(Full tool set)를 제공하는 것은 과도한 권한 부여(Over-privileging)이며, 에이전트가 예기치 않게 처리 작업을 직접 실행할 위험이 생깁니다.
 - Option B (오답): 시스템에 필요한 필수 기능(상태 확인)을 아예 제거해 버리는 것은 유용성을 해치는 잘못된 접근 방식입니다.
 - Option D (오답): 상태 확인 작업이 필요한 쪽은 접수 에이전트인데, 처리 에이전트에 접수 에이전트의 도구를 사본으로 넘겨주는 방식은 문제의 요구사항과 맞지 않으며 논리적으로 불필요합니다.
-
-
----
-
 
 ---
 
@@ -209,7 +187,6 @@ D) Omitting the description field entirely, since errorCategory alone is suffici
 
 **정답 및 해설:**
 
-
 **핵심 개념**: MCP(Model Context Protocol) 구조화된 오류 응답 설계  
 MCP 표준 에러 응답은 기계적인 제어를 위한 플래그(`errorCategory`, `isRetryable` 등)와, LLM 에이전트가 이해하고 사용자에게 전달할 수 있는 사람이 읽기 쉬운 설명 텍스트(`description` / `message`)를 분리하여 작성합니다. 명확한 자연어 메시지가 제공될 때 에이전트는 복잡한 파싱 없이 사용자에게 원인을 명확히 안내할 수 있습니다.
 
@@ -226,10 +203,6 @@ MCP 표준 에러 응답은 기계적인 제어를 위한 플래그(`errorCatego
 - Option C (오답): 예약 충돌은 사용자가 시간대를 바꾸지 않는 한 동일한 요청을 무한 재시도(`isRetryable: true`)한다고 해서 해결되지 않으며, 잘못된 로직을 일으킵니다.
 - Option D (오답): 구체적인 세부 사유(어떤 이유로 거절되었는지)를 포함하는 description 필드를 생략하고 대분류 카테고리만 제공하면, 에이전트가 사용자에게 맥락에 맞는 정확한 안내를 제공할 수 없습니다.
 
-
----
-
-
 ---
 
 ## 17번 문제 (★)
@@ -240,12 +213,9 @@ A project-scoped stdio server's `.mcp.json` entry sets `"args": ["--root", "${CL
 
 A) It resolves correctly, since Claude Code injects `CLAUDE_PROJECT_DIR` into the spawned server's own environment, though a default like `${CLAUDE_PROJECT_DIR:-.}` remains the safer practice
 
-
 B) The expansion silently becomes an empty string in this case, since Claude Code never provides a value for this variable unless a plugin explicitly sets one
 
-
 C) The expansion fails outright, because `${CLAUDE_PROJECT_DIR}` can only ever be read from the invoking shell's own environment, never from a value Claude Code injects itself
-
 
 D) The expansion falls back automatically to the user's home directory, since that is treated as the implicit default whenever no fallback is written in `.mcp.json`
 
@@ -272,8 +242,6 @@ Claude Code는 쉘 실행 환경에 해당 변수가 설정되어 있지 않더�
 - Option C (오답): 변수를 오직 호출 쉘(Invoking shell)에서만 읽을 수 있는 것은 아니며, Claude Code가 스스로 주입한 값을 정상 수신합니다.
 - Option D (오답): `.mcp.json`에서 대체 값이 없을 때 자동으로 홈 디렉터리(`~`)로 대체되는 암묵적 메커니즘은 존재하지 않습니다.
 
-<br>
-
 ---
 
 ## 19번 문제 (★)
@@ -284,12 +252,9 @@ An architect asks Claude Code to find every place in a large monorepo that calls
 
 A) Run Glob with the pattern `**/*parseInvoice*` to find files whose names contain the function, then treat that file list as the complete set of callers
 
-
 B) Run Glob with the pattern `**/*.js` to list every JavaScript file, then judge from file names alone which ones likely reference parseInvoice
 
-
 C) Run Grep across the repo for parseInvoice, then Grep the gitignored bundle's path directly, since a direct path is still searched
-
 
 D) Run Grep once with the multiline flag enabled, assuming multiline mode makes Grep search gitignored files as a side effect of that flag
 
@@ -316,8 +281,6 @@ Claude Code의 `Grep` 도구(ripgrep 기반)는 기본적으로 프로젝트의 
 - Option B (오답): `Glob`으로 자바스크립트 파일 목록만 나열한 뒤 파일명만 보고 함수 참조 여부를 추측하는 것은 실제 코드 내용을 탐색하지 못하므로 오탐 및 누락이 발생합니다.
 - Option D (오답): `multiline` 옵션은 여러 줄에 걸친 문자열 패턴 검색을 지원하는 플래그일 뿐, `.gitignore` 규칙을 무시하거나 우회하는 효과를 제공하지 않습니다.
 
-<br>
-
 ---
 
 ## 28번 문제 (★)
@@ -328,12 +291,9 @@ A `charge_card` MCP tool receives a request with an amount field formatted as `"
 
 A) The malformed argument triggers a JSON-RPC protocol error from schema validation before the tool executes, while a declined charge is reported inside the tool result with `isError:true`.
 
-
 B) The client silently coerces the malformed argument to a number before invocation, so neither a schema validation error nor a declined charge occurs; the handler receives a valid amount, and any decline is a business result.
 
-
 C) Both failures are reported inside a tool result with `isError:true`, because protocol errors are reserved for unknown tool names; all other issues, like malformed arguments or declined charges, appear as tool-level errors.
-
 
 D) Both failures are reported identically as JSON-RPC protocol errors with code -32602 (Invalid params), because the client validates the request against the schema before calling the tool handler.
 
@@ -361,8 +321,6 @@ MCP(Model Context Protocol) 시스템에서 에러는 명확히 두 개의 계�
 - Option B (오답): MCP 클라이언트는 잘못된 데이터 타입을 수동으로 암묵적 타입 변환(Silent coercion)하지 않고 엄격한 스키마 검증을 수행합니다.
 - Option C (오답): 프로토콜 에러는 알 수 없는 도구 이름뿐만 아니라 잘못된 파라미터 규격(Invalid params)에도 적용됩니다. 따라서 두 에러가 모두 도구 수준 에러로 반환되지 않습니다.
 - Option D (오답): 카드 결제 거절은 비즈니스 로직 실행 결과이므로, 스키마 검증 실패에 사용하는 JSON-RPC 프로토콜 에러 코드(-32602)로 반환되지 않습니다.
-
-<br>
 
 ---
 
@@ -837,6 +795,3 @@ D) The MCP specification requires every isError:true result to include a machine
 
 **오답 분석:**
 - Option A, C, D는 프로토콜 길이 제한이나 가상의 필수 스택 트레이스 규칙 등을 잘못 가정했으므로 오답입니다.
-
----
-
