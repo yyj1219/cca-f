@@ -83,11 +83,11 @@ C) Ask the admin-dashboard and legacy package owners to move their CLAUDE.md fil
 
 In a monorepo, Team A's rules live under `packages/team-a/.claude/rules/` and Team B's rules live under `packages/team-b/.claude/rules/`. An engineer on Team A working exclusively in `packages/team-a/` wants to avoid Team B's rules entering context while still letting Team A's own path-scoped rules load conditionally as normal. What should the engineer configure?
 
-A) Delete the `paths` frontmatter from every rule in `packages/team-a/.claude/rules/` so those rules load unconditionally at launch, which the engineer hopes also stops `packages/team-b/.claude/rules/` files from ever being discovered.
+~~A) Delete the `paths` frontmatter from every rule in `packages/team-a/.claude/rules/` so those rules load unconditionally at launch, which the engineer hopes also stops `packages/team-b/.claude/rules/` files from ever being discovered.~~
 
-B) Add a `claudeMdExcludes` entry in settings pointing to `packages/team-b/.claude/rules/**`, which skips Team B's rules files without affecting how Team A's path-scoped rules conditionally load based on their own paths frontmatter.
+B) Add a `claudeMdExcludes` entry in **settings** pointing to `packages/team-b/.claude/rules/**`, which skips Team B's rules files without affecting how Team A's path-scoped rules conditionally load based on their own paths frontmatter.
 
-C) Set `autoMemoryEnabled` to false in the engineer's local project settings, which the engineer expects stops Claude Code from discovering any `.claude/rules/` directory located outside the current package.
+~~C) Set `autoMemoryEnabled` to false in the engineer's local project settings, which the engineer expects stops Claude Code from discovering any `.claude/rules/` directory located outside the current package.~~
 
 D) Ensure that all rule files in `packages/team-b/.claude/rules/` include a `paths` frontmatter key with glob patterns scoped to `packages/team-b/`. Path-scoped rules only load when Claude works on matching files, so Team B's rules will not be triggered while the engineer works exclusively in `packages/team-a/`.
 
@@ -95,14 +95,9 @@ D) Ensure that all rule files in `packages/team-b/.claude/rules/` include a `pat
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**D번**: Ensure that all rule files in `packages/team-b/.claude/rules/` include a `paths` frontmatter key with glob patterns scoped to `packages/team-b/`. Path-scoped rules only load when Claude works on matching files, so Team B's rules will not be triggered while the engineer works exclusively in `packages/team-a/`.
+**정답: D번**
 
 **정답 및 해설:**
-
-**핵심 개념**: **Claude Code의 경로 기반 규칙 (Path-Scoped Rules) 및 프론트매터 메커니즘**
-Claude Code에서 `.claude/rules/*.md` 내에 존재하는 규칙 파일들은 YAML 프론트매터의 `paths` 글로브 패턴에 따라 동작합니다. `paths` 속성이 올바르게 지정된 규칙은 Claude가 해당 경로 패턴에 일치하는 파일(Read/Edit 등)을 조작하거나 탐색할 때만 컨텍스트에 동적으로 로드됩니다.
 
 **문제 상황 분석:**
 - 모노레포 환경에서 팀 A의 엔지니어는 `packages/team-a/` 내부 파일만 전적으로 수정 및 작성 중입니다.
@@ -110,12 +105,13 @@ Claude Code에서 `.claude/rules/*.md` 내에 존재하는 규칙 파일들은 Y
 - 팀 A 자체의 조건부 규칙(path-scoped rules)은 의도대로 정상 로드되어야 합니다.
 
 **D번이 정답인 이유:**
+- `claudeMdExcludes`는 "절대 작업하지 않는 디렉터리"를 위해 settings.json에 설정하는 정적 제외 목록이며, 작업별로 켜고 끄는 스위치가 아닙니다.
+- `paths` 프론트매터는 rules 파일 자체에 들어가 커밋되므로, 저장소를 클론하는 모두에게 한 번에 적용됩니다. 
+- `paths`는 규칙 파일 자신이 적용 범위를 선언하므로 Team B가 디렉터리 구조를 바꿔도 함께 갱신되지만, `claudeMdExcludes`는 Team A 쪽 설정에 경로가 따로 박혀 있어 구조가 바뀌면 경고 없이 조용히 무력화됩니다. 그래서 `paths` 사용을 더 추천합니다.
 - 팀 B의 규칙 파일들에 `paths: ["packages/team-b/**"]` 형태의 경로 범위를 프론트매터로 지정해 두면, Claude Code는 엔지니어가 `packages/team-b/` 하위 파일에 접근할 때만 해당 규칙을 로드합니다.
-- 팀 A 엔지니어가 `packages/team-a/`에서만 작업하는 동안에는 팀 B의 파일 경로에 일치(Match)하지 않으므로, 팀 B의 규칙들이 컨텍스트로 진입하지 않게 되며, 팀 A 고유의 경로 범위 규칙은 원래대로 정상 조건부 로드됩니다.
 
 **오답 분석:**
-- Option A (오답): 팀 A 규칙에서 `paths` 프론트매터를 삭제하면 해당 규칙들이 시작 시 무조건(전역) 로드되는 규칙으로 변경될 뿐이며, 팀 B 규칙 파일의 탐색 및 로딩을 차단하지 못합니다.
-- Option B (오답): `claudeMdExcludes` 항목은 특정 `CLAUDE.md` 파일들의 로딩을 예외 처리/건너뛰기 위해 제공되는 설정 필드이며, `.claude/rules/*.md` 마크다운 규칙 파일들을 제외하는 공식 지원 방식이 아닙니다.
+- Option B (오답): `claudeMdExcludes` 항목은 특정 **`CLAUDE.md` 파일들의 로딩을 예외 처리/건너뛰기** 위해 settings.json에 제공되는 설정 필드입니다.
 - Option C (오답): `autoMemoryEnabled`는 AI의 자동 기억/학습 기능(`MEMORY.md`)에 관한 설정일 뿐이며, 작업 영역 외부의 `.claude/rules/` 디렉터리 탐색 및 스캔을 제한하는 설정이 아닙니다.
 
 ---
