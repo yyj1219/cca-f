@@ -208,23 +208,22 @@ D) Move the checklist into a `deploy-checklist` skill under `.claude/skills/`, s
 
 **1. 문제 원문**
 
-A project ships a shared `.claude/skills/commit/SKILL.md` skill that writes commit messages in a style one developer finds too terse for their own habits. The developer wants a personal richer version of that skill while continuing to invoke the same `/commit` slash command themselves. Teammates should continue to see the original project skill when they run `/commit`. What should they do?
+A project ships a shared `.claude/skills/commit/SKILL.md` skill that writes commit messages in a style one developer finds too terse for their own habits. The developer wants a personal richer version of that skill while continuing to invoke the **same `/commit` slash command** themselves. (▶ 사용자가 계속 commit 명령을 사용하고 싶어한다고 명시했다. 문제 대충 읽으면 놓침 ◀) Teammates should continue to see the original project skill when they run `/commit`. What should they do?
 
-* A) Edit `.claude/skills/commit/SKILL.md` with the richer commit guidelines, and rely on the change remaining uncommitted so only the developer's local experience uses it, while teammates' copies are unaffected.
-* B) Create `~/.claude/skills/commit/SKILL.md` as a personal copy with the same name to locally override the project skill for this developer only, leaving the shared project skill unchanged for teammates.
-* C) Add `disable-model-invocation: true` to the shared `.claude/skills/commit/SKILL.md` so that it no longer generates output and only the developer's personal instructions apply.
-* D) Create a differently named skill, such as `~/.claude/skills/commit-verbose/SKILL.md`, so it's invoked separately and the shared project skill remains untouched for teammates.
+B) Create `~/.claude/skills/commit/SKILL.md` as a personal copy with the same name to locally override the project skill for this developer only, leaving the shared project skill unchanged for teammates.
+
+D) Create a differently named skill, such as `~/.claude/skills/commit-verbose/SKILL.md`, so it's invoked separately and the shared project skill remains untouched for teammates.
 
 ---
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**  
-**B번**: Create `~/.claude/skills/commit/SKILL.md` as a personal copy with the same name to locally override the project skill for this developer only, leaving the shared project skill unchanged for teammates.
+**정답: B번**
 
 **정답 및 해설:**
 
-**핵심 개념**: Claude Code 스킬 우선순위 (Skill Precedence & Overriding)  
+**핵심 개념**: Claude Code 스킬 오버라이드 (Skill Precedence & Overriding)  
+
 Claude Code의 스킬 우선순위 계층 구조는 `Enterprise > Personal (~/.claude/skills/) > Project (.claude/skills/) > Plugin` 순을 따릅니다. 동일한 이름을 가진 스킬이 여러 범위에 존재할 경우, 상위 레벨인 Personal(사용자/개인) 레벨의 스킬이 Project(프로젝트) 레벨의 스킬을 오버라이드(Override)합니다.
 
 **문제 상황 분석:**
@@ -237,8 +236,6 @@ Claude Code의 스킬 우선순위 계층 구조는 `Enterprise > Personal (~/.c
 
 **오답 분석:**
 
-- Option A (오답): 프로젝트 내 파일(.claude/skills/commit/SKILL.md)을 지저분하게 uncommitted 상태로 남겨두는 것은 추후 실수로 커밋되거나 `git clean` / branch switching 시 날아갈 위험이 있어 올바른 구성 방식이 아닙니다.
-- Option C (오답): 공유 파일에 `disable-model-invocation: true`를 추가하면 변경 사항을 저장소에 올리지 않더라도 비정식 접근이며, 커밋 시 다른 팀원 전체에게 영향을 주게 됩니다.
 - Option D (오답): 개발자가 기존에 쓰던 `/commit` 슬래시 커맨드를 그대로 유지하고 싶어 한다는 요구사항에 위배됩니다. 다른 커맨드 이름(`/commit-verbose`)을 새로 만들어야 하기 때문입니다.
 
 ---
