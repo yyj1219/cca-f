@@ -21,8 +21,8 @@
 * _since_ : ~이므로 (이유)
 * _objects_ : 반대하다
 * _identically_ : 동일하게
-* _regardless of_ : ~에 상관없이
-* _rather than_ : ~ 대신
+* _**regardless of**_ : ~에 상관없이
+* _**rather than**_ : ~ 대신
 * _rather than blocking it outright_ : 완전히 차단하기 보다는
 * _relative to each other_ : 서로간에
 * _the order of_ : 대략적인 규모
@@ -32,6 +32,8 @@
 * _per turn_ : 한 턴 당
 * _unilaterally_ : 일방적으로
 * _authoritative_ : 권위
+* _exempt_ : 면제
+* _inherently_ : 본질적으로
 
 ---
 
