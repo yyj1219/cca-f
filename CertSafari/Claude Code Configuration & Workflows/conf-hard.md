@@ -289,28 +289,29 @@ Claude Code CLI 실행 시 `--bare` 플래그를 지정하면 로컬 작업 디�
 
 **1. 문제 원문**
 
-A pipeline step runs `git diff main | claude -p "you are a typo linter..."` as part of a lint script in `package.json`. The maintainer wants Claude to have zero ability to run arbitrary Bash commands during this step, while still keeping the command portable across Windows and Linux runners. Which approach achieves the no-Bash-permission goal?
+A pipeline step runs `git diff main | claude -p "you are a typo linter..."` as part of a lint script in `package.json`. The maintainer wants Claude to have **zero ability(완벽히 차단)** to run arbitrary Bash commands during this step, while still keeping the command portable across Windows and Linux runners. Which approach achieves the no-Bash-permission goal?
 
-A) Running the script through npm instead of a direct shell invocation strips Bash tool access, as npm's encapsulation blocks tool invocations by the claude process.
+* _regardless of_ : ~에 상관없이
+* _rather than_ : ~ 대신
 
-B) Adding `--disallowedTools Bash` to the command line is the explicit way to block any Bash tool use, because piping alone does not remove the default tool access.
+~~A) Running the script through npm instead of a direct shell invocation strips Bash tool access, as npm's encapsulation blocks tool invocations by the claude process.~~
 
-C) Piping the diff via stdin sends the changes directly to Claude without a tool invocation, so no Bash permission is needed to access the content itself.
+B) Adding `--disallowedTools Bash` to the command line is the explicit way to block any Bash tool use, because piping alone does not remove the default tool access. => zero ability(완벽히 차단)를 요구했으니, 이 쪽이 더 답이다.
 
-D) The double-quoted prompt string itself tells Claude not to use Bash, so the invocation never makes any tool calls regardless of input, and no permission is needed.
+C) Piping the diff via stdin sends the changes directly to Claude without a tool invocation, so no Bash permission is needed to access the content itself. => "Bash 권한이 필요 없다"는 것이지 "Bash를 쓸 수 없다"가 아니다.
+
+~~D) The double-quoted prompt string itself tells Claude not to use Bash, so the invocation never makes any tool calls regardless of input, and no permission is needed.~~
 
 ---
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**B번**: Adding `--disallowedTools Bash` to the command line is the explicit way to block any Bash tool use, because piping alone does not remove the default tool access.
+**정답: B번**
 
 **정답 및 해설:**
 
 **핵심 개념**: Claude Code 도구 접근 권한 제어 (`--disallowedTools`)  
-Claude Code CLI 실행 시 기본적으로 셸 명령을 실행할 수 있는 Bash 도구 권한이 활성화되어 있을 수 있으며, 단순히 표준 입력(stdin)으로 텍스트를 전달하더라도 프로세스가 가지는 기본 도구 접근 권한 자체가 제거되는 것은 아닙니다. 명시적으로 특정 도구 사용을 금지하려면 CLI 플래그인 `--disallowedTools` (또는 권한 관련 플래그)를 지정해야 합니다.
+Claude Code CLI 실행 시 기본적으로 셸 명령을 실행할 수 있는 Bash 도구 권한이 활성화되어 있을 수 있으며, 단순히 **표준 입력(stdin)으로 텍스트를 전달하더라도 프로세스가 가지는 기본 도구 접근 권한 자체가 제거되는 것은 아닙니다**. 명시적으로 특정 도구 사용을 금지하려면 CLI 플래그인 `--disallowedTools` (또는 권한 관련 플래그)를 지정해야 합니다.
 
 **문제 상황 분석:**
 - `package.json` 파이프라인에서 `git diff` 결과를 Claude CLI에 표준 입력(stdin) 파이프로 전달하여 오탈자 검사를 진행함
