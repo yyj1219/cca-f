@@ -36,79 +36,29 @@ D) The root and `services/billing/CLAUDE.md` load at launch; `reports/CLAUDE.md`
 
 ---
 
-## 7번 문제 (원본 89번) => 재확인 불필요
-
-**어려운 이유** [유사 현상 구분, 근본 원인 vs 증상 완화] — 압축 후 루트 지시는 유지되고 중첩 지시만 사라지는 동일한 증상에 대해, 파일 손상/영구 삭제 같은 설명과 "재주입 대상 차이"라는 실제 메커니즘을 구분해야 한다.
-
-**1. 문제 원문**
-
-During a long working session, an engineer triggers a context compaction. Afterward, they notice Claude has stopped following an instruction that was in a CLAUDE.md file located deep inside a subdirectory the engineer had already worked in earlier in the session, while an instruction from the project-root CLAUDE.md is still being followed correctly. What explains this difference in behavior?
-
-~~A) Compaction only preserves instructions in the first 200 lines of a session, so the subdirectory file's later position caused it to drop~~
-
-B) Root CLAUDE.md is re-read and re-injected after compaction, but nested CLAUDE.md files reload only when Claude next reads a file there
-
-~~C) Compaction corrupts nested CLAUDE.md files on disk, so the subdirectory file must be re-created before its instructions work again~~
-
-~~D) Nested CLAUDE.md files are deleted from context permanently after compaction and can only be restored by starting an entirely new session~~
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-**B번**: Root CLAUDE.md is re-read and re-injected after compaction, but nested CLAUDE.md files reload only when Claude next reads a file there
-
-**정답 및 해설:**
-
-**핵심 개념**: **Claude Code의 컨텍스트 압축(Compaction) 및 계층적 CLAUDE.md 재로드 메커니즘**
-Claude Code에서 컨텍스트 압축(Compaction)이 발생하면 이전까지 요약/누적되었던 대화 및 임시 컨텍스트가 정리됩니다. 이때 프로젝트 루트의 `CLAUDE.md`는 시스템의 핵심 가이드라인이므로 압축 직후 자동으로 재읽기(re-read)되어 컨텍스트에 다시 주입(re-inject)됩니다. 그러나 하위 디렉터리(Subdirectory)에 존재하는 중첩된 `CLAUDE.md` 파일들은 압축 시 컨텍스트에서 제외되며, 향후 Claude가 해당 하위 디렉터리 내의 파일에 다시 접근할 때 온디맨드로 재로드(Reload)됩니다.
-
-**문제 상황 분석:**
-- 긴 세션 진행 중 컨텍스트 압축(Compaction)을 실행함.
-- 세션 이전에 방문했던 하위 디렉터리의 `CLAUDE.md` 지시 사항을 Claude가 더 이상 따르지 않음.
-- 프로젝트 루트의 `CLAUDE.md` 지시 사항은 압축 이후에도 여전히 정상적으로 적용됨.
-
-**B번이 정답인 이유:**
-- 컨텍스트 압축 후 프로젝트 루트의 `CLAUDE.md`는 자동으로 재주입되어 계속 적용되지만, 하위 디렉터리의 `CLAUDE.md`는 압축 과정에서 지워진 상태가 됩니다.
-- 해당 하위 디렉터리 안의 파일에 Claude가 다시 접근하여 읽는 시점이 되어야만 해당 하위 `CLAUDE.md`가 다시 로드되므로, 그전까지는 지시 사항을 따르지 않는 현상이 발생합니다.
-
-**오답 분석:**
-- Option A (오답): Compaction이 세션의 처음 200줄만 보존한다는 규칙은 존재하지 않습니다.
-- Option C (오답): Compaction은 메모리 상의 컨텍스트를 정리할 뿐 디스크에 저장된 실제 파일들을 손상(corrupt)시키지 않습니다.
-- Option D (오답): 중첩된 `CLAUDE.md`는 영구 삭제되는 것이 아니라, 해당 디렉터리의 파일을 다시 탐색/읽을 때 온디맨드로 다시 복구(재로드)됩니다.
-
----
-
 ## 8번 문제 (원본 39번)
 
 **어려운 이유** [원칙이 깨지는 예외, 유사 현상 구분] — claudeMdExcludes를 프로젝트 settings.json에만 둘 수 있다는 B와 settings.local.json 개인 범위인 D의 차이가 핵심이며, "팀원에게 영향 없이"라는 제약을 놓치면 B를 고른다.
 
 **1. 문제 원문**
 
-In a monorepo, an engineer working exclusively on `packages/web` finds that Claude Code's context is cluttered at startup with CLAUDE.md content from `packages/admin-dashboard` and several `packages/legacy-*` packages. This happens because the monorepo's root CLAUDE.md file uses import statements to load all subpackage CLAUDE.md files. The engineer wants these excluded from their own sessions without affecting other teammates who might work in those packages. What should they do?
+In a monorepo, an engineer working exclusively on `packages/web` finds that Claude Code's context is cluttered at startup with CLAUDE.md content from `packages/admin-dashboard` and several `packages/legacy-*` packages. This happens because the monorepo's root CLAUDE.md file uses import statements to load all subpackage CLAUDE.md files. The engineer wants these excluded from **their own sessions** without affecting other teammates who might work in those packages. What should they do?
 
-A) Delete the CLAUDE.md files from packages/admin-dashboard and packages/legacy-* directly, since unused files should be removed from the repository
+~~A) Delete the CLAUDE.md files from packages/admin-dashboard and packages/legacy-* directly, since unused files should be removed from the repository~~
 
-B) Add `claudeMdExcludes` patterns for those packages to the committed `.claude/settings.json` at the repository root, since exclusions can only be configured at the project scope
+~~B) Add `claudeMdExcludes` patterns for those packages to the committed `.claude/settings.json` at the repository root, since exclusions can only be configured at the project scope~~
 
 C) Ask the admin-dashboard and legacy package owners to move their CLAUDE.md files into `.claude/rules/`, since only root-level CLAUDE.md files are loaded across package boundaries
 
-D) Add `claudeMdExcludes` patterns for those packages to `.claude/settings.local.json`, since local settings apply only to that engineer's machine
+**D) Add `claudeMdExcludes` patterns for those packages to `.claude/settings.local.json`, since local settings apply only to that engineer's machine** => local 키워드가 있는 파일을 사용하는 점에 주의할 것!
 
 ---
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**D번**: Add `claudeMdExcludes` patterns for those packages to `.claude/settings.local.json`, since local settings apply only to that engineer's machine
+**정답: D번**
 
 **정답 및 해설:**
-
-**핵심 개념**: 로컬 환경 설정 및 `claudeMdExcludes` (Local Settings & Scope Management)
-Claude Code 환경 설정은 공용 프로젝트 설정(`.claude/settings.json`)과 개발자 개별 환경 설정(`.claude/settings.local.json`)으로 나뉩니다. 특정 패키지의 `CLAUDE.md` 파일이 자동 로드되는 것을 제외하려면 `claudeMdExcludes` 설정을 사용하며, 팀원 전체에 영향을 주지 않고 본인의 기기(세션)에만 적용하려면 Git 커밋 대상에서 제외되는 `.claude/settings.local.json`에 해당 설정을 추가해야 합니다.
 
 **문제 상황 분석:**
 - 루트 `CLAUDE.md`에서 모든 하위 패키지의 `CLAUDE.md`를 불러와 컨텍스트가 불필요한 정보로 오염되고 있습니다.
@@ -120,8 +70,6 @@ Claude Code 환경 설정은 공용 프로젝트 설정(`.claude/settings.json`)
 
 **오답 분석:**
 
-- Option A (오답): 타 팀원이 해당 패키지를 작업할 때 필요한 `CLAUDE.md` 파일 자체를 공유 저장소에서 삭제하는 것은 적절하지 못합니다.
-- Option B (오답): 커밋 대상인 루트 `.claude/settings.json`에 제외 패턴을 추가하면 프로젝트를 공유하는 다른 모든 팀원들의 세션에서도 해당 패키지의 컨텍스트 로드가 차단됩니다.
 - Option C (오답): 파일을 다른 디렉터리로 이동시키는 것은 팀 차원의 구조 변경을 수반하며, 로컬 환경만 격리하려는 목적에 부합하지 않습니다.
 - Option D (정답): 개인 환경 전용 설정 파일인 `.claude/settings.local.json`에 제외 패턴을 기재합니다.
 
