@@ -116,48 +116,6 @@ D) Ensure that all rule files in `packages/team-b/.claude/rules/` include a `pat
 
 ---
 
-## 10번 문제 (원본 54번)
-
-**어려운 이유** [덜 틀린 답 고르기, 부분적으로만 맞는 오답] — AGENTS.md 자동 폴백(C)과 심볼릭 링크(D) 모두 "중복 유지 회피"라는 결론 방향은 맞지만 Claude 전용 지시를 덧붙일 수 없거나 동작 전제가 틀려, @import가 최선임을 가려야 한다.
-
-**1. 문제 원문**
-
-A repository already has an AGENTS.md file used by several other AI coding tools, containing conventions the team wants Claude Code to follow as well, plus a short list of Claude-specific instructions like 'use plan mode for changes under src/billing/'. The team wants to avoid maintaining the same conventions in two places. What is the recommended way to structure CLAUDE.md?
-
-* A) Manually copy the full contents of AGENTS.md into CLAUDE.md today, and remember to re-copy it by hand every time AGENTS.md changes
-* B) Create CLAUDE.md starting with `@AGENTS.md` as an import, followed by the Claude-specific instructions such as the plan-mode rule underneath
-* C) Leave CLAUDE.md absent entirely, since Claude Code silently falls back to reading AGENTS.md whenever no CLAUDE.md file is present
-* D) Create a symbolic link (symlink) named CLAUDE.md pointing to AGENTS.md so both files always share the same content
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-**B번**: Create CLAUDE.md starting with `@AGENTS.md` as an import, followed by the Claude-specific instructions such as the plan-mode rule underneath
-
-**정답 및 해설:**
-
-**핵심 개념**: CLAUDE.md에서의 파일 가져오기 구문 (`@import` Syntax)
-Claude Code 지침 파일(`CLAUDE.md`)에서는 `@path/to/file.md` 형태의 구문을 사용하여 다른 마크다운 지침 파일의 내용을 동적으로 포함(Import)시킬 수 있습니다. 이를 통해 공통 프로젝트 컨벤션을 단일 파일(예: `AGENTS.md`)에서 중앙 관리하고, Claude 전용 규칙만 `CLAUDE.md`에 추가하여 중복 관리를 방지할 수 있습니다.
-
-**문제 상황 분석:**
-- 저장소에 이미 타 AI 도구들과 공유하는 공통 지침 파일 `AGENTS.md`가 존재함.
-- 공통 컨벤션을 두 곳에서 이중으로 유지관리하는 오버헤드를 피해야 함.
-- 동시에 `src/billing/` 경로에 대한 플랜 모드 사용 규칙 등 Claude Code에만 적용되는 고유 지침을 함께 추가해야 함.
-
-**B번이 정답인 이유:**
-`CLAUDE.md` 파일 상단에 `@AGENTS.md`를 기재하면 Claude Code가 실행될 때 `AGENTS.md`의 내용을 자동으로 참조/불러옵니다. 그 하단에 Claude 전용 지침을 덧붙여 작성하면, 공통 지침의 단일 출처(Single source of truth)를 유지하면서도 Claude 전용 규칙을 완벽히 병합하여 전달할 수 있습니다.
-
-**오답 분석:**
-
-- Option A (오답): 변경사항이 생길 때마다 수동으로 수복사하는 방식은 동기화 누락 및 유지보수 문제를 일으키는 잘못된 방식입니다.
-- Option C (오답): `CLAUDE.md`를 아예 삭제하면 Claude 전용으로 추가해야 하는 지침(플랜 모드 규칙 등)을 정의할 공간이 사라집니다.
-- Option D (오답): 심볼릭 링크를 생성하면 `CLAUDE.md`와 `AGENTS.md`가 100% 동일한 내용만 갖게 되므로, Claude 전용 지침을 별도로 추가하여 확장할 수 없습니다.
-
----
-
 # C. 스킬 — allowed-tools의 의미, 컨텍스트 비용, fork, 개인 오버라이드
 
 10과 74: allowed-tools는 사전 승인일 뿐 제한 아님(제한은 disallowed-tools). 24: 워크스페이스 trust 전에는 grant 미적용. 71과 82: 가끔 쓰는 내용은 CLAUDE.md 대신 스킬. 15: fork+Explore는 CLAUDE.md 미로드. 53: ~/.claude/skills 동명 스킬로 개인 오버라이드.
