@@ -120,93 +120,6 @@ D) Ensure that all rule files in `packages/team-b/.claude/rules/` include a `pat
 
 10과 74: allowed-tools는 사전 승인일 뿐 제한 아님(제한은 disallowed-tools). 24: 워크스페이스 trust 전에는 grant 미적용. 71과 82: 가끔 쓰는 내용은 CLAUDE.md 대신 스킬. 15: fork+Explore는 CLAUDE.md 미로드. 53: ~/.claude/skills 동명 스킬로 개인 오버라이드.
 
-## 11번 문제 (원본 10번)
-
-**어려운 이유** [원칙이 깨지는 예외, 부분적으로만 맞는 오답] — `allowed-tools`가 최소 권한 제한 장치라는 상식이 정반대로 깨지며, "권한 프롬프트 사전 승인일 뿐 제한이 아니다"라는 예외를 알아야 B의 그럴듯한 모범사례 진술을 버릴 수 있다.
-
-**1. 문제 원문**
-
-A developer creates a `report-generator` skill and wants to ensure it can only write and edit files, without the ability to run shell commands or delete files. They configure `allowed-tools: Write Edit` in the `SKILL.md` frontmatter without changing the permission mode. Which statement about this approach is correct?
-
-A) This configuration will effectively restrict the skill to only file write operations, preventing any destructive tool invocations.
-
-B) Using `allowed-tools` is the recommended method to limit a skill's capabilities in compliance with least privilege principles.
-
-C) Setting `allowed-tools` to `Write Edit` automatically sandboxes the skill, disabling all tools except file operations.
-
-D) The `allowed-tools` field bypasses user permission prompts for the listed tools but does not restrict which tools are available to the skill; other tools like Bash can still be invoked.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-**D번**: The `allowed-tools` field bypasses user permission prompts for the listed tools but does not restrict which tools are available to the skill; other tools like Bash can still be invoked.
-
-**정답 및 해설:**
-
-**핵심 개념**: Claude Code 스킬의 `allowed-tools` frontmatter 속성 동작 방식과 권한 프롬프트 우회 메커니즘.
-
-**문제 상황 분석:**
-- 개발자가 `report-generator` 스킬이 파일 쓰기와 편집만 수행하도록 제한하고자 합니다.
-- `SKILL.md` 파일의 frontmatter에 `allowed-tools: Write Edit`를 설정하여 보안 제한을 적용하려 합니다.
-- 스킬의 권한 모드를 변경하지 않은 상태에서 이 설정이 의도한 대로 도구 사용을 제한하는지 여부를 파악해야 합니다.
-
-**D번이 정답인 이유:**
-`allowed-tools` 필드는 보안상의 접근 제한(Restrict) 목적이 아니라, 나열된 도구에 대해 사용자 승인 프롬프트(permission prompts)를 생략(자동 허용)하기 위한 용도로 사용됩니다. 따라서 이 설정은 특정 도구의 사용을 차단하거나 제한하지 않으며, Bash 등 다른 도구들도 여전히 호출될 수 있습니다.
-
-**오답 분석:**
-
-- Option A (오답): `allowed-tools`는 도구 사용을 제한하는 보안 필터가 아니라 승인 프롬프트를 우회하는 용도이므로 파괴적인 도구 호출을 막지 못합니다.
-- Option B (오답): 최소 권한 원칙을 준수하기 위해 스킬의 기능을 제한하는 올바른 권장 보안 설정 방법이 아닙니다.
-- Option C (오답): 자동으로 스킬을 샌드박스 처리하거나 파일 작업 외의 도구를 원천 비활성화하지 않습니다.
-
----
-
-## 12번 문제 (원본 74번)
-
-**어려운 이유** [유사 현상 구분, 부분적으로만 맞는 오답] — allowed-tools가 실패한 이유(사전 승인일 뿐)와 해결책(disallowed-tools)을 둘 다 맞혀야 하며, context: fork로 샌드박스된다는 B가 겉보기에 설득력 있다.
-
-**1. 문제 원문**
-
-A developer configured `allowed-tools: Write Edit` on a skill, expecting this to prevent Claude from ever calling Bash while the skill runs. During a session, Claude still calls Bash after asking for the user's approval. Why did this happen, and what should the developer configure instead to fully remove Bash from the available pool while the skill is active?
-
-A) `allowed-tools` only constrains tools invoked directly by the user, and does not limit tools that Claude chooses during skill execution. To remove Bash, set `model: inherit` on the skill to override Claude's autonomous tool selection.
-
-B) `allowed-tools` is evaluated only after the skill finishes running, so Bash calls made during the skill are unaffected by its configuration. To remove Bash, set `context: fork` on the skill to sandbox execution and block unlisted tools.
-
-C) `allowed-tools` only pre-approves the listed tools without prompting; it does not remove other tools from availability. Adding `disallowed-tools: Bash` removes Bash from Claude's pool while the skill is active.
-
-D) `allowed-tools` requires trailing wildcards, such as `Write*` and `Edit*`, to restrict tools; without them, all tools including Bash are implicitly allowed. To block Bash, append `*` to each allowed tool so only those tools can be called.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-**C번**: `allowed-tools` only pre-approves the listed tools without prompting; it does not remove other tools from availability. Adding `disallowed-tools: Bash` removes Bash from Claude's pool while the skill is active.
-
-**정답 및 해설:**
-
-**핵심 개념**: Custom Skills 도구 권한 메타데이터 (`allowed-tools` vs `disallowed-tools`)
-Claude Code 스킬 설정에서 `allowed-tools`는 사용자의 프롬프트/승인 절차 없이 자동으로 실행(Auto-approve)을 허용할 도구 목록을 정의합니다. 반면, 특정 도구의 사용 자체를 완전히 금지하고 사용 가능한 도구 목록(Pool)에서 제거하려면 `disallowed-tools` 속성을 사용해야 합니다.
-
-**문제 상황 분석:**
-- 개발자가 스킬 내에 `allowed-tools: Write Edit`를 지정하여 Bash 사용을 완전히 막고자 함
-- 하지만 실행 중 Claude가 사용자 승인(Prompting)을 거쳐 여전히 Bash를 호출함
-- `allowed-tools`는 승인 없이 바로 실행할 도구만 지정할 뿐, 나열되지 않은 다른 도구의 사용 가능성(Availability)까지 차단하지는 못함
-
-**C번이 정답인 이유:**
-`allowed-tools`는 지정된 도구에 대해 사용자 승인 절차를 생략(Pre-approve)해 주는 역할을 할 뿐, 지정되지 않은 다른 도구(예: Bash)의 사용 권한을 아예 삭제하는 것은 아닙니다. 따라서 다른 도구는 사용자에게 승인을 물어보고 사용할 수 있는 상태로 남게 됩니다. 특정 도구를 스킬 실행 중 완전히 비활성화하려면 `disallowed-tools: Bash`를 명시적으로 설정해야 합니다.
-
-**오답 분석:**
-
-- Option A (오답): `allowed-tools`가 사용자 직접 호출 도구만 제한한다는 설명과 `model: inherit` 설정으로 자율 도구 선택을 재정의한다는 설명 모두 동작 원리와 다릅니다.
-- Option B (오답): `allowed-tools`가 스킬 실행 종료 후에 평가된다는 설명이나 `context: fork` 설정으로 미등록 도구를 차단한다는 설명은 지원되지 않는 잘못된 설명입니다.
-- Option D (오답): `allowed-tools` 설정에 와일드카드(`*`)가 필수적이라는 요구사항은 존재하지 않습니다.
-
 ---
 
 ## 13번 문제 (원본 24번)
@@ -217,26 +130,24 @@ Claude Code 스킬 설정에서 `allowed-tools`는 사용자의 프롬프트/승
 
 A contractor clones a repository containing a project skill at `.claude/skills/publish/SKILL.md` with `allowed-tools: Bash(npm publish *)` in its frontmatter. On first opening the project in Claude Code, a workspace trust dialog appears, but the contractor dismisses it without accepting. Invoking the skill still prompts for approval before running `npm publish`. What is the most likely explanation?
 
-A) The `npm publish` command must be listed under `arguments` rather than `allowed-tools` before Claude Code will treat it as pre-approved.
+* _regardless of_ : ~에 상관없이
+* _rather than_ : ~ 대신
 
-B) The `allowed-tools` field only applies to skills stored in `~/.claude/skills/`, so project-scoped skills always require manual approval regardless of trust.
+~~A) The `npm publish` command must be listed under `arguments` rather than `allowed-tools` before Claude Code will treat it as pre-approved.~~
 
-C) The skill's frontmatter is missing a `context: fork` declaration, and `allowed-tools` only takes effect for skills that run in a forked subagent.
+~~B) The `allowed-tools` field only applies to skills stored in `~/.claude/skills/`, so project-scoped skills always require manual approval regardless of trust.~~
 
-D) The project's workspace trust dialog has not yet been accepted, so the `allowed-tools` grant from the checked-in project skill has not taken effect.
+~~C) The skill's frontmatter is missing a `context: fork` declaration, and `allowed-tools` only takes effect for skills that run in a forked subagent.~~
+
+**D) The project's workspace trust dialog has not yet been accepted, so the `allowed-tools` grant from the checked-in project skill has not taken effect.**
 
 ---
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**D번**: The project's workspace trust dialog has not yet been accepted, so the `allowed-tools` grant from the checked-in project skill has not taken effect.
+**정답: D번**
 
 **정답 및 해설:**
-
-**핵심 개념**: Claude Code의 워크스페이스 신뢰(Workspace Trust) 및 프로젝트 스킬 보안 권한
-저장소 내 파일(`.claude/skills/`)로 등록된 프로젝트 수준의 스킬은 자동 실행 도구 권한(`allowed-tools`)을 정의할 수 있습니다. 그러나 신뢰할 수 없는 원격 코드의 무단 실행을 방지하기 위해, 개발자가 워크스페이스 신뢰(Workspace Trust) 대화상자를 수락하기 전까지는 프로젝트 스킬에 지정된 사전 승인 권한이 무효화되며 매번 사용자 승인을 요구하게 됩니다.
 
 **문제 상황 분석:**
 - 개발자가 프로젝트 스킬(`.claude/skills/publish/SKILL.md`)에 `allowed-tools: Bash(npm publish *)`를 명시함.
@@ -244,7 +155,7 @@ D) The project's workspace trust dialog has not yet been accepted, so the `allow
 - 스킬 실행 시 `npm publish`에 대한 자동 승인이 적용되지 않고 여전히 사용자 승인 창이 노출됨.
 
 **D번이 정답인 이유:**
-워크스페이스 신뢰를 수락하지 않으면 프로젝트에 포함된 스킬의 `allowed-tools` 사전 승인 권한 부여가 활성화되지 않습니다. 외부에서 클론한 코드 저장소에 악의적인 자동 실행 스킬이 포함되어 있을 수 있으므로, 사용자가 해당 워크스페이스를 신뢰(Trust)한다는 명시적 승인을 하기 전까지는 보안을 위해 모든 명령어가 수동 승인 모드로 동작하게 됩니다.
+워크스페이스 신뢰를 수락하지 않으면 프로젝트에 포함된 스킬의 `allowed-tools` 사전 승인 권한 부여가 활성화되지 않습니다. 사용자가 해당 워크스페이스를 신뢰(Trust)한다는 명시적 승인을 하기 전까지는 보안을 위해 모든 명령어가 **수동 승인 모드**로 동작하게 됩니다.
 
 **오답 분석:**
 
