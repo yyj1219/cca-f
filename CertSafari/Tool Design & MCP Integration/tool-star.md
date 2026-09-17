@@ -22,8 +22,7 @@ D) The research agent is passing incomplete findings, so the synthesis agent sea
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**  
-**A번**: Agents tend to misuse tools outside their specialization when given access to them; web_search should be removed from the synthesis agent's tool set and left with the research agent.
+**정답: A번**
 
 **정답 및 해설:**
 
@@ -68,8 +67,7 @@ D) The fetch tool's description exceeds a fixed token threshold, causing the mod
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**  
-**B번**: Keyword-sensitive system prompt wording creates an unintended association that overrides the more accurate tool description.
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -114,8 +112,7 @@ D) Claude Code merges the tools from the custom server directly into the built-i
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**  
-**B번**: Claude Code rejects or skips the server because `computer-use` is a reserved built-in name, so the team member needs to pick a different name
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -161,9 +158,7 @@ D) Give the processing agent a copy of the intake agent's status check tool, so 
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**C번**: Give the intake agent only a narrow check_status tool for that specific high-frequency need, while routing deeper processing operations through the processing agent.
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -210,8 +205,7 @@ D) Omitting the description field entirely, since errorCategory alone is suffici
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**  
-**B번**: A human-readable description field stating the room is already booked for that slot, separate from any machine-oriented errorCategory or isRetryable flags
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -259,8 +253,7 @@ D) The expansion falls back automatically to the user's home directory, since th
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**  
-**A번**: It resolves correctly, since Claude Code injects `CLAUDE_PROJECT_DIR` into the spawned server's own environment, though a default like `${CLAUDE_PROJECT_DIR:-.}` remains the safer practice
+**정답: A번**
 
 **정답 및 해설:**  
 **핵심 개념**: Claude Code 내장 환경 변수 주입 (Built-in Environment Variables Injection)  
@@ -280,8 +273,6 @@ Claude Code는 쉘 실행 환경에 해당 변수가 설정되어 있지 않더�
 - Option D (오답): `.mcp.json`에서 대체 값이 없을 때 자동으로 홈 디렉터리(`~`)로 대체되는 암묵적 메커니즘은 존재하지 않습니다.
 
 <br>
-
----
 
 ---
 
@@ -306,8 +297,7 @@ D) Run Grep once with the multiline flag enabled, assuming multiline mode makes 
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**  
-**C번**: Run Grep across the repo for parseInvoice, then Grep the gitignored bundle's path directly, since a direct path is still searched
+**정답: C번**
 
 **정답 및 해설:**  
 **핵심 개념**: Claude Code 도구 검색 동작 방식 (`Grep` 및 `.gitignore` 메커니즘)  
@@ -327,8 +317,6 @@ Claude Code의 `Grep` 도구(ripgrep 기반)는 기본적으로 프로젝트의 
 - Option D (오답): `multiline` 옵션은 여러 줄에 걸친 문자열 패턴 검색을 지원하는 플래그일 뿐, `.gitignore` 규칙을 무시하거나 우회하는 효과를 제공하지 않습니다.
 
 <br>
-
----
 
 ---
 
@@ -353,8 +341,7 @@ D) Both failures are reported identically as JSON-RPC protocol errors with code 
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**  
-**A번**: The malformed argument triggers a JSON-RPC protocol error from schema validation before the tool executes, while a declined charge is reported inside the tool result with `isError:true`.
+**정답: A번**
 
 **정답 및 해설:**  
 **핵심 개념**: 프로토콜 수준 에러(Protocol Errors) vs 도구 실행 결과 에러(Tool Execution Errors)  
@@ -379,8 +366,6 @@ MCP(Model Context Protocol) 시스템에서 에러는 명확히 두 개의 계�
 
 ---
 
----
-
 ## 30번 문제 (★)
 
 **1. 문제 원문**
@@ -399,9 +384,7 @@ D) Validation fails because the account ID in the request is the specific field 
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**C번**: It is a business error because the request itself is well-formed and the rejection stems from a policy rule about the account's state rather than malformed input.
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -423,8 +406,6 @@ D) Validation fails because the account ID in the request is the specific field 
 
 ---
 
----
-
 ## 31번 문제 (★)
 
 **1. 문제 원문**
@@ -443,9 +424,7 @@ D) Glob, to list all files matching **/*.test.* and treat the presence of test f
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**B번**: Bash, to invoke the project's test runner command and capture its stdout and stderr, including the stack trace, in the result
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -467,8 +446,6 @@ Claude Code 환경에서 `Bash` 도구는 터미널 명령어를 실행하고 �
 
 ---
 
----
-
 ## 36번  (★)
 
 **1. 문제 원문**
@@ -487,9 +464,7 @@ D) The `lookup_internal_docs` tool must have a malformed JSON schema, since that
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**A번**: System prompts can significantly influence tool selection, and explicit instructions may override the model's assessment of which tool is most appropriate.
+**정답: A번**
 
 **정답 및 해설:**
 
@@ -511,8 +486,6 @@ LLM의 도구 선택(Tool Selection) 과정에서 시스템 프롬프트(System 
 
 ---
 
----
-
 ## 37번 문제 (★)
 
 **1. 문제 원문**
@@ -531,9 +504,7 @@ D) A partial-results payload listing only the extract and transform steps as don
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**B번**: A success result summarizing the completed migration, since the transient failures were resolved locally and never needed to surface above the subagent
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -555,8 +526,6 @@ D) A partial-results payload listing only the extract and transform steps as don
 
 ---
 
----
-
 ## 40번 문제 (★)
 
 **1. 문제 원문**
@@ -575,9 +544,7 @@ D) The tool set `isError` to true instead of false, which signals to the agent t
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**A번**: The result carries no structured metadata distinguishing transient from non-retryable failures. The agent thus has no basis for deciding whether retrying is worthwhile.
+**정답: A번**
 
 **정답 및 해설:**
 
@@ -599,8 +566,6 @@ MCP(Model Context Protocol) 및 에이전트 기반 오류 처리에서, 도구�
 
 ---
 
----
-
 ## 46번 문제 (★)
 
 **1. 문제 원문**
@@ -619,9 +584,7 @@ D) Widen old_string to include enough surrounding context to uniquely identify t
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**D번**: Widen old_string to include enough surrounding context to uniquely identify the intended occurrence, then retry Edit with that string
+**정답: D번**
 
 **정답 및 해설:**
 
@@ -643,8 +606,6 @@ Claude Code의 `Edit` 도구는 파일 내에서 교체하고자 하는 대상 �
 
 ---
 
----
-
 ## 47번 문제 (★)
 
 **1. 문제 원문**
@@ -663,9 +624,7 @@ D) Give the agent broader access by also adding a `raw_file_read` tool so it can
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**C번**: Replace `retrieve_clause` with a `get_clause_by_id` tool that only accepts a validated clause identifier from a pre-parsed clause index
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -687,8 +646,6 @@ LLM 기반 에이전트 시스템에서 임의의 인자(예: 임의의 바이�
 
 ---
 
----
-
 ## 50번 문제 (★)
 
 **1. 문제 원문**
@@ -707,9 +664,7 @@ D) Run Glob with the pattern **/API_TIMEOUT_MS to locate files whose names conta
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**A번**: Run Grep with output mode content and a glob scope to list every file and line referencing API_TIMEOUT_MS, then review that list before editing
+**정답: A번**
 
 **정답 및 해설:**
 
@@ -731,8 +686,6 @@ Claude Code 도구 생태계에서 `Grep`은 파일 **내부 텍스트 내용(Co
 
 ---
 
----
-
 ## 51번 문제 (★)
 
 **1. 문제 원문**
@@ -751,9 +704,7 @@ D) When manual extended thinking is enabled, the `tool_choice` values `{"type": 
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**D번**: When manual extended thinking is enabled, the `tool_choice` values `{"type": "any"}` and `{"type": "tool", ...}` are not supported; set it to `{"type": "auto"}` or `{"type": "none"}` instead. To force a tool call while still using thinking, migrate to adaptive thinking (supported on newer models), or disable manual extended thinking.
+**정답: D번**
 
 **정답 및 해설:**
 
@@ -775,8 +726,6 @@ Anthropic API에서 수동 확장 사고(Manual Extended Thinking, `thinking: {"
 
 ---
 
----
-
 ## 53번 문제 (★)
 
 **1. 문제 원문**
@@ -795,9 +744,7 @@ D) Call `Grep` with output mode `content` to retrieve the matching export lines,
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**C번**: Read the file to load its full contents, then call `Write` with the complete restructured file content back over that same path.
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -819,8 +766,6 @@ Claude Code 도구 세트에서 `Edit` 도구는 파일의 **일부 구간(부�
 
 ---
 
----
-
 ## 58번 문제 (★)
 
 **1. 문제 원문**
@@ -839,9 +784,7 @@ D) Use Glob to list every file in the repository sorted by modification time, th
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**A번**: Start by reading CLAUDE.md or AGENTS.md if they exist to gain high-level architecture context, then use Grep to locate the route handler and its imports, and read files incrementally along the call chain.
+**정답: A번**
 
 **정답 및 해설:**
 
@@ -858,8 +801,6 @@ D) Use Glob to list every file in the repository sorted by modification time, th
 
 **오답 분석:**
 - Option A 외 오답들(B, C, D)은 대용량 파일 가정, 전체 파일 일괄 오픈, 무작위 최근 수정 파일 열람 등으로 컨텍스트 낭비 및 비효율성을 초래하므로 오답입니다.
-
----
 
 ---
 
@@ -881,9 +822,7 @@ D) The MCP specification requires every isError:true result to include a machine
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**B번**: A uniform generic message gives the agent no basis for choosing among retrying, adjusting input, or escalating, so it cannot make an appropriate recovery decision for each failure.
+**정답: B번**
 
 **정답 및 해설:**
 
