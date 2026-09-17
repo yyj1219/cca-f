@@ -202,50 +202,6 @@ D) Move the checklist into a `deploy-checklist` skill under `.claude/skills/`, s
 
 ---
 
-## 16번 문제 (원본 15번)
-
-**어려운 이유** [유사 현상 구분, 덜 틀린 답 고르기] — `context: fork`의 격리 탓이라는 A와 Explore 에이전트가 CLAUDE.md를 안 읽는다는 C가 증상은 동일해, 원인이 fork가 아니라 특정 내장 에이전트의 시작 컨텍스트라는 점을 구분해야 한다.
-
-**1. 문제 원문**
-
-A developer sets `context: fork` and `agent: Explore` on a `pr-summary` skill that fetches PR data and summarizes it. They notice the summary never reflects conventions written in the project's `CLAUDE.md`. Why not?
-
-A) `context: fork` enforces strict isolation by removing project-level files like `CLAUDE.md` from every subagent's context, so even when using `agent: Explore`, the agent never sees the conventions and cannot apply them.
-
-B) The `pr-summary` skill requires the `allowed-tools: Read` permission to include `CLAUDE.md` in the forked subagent's context, and without that permission, the file is not loaded even when the project has conventions.
-
-C) The built-in `Explore` agent skips loading `CLAUDE.md` at startup to keep its context small, so a forked skill using that agent only sees the skill content and the agent's own system prompt.
-
-D) `CLAUDE.md` conventions are only loaded when a skill is invoked without arguments, and since the `pr-summary` skill receives PR data as an argument, the conventions are omitted from the forked subagent's context.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-**C번**: The built-in `Explore` agent skips loading `CLAUDE.md` at startup to keep its context small, so a forked skill using that agent only sees the skill content and the agent's own system prompt.
-
-**정답 및 해설:**
-
-**핵심 개념**: Claude Code 스킬의 `context: fork` 및 내장 `Explore` 에이전트 동작 시 `CLAUDE.md` 로딩 제외 메커니즘.
-
-**문제 상황 분석:**
-- 개발자가 `pr-summary` 스킬에 `context: fork`와 `agent: Explore` 설정을 적용함.
-- 실행 결과, 생성된 요약문이 프로젝트의 `CLAUDE.md`에 정의된 코딩 컨벤션을 반영하지 못하는 현상이 발생함.
-- 특정 에이전트 환경에서 프로젝트 컨벤션 파일이 누락되는 이유를 규명해야 함.
-
-**C번이 정답인 이유:**
-내장된 `Explore` 에이전트는 컨텍스트 크기를 최적화하고 작게 유지하기 위해 시작 시 `CLAUDE.md` 로딩 과정을 건너뛰도록 설계되어 있습니다. 이로 인해 `context: fork`와 `agent: Explore`를 함께 사용하는 스킬은 프로젝트의 컨벤션 정보를 전달받지 못하고, 오직 스킬의 내용과 에이전트 자체의 시스템 프롬프트만 참조하게 됩니다.
-
-**오답 분석:**
-
-- Option A (오답): `context: fork`가 프로젝트 수준의 파일을 무조건 제거하여 격리하는 것이 아니라, 에이전트 자체의 초기화 특성에 기인한 것입니다.
-- Option B (오답): `allowed-tools: Read` 권한은 파일 읽기 권한 제어를 위한 것이며 `CLAUDE.md` 자동 로드 여부를 결정하는 직접적인 요인이 아닙니다.
-- Option D (오답): 인자(arguments)의 유무에 따라 `CLAUDE.md` 로딩 여부가 결정된다는 설명은 사실과 다릅니다.
-
----
-
 ## 17번 문제 (원본 53번)
 
 **어려운 이유** [원칙이 깨지는 예외] — 9번에서 익힌 "프로젝트 스킬이 개인 스킬보다 우선"과 충돌해 보이는 상황이라, 동일 이름 개인 스킬로 로컬 오버라이드가 가능한지 판단이 흔들리고 D(다른 이름)도 안전해 보인다.
