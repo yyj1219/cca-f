@@ -652,8 +652,6 @@ D) Do not attempt to configure Kerberos directly in Claude Code MCP authenticati
 
 **어려운 이유** [원칙이 깨지는 예외] — 수동 extended thinking에서 tool_choice any/tool이 미지원이라는 좁은 예외 규정이고 오답들이 모두 그럴듯한 API 제약처럼 서술되어 있다.
 
-> **⚠ 교차 참조 주의** — prompt-hard.md의 원본 78번은 같은 상황(강제 tool_choice + extended thinking 오류)인데 정답이 "강제 도구 유지하고 thinking 비활성"이다. 이 문제의 정답은 "auto/none으로 바꾸거나 adaptive thinking으로 이전". 문제가 무엇을 우선하는지(도구 강제 보장 vs thinking 유지)로 구분해야 한다.
-
 **1. 문제 원문**
 
 A team is building an agent that uses manual extended thinking (`thinking: {"type": "enabled"}`) to reason before acting, and they want to force it to always call a tool rather than answer directly. They set `tool_choice` to `{"type": "any"}` while manual extended thinking is enabled, and the request fails. What is the correct explanation and recommended remedy?
