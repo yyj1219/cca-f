@@ -471,13 +471,13 @@ LLM에 "신뢰도가 높은 항목만 보고하라(high-confidence findings)"와
 
 A team already tried adding "only report issues you are confident about" to a noisy category and saw no improvement in precision. An architect now wants to redesign the category's scope entirely rather than continuing to tune confidence language. Which redesign reflects the correct lesson from the earlier failed attempt?
 
-A) Rephrase the same confidence instruction using stronger emphasis, such as capitalizing key words, so the model treats the requirement as a stricter constraint.
+A) Rephrase the same confidence instruction ~~using stronger emphasis~~, such as capitalizing key words, so the model treats the requirement as a stricter constraint.
 
-B) Keep the confidence instruction but add a numeric percentage threshold to it, so the model has a specific number to compare its confidence against.
+B) Keep the confidence instruction but ~~add a numeric percentage threshold~~ to it, so the model has a specific number to compare its confidence against.
 
-C) Replace the confidence instruction with a list of the specific issue types that qualify for this category, and explicitly state which related issue types should be skipped.
+C) Replace the confidence instruction with a list of the specific issue types that **qualify(해당하다)** for this category, and explicitly state which related issue types should be skipped.
 
-D) Move the confidence instruction from the system prompt into the user message instead, on the assumption that message placement was the reason it had no effect.
+D) Move the confidence instruction ~~from the system prompt into the user message~~ instead, on the assumption that message placement was the reason it had no effect.
 
 ---
 
