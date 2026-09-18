@@ -16,6 +16,14 @@
 
 ---
 
+* _buried in_ : 정보가 눈에 띄지 않게 묻혀있다
+* _termination_ : (계약의) 해지
+* _rather than_ : ~ 대신
+* _unusual phrasing_ : 특이한 표현
+* _demonstrating_ : 보여주는
+
+---
+
 # A. 추출 실패 대응 — 예시 추가 / 재시도 / 스키마 완화 / 스키마 확장
 
 2와 43: 비정형 위치에서 null이면 두 경우를 보여주는 예시 추가. 28: 구조 오배치만 재시도로 해결. 45: 날짜 형식 불일치는 스키마 완화 + 다운스트림 파서(description 지시가 아님). 63: 값 날조는 optional + source enum.
@@ -26,15 +34,15 @@
 
 **1. 문제 원문**
 
-An extraction pipeline for supplier contracts frequently returns null for the 'renewal_notice_period' field on contracts where that information is present but phrased unusually, such as buried in a sentence about termination rather than in a clearly labeled 'Renewal' clause. The team has already tried making the field's instruction more explicit with no improvement. What should they try next?
+An extraction pipeline for supplier contracts frequently returns null for the 'renewal_notice_period' field on contracts where that information is present but phrased unusually, such as **buried in(묻혀있다)** a sentence about termination rather than in a clearly labeled 'Renewal' clause. The team has already tried making the field's **instruction** more explicit **with no improvement** (지시문으로는 효과가 없었다). What should they try next?
 
-A) Change the field's data type from a string to a required enumerated value from a fixed set
+A) Change the field's data type from a string ~~to a required enumerated~~ value from a fixed set
 
-B) Add a fallback default value of thirty days that is used whenever the field would otherwise be left null
+B) ~~Add a fallback default value~~ of thirty days that is used whenever the field would **otherwise(그렇지 않은 경우)** be left null
 
-C) Show an extraction from unusual phrasing plus a case confirming null is correct when unspecified
+C) Show an extraction from unusual **phrasing(표현)** / plus / a case confirming null is correct when unspecified
 
-D) Instruct the model to scan only clauses whose heading explicitly contains the word 'renewal' or 'termination'
+D) ~~Instruct the model~~ to scan only clauses whose heading explicitly contains the word 'renewal' or 'termination'
 
 ---
 
@@ -69,13 +77,13 @@ LLM을 이용한 정보 추출 시, 단순 지시문(Zero-shot) 개선만으로 
 
 **1. 문제 원문**
 
-A tool extracts a paper's 'sample size' and 'statistical method' fields. Some papers place this information in a clearly labeled Methodology section, while others embed it in a sentence within the Results or Discussion section without any nearby heading. The tool reliably extracts from labeled Methodology sections but frequently returns null when the same information is embedded elsewhere. What is the best fix?
+A tool extracts a paper's 'sample size' and 'statistical method' fields. Some papers place this information in a clearly labeled Methodology section, while others embed it in a sentence within the Results or Discussion section without any nearby heading. The tool reliably **extracts from labeled** Methodology sections but frequently **returns null** when the same information is **embedded elsewhere**. What is the best fix?
 
-A) Increase the model's context window to ensure it reads the entire paper rather than a truncated excerpt.
+A) ~~Increase the model's context~~ window to ensure it reads the entire paper rather than a truncated excerpt.
 
-B) Exclude any paper that lacks a labeled Methodology section from the extraction pipeline.
+B) Exclude any paper that **lacks(~가 없다)** a labeled Methodology section from the extraction pipeline.
 
-C) Provide the model with extraction examples from both a labeled Methodology section and from an embedded sentence in Results, demonstrating how to extract the fields in both cases.
+C) Provide the model with extraction examples from both a labeled Methodology section and from an embedded sentence in Results, **demonstrating(보여주는)** how to extract the fields in both cases.
 
 D) Configure the tool to first search the Methodology section, and only fall back to other sections if the fields are missing.
 
@@ -85,20 +93,20 @@ D) Configure the tool to first search the Methodology section, and only fall bac
 
 **정답: C번**
 
-정답 및 해설:
+**정답 및 해설:**
 
-핵심 개념: Few-Shot 퓨샷 프롬프팅 (Diverse Example Demonstration)
-LLM 기반 추출 도구가 특정 형식이나 위치(예: 명확한 섹션 헤딩)에 편향되어 일관성이 떨어질 때, 다양한 컨텍스트 및 예시 패턴(Few-shot examples)을 제공하면 모델의 가다듬어진 패턴 인식 능력이 대폭 향상됩니다.
+**핵심 개념:** Few-Shot 퓨샷 프롬프팅 (Diverse Example Demonstration)
+LLM 기반 추출 도구가 **특정 형식이나 위치(예: 명확한 섹션 헤딩)에 편향되어 일관성이 떨어질 때**, 다양한 컨텍스트 및 예시 패턴(Few-shot examples)을 제공하면 모델의 가다듬어진 패턴 인식 능력이 대폭 향상됩니다.
 
-문제 상황 분석:
+**문제 상황 분석:**
 - 추출 도구가 명확한 Methodology 섹션이 있는 논문에서는 정보를 잘 추출함.
 - 헤딩 없이 Results나 Discussion 내부 문장에 자연어로 묻혀 있는 정보는 인식하지 못하고 `null`을 반환함.
 - 문제의 원인은 모델이 헤딩 구조에만 의존하는 편향(Bias)이 생겼거나, 비구조화된 일반 문장 내 추출 예시 학습 부족 때문임.
 
-C번이 정답인 이유:
+**C번이 정답인 이유:**
 명확한 Methodology 섹션에서 추출하는 예시뿐만 아니라, Results/Discussion 내부 문장에서 정보를 추출하는 다양한 유형의 예시(Few-shot)를 프롬프트에 제공함으로써 모델에게 두 패턴 모두에서 필드를 식별하고 추출하는 방법을 학습시킬 수 있습니다. 이는 다양하고 엣지 있는 패턴에 대한 추출 성능을 가장 안정적으로 개선하는 방법입니다.
 
-오답 분석:
+**오답 분석:**
 - Option A (오답): 문제 원인은 잘린 텍스트 때문이 아니라 다른 위치/형태의 텍스트 패턴을 인식하지 못하는 패턴 인지 문제입니다. 컨텍스트 창 크기를 늘리는 것으로는 다양성 부족 문제를 해결하지 못합니다.
 - Option B (오답): 지정된 섹션이 없다고 논문을 제외해 버리는 것은 시스템 지원 범위를 임의로 축소하는 잘못된 우회책입니다.
 - Option D (오답): 본문 문제는 정보의 단순 검색 순서가 아니라, 비구조화된 문장 형태(embedded sentence)로 작성된 정보 자체를 모델이 알아채고 추출하지 못한다는 점입니다. 단순히 검색 순서를 fall back 방식으로 바꾸는 알고리즘 설정만으로는 내부 추출 실패 문제를 해결하지 못합니다.
