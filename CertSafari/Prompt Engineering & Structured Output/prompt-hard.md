@@ -753,47 +753,6 @@ D) One combined extraction tool with a **unified(공통)** schema for invoices, 
 
 ---
 
-## 19번 문제 (원본 89번)
-
-**어려운 이유** [원칙이 깨지는 예외] — "배치는 도구 호출 왕복이 불가하다"는 규칙을 그대로 적용하면 오답이 되고, 서버 사이드 도구는 요청 내부에서 해소되므로 가능하다는 예외를 알아야 한다.
-
-**1. 문제 원문**
-
-A search-augmentation team wants each batched research request to use a server-side web search tool so Claude can look up current information and incorporate it into the same response, without the application fetching pages or feeding results back itself. Is this workable within the Message Batches API?
-
-A) No, because the Message Batches API rejects any request that references a tool definition, whether the tool executes on the server or on the client
-
-B) No, because server tools only function within streamed synchronous responses and streaming is one of the parameters batch requests do not support
-
-C) Yes, because server tools such as web search resolve automatically within the request itself, unlike client-side tools that need an application-supplied result
-
-D) Yes, but only if the application also submits a matching synchronous request in parallel so the server tool has a live connection to execute against
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: C번**
-
-**정답 및 해설:**
-
-**핵심 개념:** Anthropic Claude Message Batches API와 서버 측 도구(Server-side Tools / Built-in Tools, 예: Web Search)의 연동 동작 방식입니다. 클라이언트 측 도구(Client-side Tool Use)는 모델이 `tool_use`를 출력하면 애플리케이션이 이를 실행한 후 `tool_result`를 다단계 왕복(Multi-turn)으로 전달해야 하므로 비동기 배치 구조에서 처리가 어렵습니다. 반면, 서버 측 웹 검색 도구는 Anthropic 서버 내부에서 검색 실행 및 결과 수집이 단일 요청 패스 내에서 자동으로 자급자족(Self-contained/Automated resolution) 처리되므로 Message Batches API 내에서 완벽하게 동작합니다.
-
-**문제 상황 분석:**
-- 검색 증강 팀이 Message Batches API를 사용하여 대량의 조사 요청을 일괄 처리하고자 합니다.
-- 클라이언트 애플리케이션이 웹 페이지를 직접 스크래핑하거나 결과를 다시 모델에 피드백(Multi-turn loop)하지 않고, 모델 스스로 서버 측 웹 검색 도구(Server-side web search tool)를 사용하여 최신 정보를 수집하고 최종 응답을 완성하기를 원합니다.
-- 이러한 서버 측 도구 사용 패턴이 비동기 방식인 Message Batches API 환경에서 지원 가능한지 판단하는 문제입니다.
-
-**C번이 정답인 이유:**
-서버 측 도구(예: Anthropic 제공 웹 검색)는 서버 내부에서 도구 호출, 검색 수행, 결과 통합 및 최종 응답 작성이 하나의 단일 API 요청 수명주기 안에서 자체적으로 완결(Self-contained)되어 자동 처리됩니다. 애플리케이션과의 중간 왕복 개입이 불필요하므로, 비동기로 백그라운드 처리되는 Message Batches API 내에서도 개별 요청으로 서버 측 도구를 지정하여 일괄 실행하는 것이 완전히 가능합니다.
-
-**오답 분석:**
-- Option A (오답): Message Batches API는 도구 정의(Tool definitions) 사용을 거부하지 않으며, 도구 사용 매개변수를 정상적으로 지원합니다.
-- Option B (오답): 서버 측 도구가 스트리밍되는 동기 응답에서만 작동한다는 설명은 사실이 아니며, 비동기 배치 처리에서도 단일 요청 내부 완료 방식으로 문제없이 동작합니다.
-- Option D (오답): 비동기 배치 요청을 처리하기 위해 클라이언트가 실시간 동기식 요청을 병렬로 유지하거나 연결을 열어둘 필요가 전혀 없습니다.
-
----
-
 ## 20번 문제 (원본 7번)
 
 **어려운 이유** [복합 시나리오, 부분적으로만 맞는 오답] — 24시간 처리 + 2시간 포매팅을 36시간에서 빼는 계산을 요구하며, 12시간·14시간 오답이 각각 "절반"과 "포매팅 흡수"라는 그럴듯한 논리를 붙여 산수 실수를 유도한다.
