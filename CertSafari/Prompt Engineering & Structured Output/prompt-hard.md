@@ -210,15 +210,15 @@ Anthropic의 공식 가이드라인에 따르면 다양한 비구조화 포맷�
 
 **1. 문제 원문**
 
-A real estate platform extracts property listings from scraped web pages using a single `describe_property` tool. The `square_footage` field is defined as a required number, but many older listings state size only in vague prose like "spacious with room to grow" and never give a numeric figure. Extraction logs show the model consistently inventing plausible square footage values for these listings. Which two schema changes together best resolve this while preserving data quality for downstream reports?
+A real estate platform extracts property listings from scraped web pages using a single `describe_property` tool. The `square_footage` field is defined as a required number, but many older listings state size only in vague prose like "spacious with room to grow" and never give a numeric figure. Extraction logs show the model consistently inventing plausible square footage values for these listings. Which two schema changes together best resolve this while preserving **data quality for downstream reports**?
 
-A) Keep `square_footage` required, but change its type to string so the model can output a placeholder like "unspecified" or "N/A" instead of fabricating a number, ensuring the field is always present.
+A) Keep `square_footage` ~~required~~, but change its type to string so the model can output a placeholder like "unspecified" or "N/A" instead of fabricating a number, ensuring the field is always present. => 할루시네이션 유발
 
-B) You can make `square_footage` optional for missing values and add a `square_footage_source` enum that stores 'stated', 'estimated', or 'unknown' so reports can separate confirmed from absent values.
+B) You can make `square_footage` **optional** for missing values and add a `square_footage_source` enum that stores 'stated', 'estimated', or 'unknown' so reports can separate confirmed from absent values.
 
-C) Keep `square_footage` required, and add a system prompt instruction (e.g., "Do not guess; output 'N/A' for missing data") and a configuration flag to require manual review of any numeric output.
+C) Keep `square_footage` required, and ~~add a system prompt instruction~~ (e.g., "Do not guess; output 'N/A' for missing data") and a configuration flag to require manual review of any numeric output.
 
-D) Remove `square_footage` from the schema entirely, and rely on a separate keyword-search script to scan raw listing text for numeric patterns and inject the first match into a staging column for reports.
+D) ~~Remove `square_footage` from the schema entirely~~, and rely on a separate keyword-search script to scan raw listing text for numeric patterns and inject the first match into a staging column for reports.
 
 ---
 
@@ -244,8 +244,6 @@ LLM 정보 추출 시스템의 환각(Hallucination) 방지 및 스키마 설계
 - Option A (오답): 숫자형 데이터를 다루는 필드를 문자열(`string`)로 변경하고 `"N/A"`나 `"unspecified"` 같은 자리표시자 텍스트를 채우게 만들면, 후속 리포트 시스템에서 해당 필드를 숫자형으로 계산/수학적 연산(평균 계산 등)을 할 때 유형 오류가 발생하여 데이터 품질이 저하됩니다.
 - Option C (오답): 숫자 타입으로 정의된 필수 필드에 `"N/A"`라는 문자열을 출력하라는 지시를 내리면 JSON 스키마 타입 검증 오류(Type Validation Error)가 발생합니다. 또한 모든 숫자 출력에 대해 수동 검토를 거치게 하는 것은 자동화 파이프라인의 효율성을 저해합니다.
 - Option D (오답): 스키마에서 필드를 완전히 제거하고 단순 정규표현식/키워드 스크립트에 의존하는 것은 모호한 서술문 문맥을 처리하지 못하며 LLM을 통한 정보 추출의 이점을 포기(abandonment)하는 잘못된 아키텍처입니다.
-
----
 
 ---
 
@@ -419,8 +417,6 @@ D) Add paired examples of a genuinely problematic instance and an acceptable ins
 
 ---
 
----
-
 # C. 리뷰 오탐 줄이기 — confidence 언어 대신 명시 기준, 그 다음 단계
 
 52: confidence 문구가 실패하는 이유. 20: 명시적 이슈 목록으로 교체. 44: 명시 기준 적용 예(docstring 모순은 보고). 39: 전용 서브에이전트. 87: 2단계 체인의 이점. 71: 재활성화 전 held-out 검증.
@@ -433,13 +429,13 @@ D) Add paired examples of a genuinely problematic instance and an acceptable ins
 
 A prompt engineer tries to fix a noisy security-findings category by adding the line "only report high-confidence findings" to the system prompt. After a week of testing, the false positive rate is essentially unchanged. What is the most likely explanation for why this change failed to improve precision?
 
-A) General confidence language gives the model no concrete rule for what to report, so it still applies the same underlying judgment that produced the false positives before the change.
+A) **General confidence language gives the model no concrete rule** for what to report, so it still applies the same underlying judgment that produced the false positives before the change.
 
-B) Adding any qualifier to a system prompt increases output length, which expands the set of tokens the evaluator inspects and independently raises the chance that a finding is miscategorized as high severity.
+B) Adding any qualifier to a system prompt increases ~~output length, which expands the set of tokens~~ the evaluator inspects and independently raises the chance that a finding is miscategorized as high severity.
 
-C) High-confidence phrasing conflicts with the model's safety training, which is designed to avoid under-reporting risks, causing it to over-report findings as a cautionary default across a wider range of inputs.
+C) ~~High-confidence phrasing conflicts with the model's safety training~~, which is designed to avoid under-reporting risks, causing it to over-report findings as a cautionary default across a wider range of inputs.
 
-D) The word "confidence" is not in the set of tokens the model is trained to parse for output constraints, so the instruction is treated as decorative text and ignored, leaving the original behavior unchanged.
+D) ~~The word "confidence" is not in the set of tokens~~ the model is trained to parse for output constraints, so the instruction is treated as decorative text and ignored, leaving the original behavior unchanged.
 
 ---
 
@@ -447,20 +443,20 @@ D) The word "confidence" is not in the set of tokens the model is trained to par
 
 **정답: A번**
 
-정답 및 해설:
+**정답 및 해설:**
 
-핵심 개념: 모호한 신뢰도 지침 vs 명시적/범주적 규칙 (Vague Confidence Phrasing vs. Explicit Criteria)  
+**핵심 개념:** 모호한 신뢰도 지침 vs 명시적/범주적 규칙 (Vague Confidence Phrasing vs. Explicit Criteria)  
 LLM에 "신뢰도가 높은 항목만 보고하라(high-confidence findings)"와 같이 주관적이고 추상적인 문구를 제공하면 모델은 스스로 무엇이 '신뢰도가 높은지' 객관적으로 판단할 수 없습니다. 결국 이전과 동일한 내재적 판단 기준을 적용하게 되므로 오탐률(False Positive Rate) 감소 및 정밀도 개선에 실패하게 됩니다.
 
-문제 상황 분석:
+**문제 상황 분석:**
 - 보안 지적 사항 카테고리에서 오탐(False positive)이 많이 발생함.
 - 프롬프트 엔지니어가 "only report high-confidence findings"라는 한 줄을 시스템 프롬프트에 추가함.
 - 일주일간 테스트했지만 오탐률에 변화가 없었으며 정밀도가 개선되지 않음.
 
-A번이 정답인 이유:
+**A번이 정답인 이유:**
 "high-confidence"라는 일반적이고 모호한 단어는 무엇을 보고하고 무엇을 스킵해야 하는지에 대한 구체적이고 객관적인 기준(Explicit/Categorical Criteria)을 모델에게 제공하지 못합니다. 모델은 '높은 신뢰도'의 정의를 알 수 없어 기존과 동일한 방식으로 오탐 가능성이 있는 지적 사항들을 그대로 출력하므로 정밀도 개선에 실패합니다.
 
-오답 분석:
+**오답 분석:**
 - Option B (오답): 프롬프트에 수식어를 추가하는 것이 출력 길이를 불필요하게 늘려 심각도 오분류 확률을 직접적으로 높인다는 주장은 기술적 근거가 없는 오답입니다.
 - Option C (오답): 주관적인 신뢰도 문구가 모델의 안전 학습(Safety training)과 직접적으로 충돌하여 예방 조치로 지적 사항을 과다 보고하게 된다는 해석은 사실이 아닙니다.
 - Option D (오답): LLM은 어휘 집합 내의 모든 일반 단어를 파싱할 수 있으며, "confidence"라는 특정 단어가 제약 조건 토큰 집합에서 제외되어 무시된다는 설명은 LLM 작동 방식에 대한 잘못된 설명입니다.
@@ -676,8 +672,6 @@ D) Run the rewritten prompt against a held-out set of past pull requests with kn
 
 ---
 
----
-
 # D. tool_choice — 강제 호출의 부작용과 설계
 
 62: 특정 도구 강제는 앞선 텍스트 억제. 78: 강제 + extended thinking 오류는 thinking 비활성(auto 전환 아님). 95: any + 유형별 도구 3개.
@@ -807,8 +801,6 @@ D) One combined extraction tool with a unified schema for invoices, receipts, an
 - Option A (오답): `tool_choice: "any"`는 특정 도구 하나(`extract_invoice`)만을 고정하여 강제하는 매개변수가 아니며, 그렇게 구현하면 영수증이나 구매 주문서가 입력되었을 때 오분류 및 추출 실패가 발생합니다.
 - Option B (오답): `tool_choice: "any"`를 사용할 때 `tools` 배열에 반드시 1개의 도구만 등록되어야 한다는 제약 조건은 전혀 없으며, 여러 개 도구 중 하나를 선택하도록 유도하는 데 자주 쓰입니다.
 - Option D (오답): 거대한 통합 스키마 1개를 사용하는 것은 스키마 충돌은 줄일 수 있어도 모델에게 불필요한 스키마 노이즈를 다량 제공하게 되므로, 소형 모듈화 도구들에 `tool_choice: "any"`를 적용하는 방식보다 우수한 설계가 아닙니다.
-
----
 
 ---
 
