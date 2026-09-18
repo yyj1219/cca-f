@@ -683,11 +683,11 @@ D) Run the rewritten prompt against a **held-out set(과거의 실제 데이터�
 
 **1. 문제 원문**
 
-A team building a resume-parsing tool wants to guarantee that structured candidate data is extracted via a `parse_resume` tool on the current turn. They also want to know whether Claude can include natural-language reasoning about ambiguous resume sections before that tool call. Which `tool_choice` configuration should be used to guarantee the `parse_resume` call, and what does Anthropic documentation state about natural-language commentary before a forced tool call?
+A team building a resume-parsing tool wants to guarantee that structured candidate data is extracted via a `parse_resume` tool on the current turn. They also want to know whether Claude can include natural-language reasoning about ambiguous resume sections before that tool call. Which `tool_choice` configuration should be used to guarantee the `parse_resume` call, and what does Anthropic documentation state about **natural-language commentary before a forced tool call**?
 
 A) `tool_choice: {"type": "auto"}`, combined with an explicit user-message instruction to use the `parse_resume` tool and share any relevant reasoning as text
 
-B) `tool_choice: {"type": "tool", "name": "parse_resume"}`, because this is the documented way to force the specific tool; the trade-off is that forced tool use suppresses natural-language text before the tool call
+B) `tool_choice: {"type": "tool", "name": "parse_resume"}`, because this is the documented way to force the specific tool; the trade-off is that forced tool use **suppresses(억제하다)** natural-language text before the tool call
 
 C) `tool_choice: {"type": "any"}`, because `any` allows Claude to freely mix natural-language commentary with the forced tool call in the same response
 
@@ -710,7 +710,7 @@ Anthropic Claude API의 `tool_choice` 파라미터 동작 방식 및 강제 도�
 - 특정 도구 강제 제어 파라미터 구성법과 해당 기능 사용 시 발생하는 동작 제약 조건을 파악해야 합니다.
 
 **B번이 정답인 이유:**  
-Anthropic 공식 문서에 따르면 특정 단일 도구의 호출을 보장하려면 `tool_choice: {"type": "tool", "name": "parse_resume"}` 형태로 지정해야 합니다. 또한 공식 문서에는 특정한 도구가 강제로 설정될 경우, 모델은 도구 호출 전 서술형 자연어 텍스트(Natural-language text/commentary)를 함께 출력하는 대신 곧바로 도구 호출(Tool call)에 필요한 JSON 객체만 생성하도록 유도 및 억제된다고 명시되어 있습니다. 따라서 B번이 기술적 사양과 공식 문서 지침을 정확히 설명합니다.
+Anthropic 공식 문서에 따르면 특정 단일 도구의 호출을 보장하려면 `tool_choice: {"type": "tool", "name": "parse_resume"}` 형태로 지정해야 합니다. 또한 공식 문서에는 **특정한 도구가 강제로 설정될 경우**, 모델은 도구 호출 전 서술형 자연어 텍스트(Natural-language text/commentary)를 함께 출력하는 대신 곧바로 **도구 호출(Tool call)에 필요한 JSON 객체만 생성하도록 유도 및 억제된다**고 명시되어 있습니다. 따라서 B번이 기술적 사양과 공식 문서 지침을 정확히 설명합니다.
 
 **오답 분석:**  
 - Option A (오답): `{"type": "auto"}`는 모델이 도구를 호출할지 일반 텍스트로 응답할지 스스로 판단하게 만들므로, 사용자 프롬프트에 지시를 추가하더라도 API 수준에서 특정 도구 호출을 100% 보장하지 못합니다.
