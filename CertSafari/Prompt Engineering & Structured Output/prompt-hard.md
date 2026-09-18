@@ -363,7 +363,7 @@ D) An instruction to flag every new conditional branch in a diff regardless of t
 
 **문제 상황 분석:**
 - PR 검토 에이전트가 테스트 커버리지가 부족한 코드 분기를 판별하는 역할을 수행합니다.
-- 기존 통합 테스트에 의해 간접적으로 테스트되는 새 분기에 대해 거짓 양성(False Positive) 경고를 일관성 없이 발생시켜 신뢰도를 저하시키고 있습니다.
+- 기존 통합 테스트에 의해 간접적으로 테스트되는 새 분기에 대해 오탐(False Positive) 경고를 일관성 없이 발생시켜 신뢰도를 저하시키고 있습니다.
 - '커버리지'에 대한 구체적인 서술형 지시사항을 프롬프트에 추가했음에도 일관성 문제가 해결되지 않는 상황입니다.
 
 **A번이 정답인 이유:**
@@ -372,7 +372,7 @@ Anthropic 프롬프트 엔지니어링 가이드라인에 따르면, 모호한 �
 **오답 분석:**
 - Option B (오답): 전체 테스트 수트를 무조건 실행하고 100% 미만 커버리지를 모두 경고하는 것은 검토 노이즈(False Positive)를 오히려 크게 증가시키고 실행 비용/시간을 극대화합니다.
 - Option C (오답): 10줄 미만 변경 파일을 무조건 안전하다고 간주하는 임의적 하드코딩 규칙은 실제 커버리지가 누락된 중요한 버그 경로를 놓치게 만듭니다.
-- Option D (오답): 주변 테스트 상황을 무시하고 모든 조건부 분기를 무조건 경고하는 것은 간접 커버리지 분기까지 모두 경고 대상으로 만들어 문제의 원인인 거짓 양성을 극대화합니다.
+- Option D (오답): 주변 테스트 상황을 무시하고 모든 조건부 분기를 무조건 경고하는 것은 간접 커버리지 분기까지 모두 경고 대상으로 만들어 문제의 원인인 오탐을 극대화합니다.
 
 ---
 
@@ -553,15 +553,13 @@ D) No, because caching behavior is an implementation detail, and implementation 
 
 **1. 문제 원문**
 
-A code review agent flags a helper function because its naming does not match the dominant naming convention in the file. However, the file already contains legacy functions with several naming styles, and the helper function's name is consistent with one of those legacy styles but not with the project's canonical naming standard. The architect is using a subagent-based code review workflow and wants a criterion that reduces this kind of false positive without suppressing genuine naming defects. Which criterion best addresses this failure mode?
+A code review agent **flags(지적하다)** a helper function because its naming does not match the dominant naming convention in the file. However, the file already contains legacy functions with several naming styles, and the helper function's name is consistent with one of those legacy styles but not with the project's canonical naming standard. The architect is using a subagent-based code review workflow and wants a **criterion(기준)** that **reduces(!!) this kind of false positive** without **suppressing(억제하다, 놓치다)** **genuine(진정한)** naming defects. Which criterion best addresses this failure mode?
 
-A) Skip all naming-related findings across the entire codebase regardless of context, treating naming style as advisory, and focus the review exclusively on validating the code's logic and error handling.
+A) ~~Skip all naming-related findings~~ across the entire codebase **regardless of(~에 상관없이)** context, treating naming style as advisory, and focus the review exclusively on validating the code's logic and error handling.
 
-B) Report the naming inconsistency but flag it as low severity in the findings list and include the local style variations that are already present in the file to provide context for the review.
+B) Report the naming **inconsistency(불일치)** but flag it as low **severity(심각도)** in the findings list and include the local style **variations(변형)** that are already present in the file to provide context for the review. => 심각도를 낮춰도 오탐을 줄이지 못 하고 그대로 계속된다.
 
-C) Dedicate a subagent to naming review with an isolated context window, a custom system prompt that instructs it to ignore pre-existing local style variations and flag only deviations from the project's canonical naming standard, and least-privilege tool access. This reduces false positives by focusing the review on the canonical standard, though it cannot eliminate all false positives.
-
-D) Ask the model to only report naming issues when its confidence exceeds 90% based on comparing the usage against standard library conventions and the project's own style guide.
+C) Dedicate a subagent to naming review with an isolated context window, a custom system prompt that instructs it to ignore pre-existing local style variations and flag only **deviations(편차)** from the project's canonical naming standard, and least-privilege tool access. This **reduces false positives** by focusing the review on the canonical standard, though it cannot **eliminate(제거하다)** all false positives. => 검토를 표준명명규칙에 집중시켜서 오탐을 줄인다, 비록 모든 오탐을 완전히 없앨 수는 없지만 (한계까지 정직하게 인정하는 모습)
 
 ---
 
@@ -571,8 +569,7 @@ D) Ask the model to only report naming issues when its confidence exceeds 90% ba
 
 **정답 및 해설:**
 
-**핵심 개념**: 서브에이전트 역할 격리 및 시스템 프롬프트를 통한 거짓 양성 차단 (Subagent Isolation & Standard-driven Prompts)
-코드베이스 내에 혼재하는 기존 레거시 코드 스타일로 인해 발생하는 오탐(False Positive)을 줄이기 위해서는, 해당 작업만을 전담하는 서브에이전트에 독립된 컨텍스트 창을 부여하고, "기존 레거시 스타일 파편화에 인접하여 맞춰 쓴 코드는 노이즈로 보고 무시하되, 오직 프로젝트의 중앙 표준 가이드라인(Canonical standard) 위반만 지적하라"는 명확한 시스템 프롬프트를 주입해야 합니다.
+**핵심 개념**: 서브에이전트 역할 격리 및 시스템 프롬프트를 통한 오탐 차단 (Subagent Isolation & Standard-driven Prompts)
 
 **문제 상황 분석:**
 - 검토 에이전트가 헬퍼 함수의 이름을 지적함 (해당 파일 내 주요 컨벤션과 다르다는 이유)
@@ -584,9 +581,7 @@ D) Ask the model to only report naming issues when its confidence exceeds 90% ba
 - 시스템 프롬프트를 통해 "파일 내부의 기존 로컬 스타일 혼용에惑(혹)하지 말고, 오직 프로젝트 중앙 표준 기준(Canonical naming standard)에서 벗어난 진성 위반만 검출하라"고 명확히 제한함으로써 레거시 혼재로 인한 오탐을 대폭 감소시킬 수 있습니다.
 
 **오답 분석:**
-- Option A (오답): 오탐을 줄이겠다고 코드베이스 전체의 이름 검토 지적을 아예 건너뛰는(Skip) 것은 진짜 명명 결함(Genuine naming defects)까지 놓치게 되므로 부적절합니다.
 - Option B (오답): 오탐 메시지 자체를 없애지 않고 단순히 낮은 심각도로 계속 보고하는 방식은 개발자의 알림 피로도(Notification fatigue)를 해결하지 못합니다.
-- Option D (오답): "신뢰도 90% 초과"와 같은 수치 조건은 LLM 모델 자체의 주관적이고 불확실한 확신도 산출 방식에 의존하므로, 표준 위반 판단 기준을 명확히 제어하지 못합니다.
 
 ---
 
@@ -658,7 +653,7 @@ D) Run the rewritten prompt against a held-out set of past pull requests with kn
 **핵심 개념:** 프롬프트 평가 및 회귀 테스트(Prompt Evaluation & Regression Testing) 모범 사례입니다. AI 프롬프트의 품질을 개선하거나 수정한 후에는 결과를 정량적으로 검증하기 위해 미리 별도로 격리해 둔 검증용 데이터셋(Held-out dataset / Gold standard dataset)을 기반으로 자동화된 벤치마크 테스트를 거쳐야 합니다.
 
 **문제 상황 분석:**
-- 코드 리뷰 또는 정적 분석 에이전트의 "성능 제안" 카테고리가 높은 거짓 양성(False Positive)을 발생시켜 임시 비활성화됨.
+- 코드 리뷰 또는 정적 분석 에이전트의 "성능 제안" 카테고리가 높은 오탐(False Positive)을 발생시켜 임시 비활성화됨.
 - 아키텍트가 해당 카테고리의 판단 기준 프롬프트를 명확하고 검증 가능한 규칙으로 수정함.
 - 전체 팀에 배포(Re-enable)하기 전, 오탐율이 실제로 줄어들었는지 안전하게 검증하는 가장 정석적인 품질 관리(QA) 절차를 찾아야 함.
 
