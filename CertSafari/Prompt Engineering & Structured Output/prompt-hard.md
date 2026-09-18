@@ -22,6 +22,8 @@
 * _unusual phrasing_ : 특이한 표현
 * _demonstrating_ : 보여주는
 * _ingests_ : 수집하다
+* _corpus_ : 말뭉치
+* _Held-out dataset / Holdout set / Withheld dataset_ : 학습에서 제외해 평가용으로 남긴 데이터
 
 ---
 
@@ -620,7 +622,7 @@ C) The second pass gives the model a separate opportunity to check each draft fi
 
 ---
 
-## 15번 문제 (원본 71번)
+## 15번 문제 (원본 71번) ★
 
 **어려운 이유** [덜 틀린 답 고르기] — 시니어 엔지니어의 과거 PR 수동 검토(B)가 현실적으로 충분해 보이지만, held-out 세트로 FP율을 측정하는 정량 검증만이 정답이다.
 
@@ -628,13 +630,9 @@ C) The second pass gives the model a separate opportunity to check each draft fi
 
 After temporarily disabling a high false-positive "performance suggestions" category and rewriting its criteria with specific, checkable rules, an architect must decide when it is safe to re-enable the category for the whole team. What is the most appropriate validation step before re-enabling it broadly?
 
-A) Re-enable the category immediately after the new criteria are added to the repository, because the explicit rules themselves demonstrate improved precision without needing any further validation against historic pull requests.
+C) Re-enable the category only for pull requests opened by the engineer who reported the false positives, as a limited pilot to verify the criteria, while keeping it disabled for all other contributors. => 특정 개발자에 의존하면 샘플의 다양성을 담보할 수 없다.
 
-B) Ask a single senior engineer to review the new criteria against a small set of past pull requests that triggered false positives, and authorize re-enabling if the criteria appear sound based on that manual check.
-
-C) Re-enable the category only for pull requests opened by the engineer who reported the false positives, as a limited pilot to verify the criteria, while keeping it disabled for all other contributors.
-
-D) Run the rewritten prompt against a held-out set of past pull requests with known findings, and confirm its false positive rate has dropped to an acceptable level before re-enabling it for everyone.
+D) Run the rewritten prompt against a **held-out set(과거의 실제 데이터셋)** of past pull requests with known findings, and confirm its false positive rate has dropped to an acceptable level before re-enabling it for everyone.
 
 ---
 
@@ -644,7 +642,7 @@ D) Run the rewritten prompt against a held-out set of past pull requests with kn
 
 **정답 및 해설:**
 
-**핵심 개념:** 프롬프트 평가 및 회귀 테스트(Prompt Evaluation & Regression Testing) 모범 사례입니다. AI 프롬프트의 품질을 개선하거나 수정한 후에는 결과를 정량적으로 검증하기 위해 미리 별도로 격리해 둔 검증용 데이터셋(Held-out dataset / Gold standard dataset)을 기반으로 자동화된 벤치마크 테스트를 거쳐야 합니다.
+**핵심 개념:** 프롬프트 평가 모범 사례입니다. AI 프롬프트의 품질을 개선하거나 수정한 후에는 결과를 정량적으로 검증하기 위해 미리 별도로 격리해 둔 검증용 데이터셋(Held-out dataset / Gold standard dataset)을 기반으로 자동화된 벤치마크 테스트를 거쳐야 합니다.
 
 **문제 상황 분석:**
 - 코드 리뷰 또는 정적 분석 에이전트의 "성능 제안" 카테고리가 높은 오탐(False Positive)을 발생시켜 임시 비활성화됨.
@@ -655,9 +653,23 @@ D) Run the rewritten prompt against a held-out set of past pull requests with kn
 프롬프트 변경 사항을 배포하기 전에는 결과가 이미 수집되어 있는 과거 실제 데이터셋(Held-out Dataset)을 대상으로 수정된 프롬프트를 실행하여 정량 지표(False Positive Rate)를 측정해야 합니다. 오탐율이 목표치 이하로 감소했음을 객관적인 데이터로 확인한 후 전체 배포를 진행하는 것이 프롬프트 회귀 테스트(Regression Testing)의 모범 사례입니다.
 
 **오답 분석:**
-- Option A (오답): 아무런 실제 테스트나 검증 없이 명시적 규칙을 썼다는 이유만으로 즉시 배포하는 것은 맹목적인 추측이며, 실제 운영 환경에서 예기치 못한 Side-effect나 다른 유형의 오탐을 일으킬 수 있습니다.
-- Option B (오답): 엔지니어 한 명의 주관적인 수동 눈단속(Manual Check)과 소수 편향 데이터에 의존하는 방식은 정량적인 평가 수치가 부족하며 검증의 객관성과 신뢰성을 담보할 수 없습니다.
 - Option C (오답): 오류를 리포트한 특정 개발자의 PR에만 한정하여 활성화하는 라이브 프로덕션 파일럿 방식은 불완전하며, 데이터 샘플의 다양성을 반영하지 못하고 해당 개발자에게 테스트 부담을 전가합니다.
+
+**평가/검증 목적 데이터셋:**
+- Held-out dataset / Holdout set — 학습에서 제외해 평가용으로 남긴 데이터
+- Withheld dataset — "보류/유보해둔" 데이터, held-out과 거의 동의어
+- Split-off set — train/test split 과정에서 "떼어낸" 부분임을 강조
+- Evaluation set — 평가용 데이터셋 (일반적 표현)
+- Validation set — 튜닝 단계에서 쓰는 검증용 데이터
+- Curated dataset — 사람이 직접 선별/검수한 데이터셋 (품질 보증 뉘앙스)
+- Labeled/Annotated dataset — 사람이 정답 레이블을 달아둔 데이터셋
+
+**Gold standard 계열 (정답/기준이 확실한 데이터):**
+- Gold standard dataset — 가장 신뢰할 수 있는 정답으로 간주되는 데이터셋
+- Ground truth — 실제 정답, 참값 (예: "compared against ground truth")
+
+**말뭉치/데이터셋:**
+- scanned-document corpus - 스캔된 문서 말뭉치
 
 ---
 
