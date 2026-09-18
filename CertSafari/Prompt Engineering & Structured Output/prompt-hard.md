@@ -113,19 +113,26 @@ LLM 기반 추출 도구가 **특정 형식이나 위치(예: 명확한 섹션 �
 
 ---
 
-## 3번 문제 (원본 28번)
+## 3번 문제 (원본 28번) ★
 
 **어려운 이유** [유사 현상 구분, 복합 시나리오] — 네 가지 실패를 "소스에 정보가 없음" vs "구조적 배치 오류"로 분류해야 하며, service_address가 우편주소인 경우도 구조 오류처럼 보여 혼동을 준다.
 
 **1. 문제 원문**
 
-A utility-bill extraction pipeline has logged the following four distinct failed extractions: 1. The `meter_reading` value was extracted correctly but placed under `billing_address` instead of the `usage_details` object. 2. The `account_holder_phone` field is blank because no phone number appears anywhere on the scanned bill provided so far. 3. The `prior_year_comparison` figure is missing because it only appears in an annual letter never supplied to the pipeline. 4. The `service_address` field holds the mailing address because that is the only address printed on this particular bill. Which of these is the one most likely to be fixed by an error-feedback retry, as opposed to requiring a different source document or human escalation?
+A utility-bill extraction pipeline has logged the following four distinct failed extractions: 
 
-A) The `service_address` field holds the mailing address because that is the only address printed on this particular bill
+1. The `meter_reading` value was extracted correctly but placed under `billing_address` instead of the `usage_details` object. 
+2. The `account_holder_phone` field is blank because no phone number appears anywhere on the scanned bill provided so far. 
+3. The `prior_year_comparison` figure is missing because it only appears in an annual letter never supplied to the pipeline. 
+4. The `service_address` field holds the mailing address because that is the only address printed on this particular bill. 
 
-B) The `prior_year_comparison` figure is missing because it only appears in an annual letter never supplied to the pipeline
+Which of these is the one most likely to be **fixed by an error-feedback retry**, **as opposed to(~와는 반대로)** requiring a different source document or human escalation? => 재시도로 해결할 수 있는 방법
 
-C) The `account_holder_phone` field is blank because no phone number appears anywhere on the scanned bill provided so far
+A) The `service_address` field holds the mailing address because that is the only address printed on this particular bill => "메일 주소 = 서비스 주소로 봐도 되는가?"에 대한 정답 기준이 없음
+
+B) The `prior_year_comparison` figure is missing because it only appears in an annual letter never supplied to the pipeline => 연간 레터에만 있는 정보라서 파이프라인에는 정보 없음
+
+C) The `account_holder_phone` field is blank because no phone number appears anywhere on the scanned bill provided so far => 청구서 어디에도 전화 번호 없음
 
 D) The `meter_reading` value was extracted correctly but placed under `billing_address` instead of the `usage_details` object
 
