@@ -30,13 +30,15 @@
 
 A customer contacts Anthropic support about a $45 API overage charge and says: "I don't want to discuss this with a bot, connect me to a human agent right now." The support agent has not yet reviewed the account. According to Anthropic's recommended support approach, what should the agent do?
 
+> (문제 원문의 "Anthropic's recommended support approach"라는 표현은 실제 공식 문서에 근거한 것이 아니라 출제자가 만든 가상의 전제이다 — 아래 해설 참고.)
+
 A) Review the account's usage history and attempt to resolve the overage charge before responding to the customer's escalation request
 
 B) Escalate the conversation to a human agent immediately, without first investigating the overage charge
 
 C) Ask the customer to first explain why they don't want to work with an automated system before escalating
 
-D) Offer to explain the overage charge in detail, attempt to resolve it, and escalate to a human only if the customer repeats the request or the issue remains unresolved
+**D) Offer to explain the overage charge in detail, attempt to resolve it, and escalate to a human only if the customer repeats the request or the issue remains unresolved**
 
 ---
 
@@ -54,16 +56,18 @@ D) Offer to explain the overage charge in detail, attempt to resolve it, and esc
 
 - 고객이 API 초과 청구 요금에 대해 다이렉트로 사람 상담원 연결을 강력하게 요구하며 봇과의 대화를 거부했습니다.
 - 지원 에이전트(AI 서포트 시스템)는 아직 계정 조사를 시작하지 않은 상태입니다.
-- Anthropic의 AI-First 서포트 플로우(Recommended Support Approach)에 맞춰 AI가 취해야 할 최적의 정석적 흐름을 판단해야 합니다.
+- 요금이 정당한지 판단·조사가 필요한 사안에서 AI가 취해야 할 대응을 판단해야 합니다.
 
 **D번이 정답인 이유:**
 
-Anthropic 권장 지원 흐름에 따라 지원 봇은 고객의 초과 청구 요금 내역을 먼저 검토 및 설명하여 AI 차원에서 문제를 해결하려는 시도(Attempt to resolve)를 우선적으로 해야 합니다. 그리고 해당 시도 후에도 고객이 사람 연결을 지속 요청하거나 문제 해결이 불가능한 것으로 판명될 때 최종적으로 사람 상담원에게 에스컬레이션을 수행하는 것(AI-First 후 Human Fallback)이 시스템 공식 가이드라인에 부합하는 정답입니다.
+이 문제 세트가 기대하는 것은 Anthropic이 문서로 공표한 특정 절차가 아니라, 일반적인 CX/에스컬레이션 설계 상식입니다: 청구가 정당한지 확인·설명이 필요한 사안은 판단·조사가 필요하므로, 먼저 계정을 검토하고 설명·해결을 시도(Attempt to resolve)한 뒤, 그럼에도 고객이 반복 요청하거나 문제가 해결되지 않을 때 사람 상담원에게 이관하는 것이 합리적인 흐름입니다.
 
 **오답 분석:**
 - Option A (오답): 에스컬레이션 요청에 전혀 응답하지 않은 채 조사부터 진행하는 것은 고객과의 커뮤니케이션을 무시하므로 올바르지 않으며, 조사 후 어떻게 이관 절차를 밟는지에 대한 완전한 지원 워크플로우를 담고 있지 않습니다.
-- Option B (오답): Anthropic의 고객 지원은 AI-First 모델을 기반으로 하므로, AI 봇이 계정 확인 및 문제 해결 시도를 전혀 거치지 않은 상태에서 즉시 사람 상담원에게 넘기는 것은 권장 방식이 아닙니다.
-- Option C (오답): 봇과 대화하기 싫은 이유를 설명하라고 고객에게 요구하는 것은 고객 여정에 마찰(Friktion)만 가중시키는 부적절한 대응 방식입니다.
+- Option B (오답): 판단·조사가 필요한 사안임에도 AI가 계정 확인이나 해결 시도를 전혀 거치지 않은 상태에서 즉시 사람 상담원에게 넘기는 것은 불필요한 인계입니다.
+- Option C (오답): 봇과 대화하기 싫은 이유를 설명하라고 고객에게 요구하는 것은 고객 여정에 마찰(Friction)만 가중시키는 부적절한 대응 방식입니다.
+
+> 참고: Claude Platform Docs의 "Customer support agent" 가이드에는 에스컬레이션 정확도(escalation accuracy) 목표치 같은 평가 지표만 있을 뿐, "명시적 요청 시 즉시 에스컬레이션" 같은 절차 규정은 명시되어 있지 않다. 즉 이 문제의 근거는 Anthropic 공식 정책이라기보다 일반적인 지원 설계 원칙에 가깝다.
 
 ---
 
@@ -75,7 +79,7 @@ Anthropic 권장 지원 흐름에 따라 지원 봇은 고객의 초과 청구 �
 
 A brokerage customer messages support: 'I want a real person, not a bot,' regarding a routine request to reset their account password. The agent has not yet attempted any troubleshooting. What is the appropriate response?
 
-A) Escalate to a human agent right away, honoring the request without first attempting to resolve it
+**A) Escalate to a human agent right away, honoring the request without first attempting to resolve it**
 
 B) Ask the customer to explain why a human agent is preferred before deciding how to proceed
 
@@ -103,7 +107,7 @@ D) Walk the customer through the password reset steps first, since the process i
 
 **A번이 정답인 이유:**
 
-고객 지원 및 대화형 AI 시스템 가이드라인의 최우선 규칙 중 하나는 사용자가 명확하게 사람 상담원 연결을 요청할 때 이를 거부하거나 우회하려 하지 않는 것입니다. 비록 요청된 작업(비밀번호 재설정)이 단순하고 자동화 처리가 가능할지라도, 사용자가 '사람'과의 대화를 직접 지목하여 요구한 경우 AI가 자체적으로 처리를 시도하거나 설득하려 들지 않고, 요구사항을 즉시 받아들여 사람 상담원에게 이관(Escalate)하는 것이 올바른 대응 방식입니다.
+이 역시 Anthropic이 문서로 규정한 절차라기보다 일반적인 CX 설계 상식으로 이해하는 것이 정확합니다: 요청된 작업(비밀번호 재설정)이 판단·조사 없이 즉시 처리 가능한 단순 작업이라면, AI가 자체적으로 먼저 처리를 시도하거나 설득하려 들 이유가 없습니다. 그런 상황에서 사용자가 '사람'과의 대화를 직접 지목해 요구했다면, 굳이 먼저 나서지 말고 요구사항을 즉시 받아들여 사람 상담원에게 이관(Escalate)하는 것이 합리적인 대응입니다.
 
 **오답 분석:**
 - Option B (오답): 왜 사람을 선호하는지 이유를 묻고 따지는 것은 이미 불만을 표시한 고객에게 불필요한 마찰과 거부감을 유발합니다.
