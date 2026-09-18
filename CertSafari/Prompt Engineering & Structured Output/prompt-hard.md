@@ -708,21 +708,19 @@ Anthropic 공식 문서에 따르면 특정 단일 도구의 호출을 보장하
 
 ---
 
-## 17번 문제 (원본 95번)
+## 17번 문제 (원본 95번) ★
 
 **어려운 이유** [덜 틀린 답 고르기, 부분적으로만 맞는 오답] — 통합 스키마의 일관된 필드 네이밍 이점(D)이 실무적으로 설득력 있어, tool_choice "any"의 설계 의도(타입별 도구 선택)와 정면으로 경합한다.
 
 **1. 문제 원문**
 
-An engineering team is deciding whether to expose one single extract_document tool with a very large schema covering invoices, receipts, and purchase orders in one combined structure, or three separate smaller tools (extract_invoice, extract_receipt, extract_purchase_order) selected via tool_choice: "any" based on document content. Users upload one document at a time and document type varies per upload. Which design better matches the intended use of tool_choice: "any" for extraction?
+An engineering team is deciding whether to expose one single extract_document tool with a very large schema covering invoices, receipts, and purchase orders in one combined structure, or three separate smaller tools (extract_invoice, extract_receipt, extract_purchase_order) selected via tool_choice: "any" based on document content. Users upload one document at a time and document type varies per upload. Which design better matches the intended use of tool_choice: "any" for extraction? => "어떤 설계가 추출(extraction) 작업에서 tool_choice: "any"의 의도된 사용 방식에 더 잘 부합할까요?"
 
-A) Three separate, document-type-specific tools, but with tool_choice: "any" forced to extract_invoice as the default since invoices dominate uploads, ensuring the tool always handles the most common case correctly and reliably.
+B) One combined extraction tool with a single schema for all document types, because **tool_choice: "any" requires exactly one tool to be registered** in the tools array for the model to invoke the extraction logic correctly and clearly. => 하나로 통합한 도구는 무조건 아님
 
-B) One combined extraction tool with a single schema for all document types, because tool_choice: "any" requires exactly one tool to be registered in the tools array for the model to invoke the extraction logic correctly and clearly.
+C) Three separate, document-type-specific tools with tool_choice: "any", so Claude selects the schema matching the actual document avoiding the noise and confusion of an oversized combined schema. => tool_choice: "any"를 사용하는 세 개의 별도 문서 유형별 도구를 두어, 지나치게 큰 통합 스키마의 노이즈와 혼란을 피하면서 Claude가 실제 문서와 일치하는 스키마를 선택하도록 합니다.
 
-C) Three separate, document-type-specific tools with tool_choice: "any", so Claude selects the schema matching the actual document avoiding the noise and confusion of an oversized combined schema.
-
-D) One combined extraction tool with a unified schema for invoices, receipts, and purchase orders, where tool_choice: "any" selects that single tool and ensures consistent field naming across all document types without schema conflicts.
+D) One combined extraction tool with a **unified(공통)** schema for invoices, receipts, and purchase orders, where tool_choice: "any" selects that single tool and ensures consistent field naming across all document types without schema conflicts. => 하나로 통합한 도구는 무조건 아님
 
 ---
 
@@ -738,13 +736,12 @@ D) One combined extraction tool with a unified schema for invoices, receipts, an
 - 송장, 영수증, 구매 주문서 등 업로드되는 문서의 종류가 다양하며, 한 번에 한 문서씩 들어옵니다.
 - 선택지 설계안 1: 3가지 문서 형태를 모두 다루는 거대 통합 도구 1개 배치.
 - 선택지 설계안 2: 문서 종류별로 특화된 소형 도구 3개를 배치하고 `tool_choice: "any"`로 호출을 강제.
-- `tool_choice: "any"`의 의도된 설계 목적과 API 베스트 프랙티스에 완벽히 부합하는 방안을 찾는 문제입니다.
+- **`tool_choice: "any"`의 의도된 설계 목적과 API 베스트 프랙티스**에 완벽히 부합하는 방안을 찾는 문제입니다.
 
 **C번이 정답인 이유:**
 모든 필드를 포함하는 거대한 단일 스키마를 제공하면 스키마 내부의 수많은 선택적(Optional) 필드와 조건부 필드로 인해 모델이 노이즈를 겪고 환각이나 잘못된 필드 추출을 일으킬 위험이 높아집니다. 반면, 문서 종류별로 명확하고 간결한 스키마를 가진 3개의 도구(`extract_invoice`, `extract_receipt`, `extract_purchase_order`)를 등록하고 `tool_choice: {"type": "any"}`를 주면, Claude는 도구 호출을 강제받는 동시에 입력된 문서 내용을 분석하여 가장 적합한 도구를 스스로 선택합니다. 이는 스키마 복잡성을 낮추고 추출 정확도를 극대화하는 `tool_choice: "any"`의 올바른 활용 방식입니다.
 
 **오답 분석:**
-- Option A (오답): `tool_choice: "any"`는 특정 도구 하나(`extract_invoice`)만을 고정하여 강제하는 매개변수가 아니며, 그렇게 구현하면 영수증이나 구매 주문서가 입력되었을 때 오분류 및 추출 실패가 발생합니다.
 - Option B (오답): `tool_choice: "any"`를 사용할 때 `tools` 배열에 반드시 1개의 도구만 등록되어야 한다는 제약 조건은 전혀 없으며, 여러 개 도구 중 하나를 선택하도록 유도하는 데 자주 쓰입니다.
 - Option D (오답): 거대한 통합 스키마 1개를 사용하는 것은 스키마 충돌은 줄일 수 있어도 모델에게 불필요한 스키마 노이즈를 다량 제공하게 되므로, 소형 모듈화 도구들에 `tool_choice: "any"`를 적용하는 방식보다 우수한 설계가 아닙니다.
 
