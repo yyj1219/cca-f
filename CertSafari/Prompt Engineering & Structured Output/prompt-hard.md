@@ -21,6 +21,7 @@
 * _rather than_ : ~ 대신
 * _unusual phrasing_ : 특이한 표현
 * _demonstrating_ : 보여주는
+* _ingests_ : 수집하다
 
 ---
 
@@ -169,15 +170,15 @@ D) The `meter_reading` value was extracted correctly but placed under `billing_a
 
 **1. 문제 원문**
 
-A logistics company ingests shipment confirmation emails from many different carriers. Dates appear as `03/14/2026`, `14-Mar-2026`, and `2026.03.14` depending on the carrier, but the extraction schema defines `ship_date` as a string with a strict ISO 8601 pattern. Extractions frequently fail schema validation because the source dates don't match the expected format. According to the current Anthropic official guidance, what is the most effective fix?
+A logistics company **ingests(수집하다)** shipment confirmation emails from many different carriers. Dates appear as `03/14/2026`, `14-Mar-2026`, and `2026.03.14` depending on the carrier, but the extraction schema defines `ship_date` as a string with a strict ISO 8601 pattern. Extractions frequently fail schema validation because the source dates don't match the expected format. According to the current Anthropic official guidance, what is the most effective fix?
 
 A) Retain the strict ISO 8601 schema constraint for `ship_date` and add an explicit `description` in the JSON schema telling Claude to parse and normalize the carrier date string to ISO 8601 format (e.g., `YYYY-MM-DD`).
 
-B) Remove the `ship_date` field from the extraction schema and infer the shipment date later from other fields such as tracking number lookup or email metadata.
+B) Remove the `ship_date` field from the extraction schema and ~~infer the shipment date~~ later from other fields such as tracking number lookup or email metadata.
 
-C) Loosen the schema to accept any string for `ship_date`, and add a downstream step that uses a date parser to normalize the value to ISO 8601 format before storing it in the database.
+C) Loosen the schema to **accept any string** for `ship_date`, and add a downstream step that uses a date parser to normalize the value to ISO 8601 format before storing it in the database.
 
-D) Split `ship_date` into three fields such as `ship_date_us`, `ship_date_eu`, and `ship_date_iso`, each expecting a different carrier date format, and populate only the one matching the extracted string.
+D) ~~Split `ship_date` into three fields~~ such as `ship_date_us`, `ship_date_eu`, and `ship_date_iso`, each expecting a different carrier date format, and populate only the one matching the extracted string.
 
 ---
 
@@ -185,23 +186,21 @@ D) Split `ship_date` into three fields such as `ship_date_us`, `ship_date_eu`, a
 
 **정답: C번**
 
-정답 및 해설:
+**정답 및 해설:**
 
-핵심 개념: LLM 추출과 후속 정규화의 역할 분리 (Decoupling LLM Extraction & Deterministic Parsing)  
+**핵심 개념:** LLM 추출과 후속 정규화의 역할 분리 (Decoupling LLM Extraction & Deterministic Parsing)  
 Anthropic의 공식 가이드라인에 따르면 다양한 비구조화 포맷을 가진 데이터를 추출할 때 스키마 레벨에서 엄격한 포맷 검증(Regex/Pattern)을 강제하면 스키마 유효성 검사 실패율이 높아집니다. 스키마 제약조건은 일반 문자열(`type: string`)로 완화하여 추출 성공률을 높이고, 정규화(Normalization)는 후속 애플리케이션 코드(Date Parser)에 위임하는 것이 가장 정석적인 설계입니다.
 
-문제 상황 분석:
+**문제 상황 분석:**
 - 이메일 원본의 날짜 포맷이 운송사별로 상이함 (`03/14/2026`, `14-Mar-2026`, `2026.03.14`).
 - 추출 스키마에서 `ship_date`에 엄격한 ISO 8601 패턴을 적용하여 유효성 검사 오류가 지속 발생함.
 - 모델의 자연어 추출 능력과 엄격한 스키마 검증 간의 충돌로 인해 시스템 신뢰도가 저하됨.
 
-C번이 정답인 이유:
+**C번이 정답인 이유:**
 `ship_date` 스키마 제약을 단순 문자열로 완화(Loosen)하면 모델이 이메일의 날짜를 실패 없이 원문 그대로 가져올 수 있습니다. 이후 데이터베이스 저장 직전 단계(Downstream)에서 검증된 날짜 파서 라이브러리를 사용해 ISO 8601 포맷으로 변환하면, 스키마 유효성 검사 실패를 원천적으로 방지하고 안전하게 정규화된 데이터를 확보할 수 있습니다.
 
-오답 분석:
+**오답 분석:**
 - Option A (오답): 스키마 `description`에 정규화 지침을 제공하더라도, 엄격한 패턴 검증 규칙을 유지하면 모델이 비구조화 데이터를 인코딩하는 과정에서 여전히 스키마 유효성 검사 실패가 자주 발생합니다.
-- Option B (오답): 이메일 본문에 존재하는 핵심 데이터(`ship_date`) 추출을 포기하고 외부 조회나 메타데이터에 의존하는 것은 불필요한 복잡성을 유발하고 본래의 추출 목적을 달성하지 못합니다.
-- Option D (오답): 날짜 포맷별로 필드를 무분별하게 나누는 것은 데이터베이스 구조와 데이터 모델을 불필요하게 파편화하며 유지보수를 매우 어렵게 만듭니다.
 
 ---
 
