@@ -547,7 +547,7 @@ D) No, because caching behavior is an implementation detail, and implementation 
 
 ---
 
-## 13번 문제 (원본 39번)
+## 13번 문제 (원본 39번) ★
 
 **어려운 이유** [길이가 단서 아님, 덜 틀린 답 고르기] — 정답이 가장 긴 옵션이라 오히려 역함정처럼 보이고, "낮은 심각도로 보고" 같은 절충안이 실무적으로 매우 그럴듯하다.
 
@@ -585,21 +585,17 @@ C) Dedicate a subagent to naming review with an isolated context window, a custo
 
 ---
 
-## 14번 문제 (원본 87번)
+## 14번 문제 (원본 87번) ★
 
-**어려운 이유** [부분적으로만 맞는 오답] — 체이닝이 정밀도를 높인다는 결론은 네 선택지 모두 같고, "시스템 프롬프트 리셋"·"컨텍스트 2배" 같은 그럴듯하지만 틀린 메커니즘을 걸러내야 한다.
+**어려운 이유** [부분적으로만 맞는 오답] — 체이닝이 정밀도를 높인다는 결론은 네 선택지 모두 같고, "시스템 프롬프트 리셋", "컨텍스트 2배" 같은 그럴듯하지만 틀린 메커니즘을 걸러내야 한다.
 
 **1. 문제 원문**
 
-An architect is designing a multi-step pipeline to reduce false positives in a review category: a first API call generates draft findings, and a second API call reviews each draft against explicit criteria before finalizing it. Why would this chained approach improve precision compared to a single-pass prompt with the same criteria?
+An architect is designing a multi-step pipeline to **reduce false positives** in a review category: a first API call generates draft findings, and a second API call reviews each draft against explicit criteria before finalizing it. Why would this **chained approach improve precision** compared to a single-pass prompt with the same criteria?
 
-A) The second API call is configured to invoke a more capable model by default, so the improved precision comes purely from a model upgrade between calls, not from the explicit two-step review process.
+B) Chaining calls **resets the model's system prompt** after the **draft(초안)** generation, which **strips(제거하다)** any prior **contextual cues(맥락적 단서들)** / that / could have biased (편향시켰을 수 있다) / the first pass / toward over-flagging (~쪽으로 과도하게 지적하도록) / **benign(무해한)** patterns / as findings (지적 사항으로) / , reducing false positives. => 그 단서들은 → 첫 번째 패스를 편향시켰을 수 있었다 → (어느 쪽으로?) 무해한 패턴을 지적 사항으로 과잉 표시하는 쪽으로 → (그걸 제거하니) 오탐이 줄어든다
 
-B) Chaining calls resets the model's system prompt after the draft generation, which strips any prior contextual cues that could have biased the first pass toward over-flagging benign patterns as findings, reducing false positives.
-
-C) The second pass gives the model a separate opportunity to check each draft finding against the explicit criteria in isolation, catching cases where the first pass may have misapplied the criteria due to generating a large set of findings in one response.
-
-D) Splitting the task across two calls doubles the amount of context available to the model by exposing all draft findings and the criteria to the second call, which mechanically improves classification accuracy by reducing false positives.
+C) The second pass gives the model a separate opportunity to check each draft finding against the explicit criteria in isolation, catching cases where the first pass / may have misapplied (잘못 적용했을 수도 있다) / the criteria / due to generating (생성한 것 때문에) / a large set of findings in one response. => 첫 번째 패스가 → 기준을 잘못 적용했을 수도 있다 → (왜냐하면) 하나의 응답 안에서 → 대량의 지적 사항을 생성했기 때문에
 
 ---
 
@@ -620,9 +616,7 @@ D) Splitting the task across two calls doubles the amount of context available t
 단일 패스 생성 시에는 한 번의 응답 출력에서 수많은 후보 항목을 찾아내고 정형화하느라 모델이 복잡한 기준 조건을 완벽히 적용하지 못하고 오탐(False Positive)을 남길 수 있습니다. 반면, 2차 검토 패스를 별도로 두면 이미 뽑혀 나온 초안 목록 하나하나에 집중하여 검토 기준 준수 여부만 독립적으로(in isolation) 엄격히 평가할 수 있습니다. 그 결과, 1차 작업 시 과도하게 잡혔던 부적절한 플래그들이 걸러져 정밀도가 명확히 향상됩니다.
 
 **오답 분석:**
-- Option A (오답): 2단계 검토 프로세스는 동일한 모델을 사용하더라도 파이프라인의 구조적 이점(작업 분리 및 검증)에 의해 정밀도가 향상되는 것이며, 두 번째 호출에서 더 높은 성능의 모델을 쓰는 것이 기본값(by default)이라는 설명은 사실이 아닙니다.
 - Option B (오답): 프롬프트 체이닝이 시스템 프롬프트를 재설정하여 이전 맥락을 지워주기 때문이라는 설명은 아키텍처 관점에서 정밀도 향상의 본질적인 이유(개별 항목에 대한 별도 검증 및 정제 기회 제공)가 아닙니다.
-- Option D (오답): 호출을 둘로 나누는 것이 모델이 활용 가능한 콘텍스트 양을 기계적으로 두 배로 늘려주는 것은 아니며, 단지 정보를 노출한다고 해서 정확도가 자동으로 향상되는 것은 아닙니다.
 
 ---
 
