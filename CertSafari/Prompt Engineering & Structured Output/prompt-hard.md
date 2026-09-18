@@ -708,51 +708,7 @@ Anthropic 공식 문서에 따르면 특정 단일 도구의 호출을 보장하
 
 ---
 
-## 17번 문제 (원본 78번)
-
-**어려운 이유** [원칙이 깨지는 예외, 부분적으로만 맞는 오답] — extended thinking과 tool_choice 호환성이라는 예외 규칙이며, "강제 도구 유지하고 thinking을 끈다"(A)가 결론상 에러는 없애므로 매우 그럴듯하다.
-
-> **⚠ 교차 참조 주의 / 해설 확인 필요** — tool-hard.md의 원본 51번은 같은 상황인데 정답이 "tool_choice를 auto/none으로 바꾸거나 adaptive thinking으로 이전"이다. 이 문제는 도구 호출 보장이 우선이라 "thinking 비활성"(A)이 정답. 또한 위 "어려운 이유" 메모는 A를 매력적 오답처럼 서술하고 있어 정답란(A)과 모순되므로 원본 prompt-merged.md와 대조해 확인할 것.
-
-**1. 문제 원문**
-
-A developer building a metadata-tagging pipeline registers a single `tag_document` tool and sets `tool_choice` to `{"type": "tool", "name": "tag_document"}` to ensure every input document is tagged. They also want Claude to use extended thinking to reason carefully before tagging ambiguous documents. During testing, requests combining extended thinking with this `tool_choice` setting return an error. What should the developer do to resolve this?
-
-A) Keep `tool_choice` forced to `tag_document` and disable extended thinking for the request, because forced tool selections are incompatible with extended thinking
-
-B) Switch `tool_choice` to `{"type": "auto"}`, since extended thinking is only compatible with `auto` (or `none`) and is not supported alongside forced tool selections like `any` or a named tool
-
-C) Keep `tool_choice` forced to `tag_document`, and add a top-level `thinking_mode: "extended"` field directly inside the tool's `input_schema` to bypass the restriction
-
-D) Switch `tool_choice` to `{"type": "any"}`, since `any` is explicitly designed to support extended thinking while `auto` and forced-tool modes are the ones that are incompatible
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: A번**
-
-**정답 및 해설:**
-
-**핵심 개념:** Anthropic Claude API의 Extended Thinking(확장 추론) 기능과 Forced Tool Selection(도구 강제 호출) 간의 API 제약 조건 및 시스템 요구사항 충족 설계입니다.
-
-**문제 상황 분석:**
-- 개발자가 모든 입력 문서에 반드시 태그가 부여되도록 `tool_choice: {"type": "tool", "name": "tag_document"}` 설정을 사용하여 도구 호출을 강제함.
-- 동시 처리를 위해 Extended Thinking을 활성화했으나 API 호환성 오류가 발생함.
-- 파이프라인의 핵심 요구사항(모든 문서 필수 태깅 보장)을 훼손하지 않으면서 API 에러를 해결해야 함.
-
-**A번이 정답인 이유:**
-Anthropic Claude API 사양에 따르면 Extended Thinking 기능은 `tool_choice`가 `auto` 또는 `none`일 때만 호환됩니다. `{"type": "tool", "name": "tag_document"}`와 같은 강제 지정(Forced Tool Selection)이나 `any` 지정 방식은 Extended Thinking과 함께 사용할 수 없어 API 에러가 유발됩니다.
-이때 파이프라인의 핵심 요구사항인 '모든 문서의 필수 태깅 보장'을 유지하려면, 도구 강제 설정을 건드리지 않고 해당 API 요청에서 Extended Thinking을 비활성화하는 것이 시스템 제약 조건을 충족시키는 유일한 정답입니다.
-
-**오답 분석:**
-- Option B (오답): `tool_choice`를 `auto`로 변경하면 API 에러는 해소되지만, Claude가 도구를 호출하지 않고 일반 텍스트 응답을 반환할 수 있어 파이프라인의 필수 요구사항(모든 문서 필수 태깅)을 보장할 수 없게 됩니다.
-- Option C (오답): `input_schema` 내부에 `thinking_mode` 필드를 추가한다고 해서 API 레벨의 매개변수 호환성 제약을 우회할 수 없으며, 존재하지 않는 잘못된 스키마 속성입니다.
-- Option D (오답): `any` 모드 역시 특정 도구 집합 호출을 강제하는 Forced Tool Selection의 일종이므로 Extended Thinking과 호환되지 않으며 에러가 발생합니다.
-
----
-
-## 18번 문제 (원본 95번)
+## 17번 문제 (원본 95번)
 
 **어려운 이유** [덜 틀린 답 고르기, 부분적으로만 맞는 오답] — 통합 스키마의 일관된 필드 네이밍 이점(D)이 실무적으로 설득력 있어, tool_choice "any"의 설계 의도(타입별 도구 선택)와 정면으로 경합한다.
 
@@ -798,7 +754,7 @@ D) One combined extraction tool with a unified schema for invoices, receipts, an
 
 47: 클라이언트 도구 결과 왕복 불가. 89: 서버 도구(web search)는 가능. 7: 마감 역산 제출 주기.
 
-## 19번 문제 (원본 47번)
+## 18번 문제 (원본 47번)
 
 **어려운 이유** [유사 현상 구분, 부분적으로만 맞는 오답] — 배치에서 도구를 아예 못 쓴다(B)는 과장된 오답과 "요청 중간 왕복 불가"라는 진짜 이유를 구분해야 한다.
 
@@ -840,7 +796,7 @@ C번이 정답인 이유:
 
 ---
 
-## 20번 문제 (원본 89번)
+## 19번 문제 (원본 89번)
 
 **어려운 이유** [원칙이 깨지는 예외] — "배치는 도구 호출 왕복이 불가하다"는 규칙을 그대로 적용하면 오답이 되고, 서버 사이드 도구는 요청 내부에서 해소되므로 가능하다는 예외를 알아야 한다.
 
@@ -881,7 +837,7 @@ D) Yes, but only if the application also submits a matching synchronous request 
 
 ---
 
-## 21번 문제 (원본 7번)
+## 20번 문제 (원본 7번)
 
 **어려운 이유** [복합 시나리오, 부분적으로만 맞는 오답] — 24시간 처리 + 2시간 포매팅을 36시간에서 빼는 계산을 요구하며, 12시간·14시간 오답이 각각 "절반"과 "포매팅 흡수"라는 그럴듯한 논리를 붙여 산수 실수를 유도한다.
 
