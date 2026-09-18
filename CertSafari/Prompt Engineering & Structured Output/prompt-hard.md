@@ -751,46 +751,6 @@ D) One combined extraction tool with a **unified(공통)** schema for invoices, 
 
 47: 클라이언트 도구 결과 왕복 불가. 89: 서버 도구(web search)는 가능. 7: 마감 역산 제출 주기.
 
-## 18번 문제 (원본 47번)
-
-**어려운 이유** [유사 현상 구분, 부분적으로만 맞는 오답] — 배치에서 도구를 아예 못 쓴다(B)는 과장된 오답과 "요청 중간 왕복 불가"라는 진짜 이유를 구분해야 한다.
-
-**1. 문제 원문**
-
-An agent workflow needs Claude to request a database-lookup tool, receive the tool's result, and then reason over that result before producing a final answer, all within one logical exchange. A developer wants to run this exchange through the Message Batches API to save on cost. What is the key limitation that rules this out?
-
-A) Batch requests limit each conversation to a single message, so a tool_use block and its follow-up reasoning cannot appear in one batched exchange, since each conversation must be self-contained.
-
-B) Tool definitions cannot be attached to any request submitted through the Message Batches API, so the model never has the option to request a database-lookup tool during processing.
-
-C) A single batch request cannot pause mid-processing to accept an application-supplied tool result, since each request resolves independently with no mid-request round trip.
-
-D) The Message Batches API silently strips tool_use content blocks from responses, so the application never learns which tool the model wanted to call, leaving it unable to supply the required result.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: C번**
-
-정답 및 해설:
-
-핵심 개념: Message Batches API의 비동기적 특성 및 도구 호출 루프 (Message Batches API & Tool Use Loop)  
-Anthropic의 Message Batches API는 비동기식(Asynchronous) 대량 요청 처리 API로, 50%의 비용 절감을 제공하지만 단일 네트워크 요청 내에서 실시간 왕복(Round-trip) 통신을 지원하지 않습니다. 에이전트의 도구 실행 워크플로는 [모델의 도구 호출 요청 -> 애플리케이션의 도구 실행 및 결과 반환 -> 모델의 후속 추론]이라는 동기적 다단계 피드백 루프가 필수적입니다.
-
-문제 상황 분석:
-- 에이전트 워크플로가 단일 교환 내에서 도구 실행 및 결과 수신, 최종 추론까지 완결되기를 요구함.
-- 개발자가 비용 절감을 위해 이를 단일 Message Batches API 요청으로 처리하고자 함.
-- 배치 처리의 구조상 실시간 중단 및 외부 결과 수신이 불가능하다는 제약 조건이 발생함.
-
-C번이 정답인 이유:
-단일 배치 API 요청은 독립적이고 단방향으로 실행됩니다. 처리 중간에 일시 정지(Pause)하여 외부 애플리케이션이 실행한 도구 결과(`tool_result`)를 전달받아 실행을 재개하는 '중간 왕복 통신'이 불가능하므로, 이러한 연속적인 에이전트 인터랙션을 단일 배치 요청 내에서 처리할 수 없습니다.
-
-오답 분석:
-- Option A (오답): 배치 요청에는 이전 대화 내역을 담은 여러 개의 메시지(`messages` 배열)를 포함할 수 있으므로 메시지 개수가 단 하나로 제한된다는 설명은 거짓입니다.
-- Option B (오답): Message Batches API에서도 `tools` 파라미터를 사용하여 도구 정의를 정상적으로 첨부할 수 있습니다.
-- Option D (오답): Batch API 응답에도 `tool_use` 블록이 정상적으로 포함되어 반환되며, 이를 임의로 무단 제거(strip)하지 않습니다.
-
 ---
 
 ## 19번 문제 (원본 89번)
