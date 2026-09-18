@@ -511,15 +511,15 @@ LLM에게 "자신 있는 문제만 보고해라" 또는 "확신률 80% 이상만
 
 **1. 문제 원문**
 
-A reviewer flags a docstring that says "returns the cached value if present, otherwise fetches from the API," but the function under review always calls the API regardless of a cache. Under an explicit-criteria rule that only flags comments contradicted by actual code behavior, should this finding be reported?
+A reviewer **flags(지적하다)** a docstring that says "returns the cached value if present, otherwise fetches from the API," but the function under review always calls the API **regardless of(~에 상관없이)** a cache. Under an explicit-criteria rule that only **flags(지적하다)** comments **contradicted by(~와 모순되는)** actual code **behavior(동작)**, should this finding be reported? => 프롬프트로 명시적 기준 규칙을 위반하는 건 지적하라고 지시했다. 이런 기준을 준 상태에서, docstring과 실제 코드가 다르면 지적이 되어야 하는가?
 
-A) No, because docstrings describe intent rather than guaranteed behavior, so a mismatch with the current implementation is not a reportable contradiction.
+A) No, because docstrings describe **intent(의도)** rather than guaranteed behavior, so a mismatch with the current implementation is not a reportable **contradiction(모순)**.
 
-B) Yes, but only if the function is called from more than one place in the codebase, since single-use functions are exempt from this criterion.
+B) Yes, but only if the function is called from more than one place in the codebase, since single-use functions are **exempt(제외되다)** from this criterion.
 
-C) Yes, because the docstring makes a specific, checkable claim about caching behavior that the code's actual control flow directly contradicts.
+C) Yes, because the docstring makes a **specific(구체적)**, **checkable(확인 가능한)** **claim(주장)** about caching behavior that the code's actual control flow directly **contradicts(모순시키는)**.
 
-D) No, because caching behavior is an implementation detail, and implementation details are excluded from comment-accuracy review by definition.
+D) No, because caching behavior is an implementation detail, and implementation details are excluded from comment-**accuracy(정확성)** review by definition.
 
 ---
 
@@ -527,20 +527,20 @@ D) No, because caching behavior is an implementation detail, and implementation 
 
 **정답: C번**
 
-정답 및 해설:
+**정답 및 해설:**
 
-핵심 개념: 코드 주석 정확도 및 명확한 검토 기준 (Code Comment Accuracy & Explicit Review Criteria)  
-자동화된 코드 검토 시스템이나 규칙 기반 리뷰어는 "실제 코드 동작과 직접적으로 모순되는 주석"만을 지적하도록 명시적 규칙을 적용합니다. 주석에 기재된 명확한 동작 설명이 코드의 실제 제어 흐름(Control Flow)과 일치하지 않는 경우, 이는 명백한 보고 대상 오류에 해당합니다.
+**핵심 개념:**
+- 프롬프트로 명시적 기준을 줬으면, "이 정도는 넘어가도 되지 않을까" 하는 일반적 직관(주관적 판단)을 적용하지 말고, **주어진 기준에 실제로 해당하는지만 판단해서 규칙대로 지적해야 한다**.
 
-문제 상황 분석:
+**문제 상황 분석:**
 - 독스트링은 "캐시가 있으면 캐시 값을 반환하고, 없으면 API를 호출한다"고 명시함.
 - 그러나 실제 작성된 코드는 캐시 존재 여부를 확인하지 않고 항상 API를 호출함.
 - 검토 규정은 "실제 코드 동작과 모순(contradict)되는 주석만 지적한다"는 명확한 기준(explicit-criteria rule)을 따르고 있음.
 
-C번이 정답인 이유:
+**C번이 정답인 이유:**
 독스트링에 작성된 설명은 "캐싱 조건부 동작"이라는 구체적이고 코드상에서 검증 가능한(checkable) 내용을 담고 있습니다. 하지만 실제 코드의 제어 흐름은 캐시 확인 없이 항상 API를 호출하므로 독스트링의 내용과 직접적으로 충돌하며 모순됩니다. 따라서 주어진 명확한 검토 규칙에 따라 이 지적 사항은 보고(reported)되어야 합니다.
 
-오답 분석:
+**오답 분석:**
 - Option A (오답): 독스트링이 의도를 나타낸다 하더라도, 명시된 조건부 캐싱 동작과 실제 항상 API를 호출하는 구현 간의 직접적인 모순은 규칙상 명백한 지적 대상입니다.
 - Option B (오답): 함수가 코드베이스에서 호출되는 횟수(단일 사용 여부)는 주석-코드 모순 여부를 판단하는 기준에 해당하지 않습니다.
 - Option D (오답): 독스트링에 특정 캐싱 제어 흐름을 명시적으로 서술해 두었다면 이는 단순 구현 세부 사항을 넘어 외부 호출자가 기대하는 함수의 동작 계약(Contract)에 해당하므로, 실제 코드와 다를 경우 지적 대상입니다.
