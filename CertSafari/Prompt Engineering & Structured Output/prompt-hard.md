@@ -40,9 +40,7 @@ D) Instruct the model to scan only clauses whose heading explicitly contains the
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**C번**: Show an extraction from unusual phrasing plus a case confirming null is correct when unspecified
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -85,8 +83,7 @@ D) Configure the tool to first search the Methodology section, and only fall bac
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-정답:
-C번: Provide the model with extraction examples from both a labeled Methodology section and from an embedded sentence in Results, demonstrating how to extract the fields in both cases.
+**정답: C번**
 
 정답 및 해설:
 
@@ -128,9 +125,7 @@ D) The `meter_reading` value was extracted correctly but placed under `billing_a
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**D번**: The `meter_reading` value was extracted correctly but placed under `billing_address` instead of the `usage_details` object
+**정답: D번**
 
 **정답 및 해설:**
 
@@ -173,8 +168,7 @@ D) Split `ship_date` into three fields such as `ship_date_us`, `ship_date_eu`, a
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-정답:
-C번: Loosen the schema to accept any string for `ship_date`, and add a downstream step that uses a date parser to normalize the value to ISO 8601 format before storing it in the database.
+**정답: C번**
 
 정답 및 해설:
 
@@ -216,8 +210,7 @@ D) Remove `square_footage` from the schema entirely, and rely on a separate keyw
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-B번: You can make `square_footage` optional for missing values and add a `square_footage_source` enum that stores 'stated', 'estimated', or 'unknown' so reports can separate confirmed from absent values.
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -266,8 +259,7 @@ D) Few-shot examples are simply incompatible with document classification tasks,
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-정답:
-A번: The examples unintentionally taught an unrelated pattern tied to length and language; diversify them
+**정답: A번**
 
 정답 및 해설:
 
@@ -309,8 +301,7 @@ D) Reduce the twenty examples to a small set that makes the underlying decision 
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-D번: Reduce the twenty examples to a small set that makes the underlying decision rule visible to the model
+**정답: D번**
 
 **정답 및 해설:**
 
@@ -351,8 +342,7 @@ D) An instruction to flag every new conditional branch in a diff regardless of t
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-A번: A couple of examples pairing a diff with a coverage judgment: one branch with no test, one covered indirectly
+**정답: A번**
 
 **정답 및 해설:**
 
@@ -394,8 +384,7 @@ D) Add paired examples of a genuinely problematic instance and an acceptable ins
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-D번: Add paired examples of a genuinely problematic instance and an acceptable instance, each with the correct verdict
+**정답: D번**
 
 **정답 및 해설:**
 
@@ -442,8 +431,7 @@ D) The word "confidence" is not in the set of tokens the model is trained to par
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-정답:
-A번: General confidence language gives the model no concrete rule for what to report, so it still applies the same underlying judgment that produced the false positives before the change.
+**정답: A번**
 
 정답 및 해설:
 
@@ -485,9 +473,7 @@ D) Move the confidence instruction from the system prompt into the user message 
 
 **정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**C번**: Replace the confidence instruction with a list of the specific issue types that qualify for this category, and explicitly state which related issue types should be skipped.
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -529,8 +515,7 @@ D) No, because caching behavior is an implementation detail, and implementation 
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-정답:
-C번: Yes, because the docstring makes a specific, checkable claim about caching behavior that the code's actual control flow directly contradicts.
+**정답: C번**
 
 정답 및 해설:
 
@@ -572,9 +557,7 @@ D) Ask the model to only report naming issues when its confidence exceeds 90% ba
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**C번**: Dedicate a subagent to naming review with an isolated context window, a custom system prompt that instructs it to ignore pre-existing local style variations and flag only deviations from the project's canonical naming standard, and least-privilege tool access. This reduces false positives by focusing the review on the canonical standard, though it cannot eliminate all false positives.
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -617,8 +600,7 @@ D) Splitting the task across two calls doubles the amount of context available t
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-C번: The second pass gives the model a separate opportunity to check each draft finding against the explicit criteria in isolation, catching cases where the first pass may have misapplied the criteria due to generating a large set of findings in one response.
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -659,8 +641,7 @@ D) Run the rewritten prompt against a held-out set of past pull requests with kn
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-D번: Run the rewritten prompt against a held-out set of past pull requests with known findings, and confirm its false positive rate has dropped to an acceptable level before re-enabling it for everyone.
+**정답: D번**
 
 **정답 및 해설:**
 
@@ -707,8 +688,7 @@ D) `tool_choice: {"type": "none"}`, so Claude can freely decide in text whether 
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**  
-B번: `tool_choice: {"type": "tool", "name": "parse_resume"}`, because this is the documented way to force the specific tool; the trade-off is that forced tool use suppresses natural-language text before the tool call
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -752,8 +732,7 @@ D) Switch `tool_choice` to `{"type": "any"}`, since `any` is explicitly designed
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-A번: Keep `tool_choice` forced to `tag_document` and disable extended thinking for the request, because forced tool selections are incompatible with extended thinking
+**정답: A번**
 
 **정답 및 해설:**
 
@@ -795,8 +774,7 @@ D) One combined extraction tool with a unified schema for invoices, receipts, an
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-C번: Three separate, document-type-specific tools with tool_choice: "any", so Claude selects the schema matching the actual document avoiding the noise and confusion of an oversized combined schema.
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -844,8 +822,7 @@ D) The Message Batches API silently strips tool_use content blocks from response
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-정답:
-C번: A single batch request cannot pause mid-processing to accept an application-supplied tool result, since each request resolves independently with no mid-request round trip.
+**정답: C번**
 
 정답 및 해설:
 
@@ -887,8 +864,7 @@ D) Yes, but only if the application also submits a matching synchronous request 
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-C번: Yes, because server tools such as web search resolve automatically within the request itself, unlike client-side tools that need an application-supplied result
+**정답: C번**
 
 **정답 및 해설:**
 
@@ -929,9 +905,7 @@ D) At least every 14 hours, since the downstream formatting time can be absorbed
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-**B번**: At least every 10 hours, since the worst-case wait until the next batch (the interval) plus the 24-hour processing and the 2-hour formatting must not exceed 36 hours.
+**정답: B번**
 
 **정답 및 해설:**
 
