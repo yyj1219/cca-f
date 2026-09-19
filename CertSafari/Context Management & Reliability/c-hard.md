@@ -125,7 +125,7 @@ D) Walk the customer through the password reset steps first, since the process i
 
 A medical-records extraction system reports 96% overall field accuracy. When an architect breaks the results down further, the 'medication dosage' field is only 81% accurate on handwritten prescription forms, while every other field and document type exceeds 97%. The team is deciding whether to reduce human review of the pipeline overall. What is the correct action?
 
-A) Keep human review at the current level for all fields and document types until the medication-dosage field's accuracy on handwritten forms is separately investigated and improved.
+A) Keep human review at the current level for all fields and document types **until the medication-dosage field's accuracy on handwritten forms is separately investigated and improved**.
 
 B) Reduce human review for every field and document type except handwritten prescriptions in general, treating the entire document type as unreliable rather than isolating the specific field.
 
@@ -137,15 +137,13 @@ D) Reduce human review across the entire pipeline uniformly, since the 96% overa
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-A번: Keep human review at the current level for all fields and document types until the medication-dosage field's accuracy on handwritten forms is separately investigated and improved.
+**정답: A번**
 
 **정답 및 해설:**
 
 **핵심 개념:** 
 
-의료/금융 등 고위험 도메인(High-risk Domain)의 데이터 추출 파이프라인 설계에서 **안전 가드레일 및 세그먼트 오류 리스크 관리(Safety Guardrails & Risk-Sensitive Human-in-the-Loop)** 원칙입니다. 시스템 전체의 평균 정확도가 아무리 높더라도, 환자의 생명과 직결되는 핵심 필드('약물 용량')에서 취약한 오답률(81%)이 포착된다면, 해당 원인이 규명되고 개선될 때까지 안전한 수준의 검토 체계를 유지해야 합니다.
+시스템 전체의 평균 정확도가 아무리 높더라도, 환자의 생명과 직결되는 핵심 필드('약물 용량')에서 취약한 오답률(81%)이 포착된다면, 해당 **원인이 규명되고 개선될 때까지 안전한 수준의 검토 체계를 유지**해야 합니다.
 
 **문제 상황 분석:**
 
@@ -156,12 +154,7 @@ A번: Keep human review at the current level for all fields and document types u
 
 **A번이 정답인 이유:**
 
-의료 도메인에서 '약물 용량' 오추출은 환자의 건강 및 생명에 직접적인 위해를 가할 수 있는 치명적 오류(Critical Risk)입니다. 특정 중요 필드가 81%라는 낮고 위험한 정확도를 보이는 이상, 문제를 일으키는 하위 원인을 별도로 조사하고 모델/프롬프트를 개선하여 안전 기준에 도달할 때까지는 전체 시스템의 검토 단계를 성급히 줄이지 않고 현재의 검토 수준을 유지하는 것이 가장 안전하고 올바른 조치입니다.
-
-**오답 분석:**
-- Option B (오답): 97% 이상의 높은 정확도를 보이는 다른 모든 수기 필드까지 묶어서 '수기 처방전 전체'를 불확실한 것으로 처리하고 검토를 거두지 못하는 것은 문제를 세밀하게 다루지 못하며, 취약 필드('약물 용량')를 근본적으로 개선하지 않은 채 타 분야의 라벨링 자동화 기회를 방해하는 비효율을 낳습니다.
-- Option C (오답): 81%의 낮은 정확도를 보이는 위험 필드에서 오히려 인간의 검토를 제거한다는 설명은 의료 안전 관점에서 심각한 결함입니다.
-- Option D (오답): 전체 평균 96%라는 수치가 평균의 함정(Simpson's paradox)을 유발하고 있음에도 불구하고 일률적으로 검토를 줄이는 것은 고위험 의료 오류를 방치하는 위험한 접근입니다.
+의료 도메인에서 '약물 용량' 오추출은 환자의 건강 및 생명에 직접적인 위해를 가할 수 있는 치명적 오류(Critical Risk)입니다. 특정 중요 필드가 81%라는 낮고 위험한 정확도를 보이는 이상, 문제를 일으키는 하위 원인을 별도로 조사하고 모델/프롬프트를 개선하여 **안전 기준에 도달할 때까지는 전체 시스템의 검토 단계를 성급히 줄이지 않고 현재의 검토 수준을 유지**하는 것이 가장 안전하고 올바른 조치입니다.
 
 ---
 
@@ -171,9 +164,9 @@ A번: Keep human review at the current level for all fields and document types u
 
 **1. 문제 원문**
 
-A legal-document review pipeline processes contracts where, in some cases, two clauses on different pages state contradictory terms for the same provision (for example, differing renewal notice periods). The model extracts a single value for the field without flagging the contradiction. What review-routing behavior should the team implement for this scenario?
+A legal-document review pipeline processes contracts where, in some cases, two clauses on different pages state contradictory terms for the same provision (for example, differing renewal notice periods). The model extracts a single value for the field without flagging the **contradiction(모순)**. What review-routing behavior should the team implement for this scenario?
 
-A) Have the model detect when source values conflict across the document and route those specific extractions to human review, even if its confidence in the single value it chose is high.
+A) Have the model detect when source values conflict across the document and route those specific extractions **to human review**, even if its confidence in the single value it chose is high.
 
 B) Average the two conflicting values from the document to produce a single extracted number that falls between them, then route that averaged value through normal processing.
 
@@ -185,15 +178,13 @@ D) Trust the model's single extracted value whenever its reported confidence sco
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-A번: Have the model detect when source values conflict across the document and route those specific extractions to human review, even if its confidence in the single value it chose is high.
+**정답: A번**
 
 **정답 및 해설:**
 
 **핵심 개념:** 
 
-HITL(Human-in-the-Loop) 및 위험 기반 검토 라우팅(Risk-based Review Routing) 시스템 설계에 관한 문제입니다. 문서 내부의 모순(In-document Contradiction)은 모델이 높은 신뢰도를 보이더라도 법적 위험성이 매우 크므로, 모순 감지 시 자동으로 담당자(Human Reviewer)에게 이관(Escalation)하도록 파이프라인을 구축해야 합니다.
+문서 내부의 모순(In-document Contradiction)은 모델이 높은 신뢰도를 보이더라도 법적 위험성이 매우 크므로, 모순 감지 시 자동으로 담당자(Human Reviewer)에게 이관(Escalation)하도록 파이프라인을 구축해야 합니다.
 
 **문제 상황 분석:**
 
@@ -203,12 +194,7 @@ HITL(Human-in-the-Loop) 및 위험 기반 검토 라우팅(Risk-based Review Rou
 
 **A번이 정답인 이유:**
 
-문서 내 정보 간에 모순(Conflict)이 발생하는 상황은 고위험 비즈니스/법률 파이프라인에서 전형적인 HITL(Human-in-the-Loop) 적용 대상입니다. 모델이 임의로 하나의 값을 선택하여 높은 신뢰도 점수를 부여하더라도, 원본 데이터 상의 충돌 조건 자체를 감지(Conflict Detection)하고 이를 사람이 직접 확인 및 판단하도록 이관(Route to human review)하는 것이 시스템 안정성과 위험 관리 측면에서 가장 올바른 모범 사례입니다.
-
-**오답 분석:**
-- Option B (오답): 서로 다른 법적 기간(예: 30일 vs 60일)을 단순 수학적 평균(45일)을 내어 처리하는 것은 계약서의 실제 의도를 완전히 왜곡하는 심각한 오류입니다.
-- Option C (오답): 앞쪽 페이지의 조항이 무조건 우선권을 가진다고 단정할 수 없으며(특약 사항이나 후순위 조항이 앞서는 경우도 있음), 모순을 임의로 무시해서는 안 됩니다.
-- Option D (오답): 모델의 신뢰도 점수(Confidence Score)는 입력 문서 내부의 모순 관계나 법적 환각을 완벽히 보장해주지 못하므로, 높은 점수만 믿고 충돌을 방치하면 안 됩니다.
+문서 내 정보 간에 모순(Conflict)이 발생하는 상황은 고위험 비즈니스/법률 파이프라인에서 전형적인 HITL(Human-in-the-Loop) 적용 대상입니다. 원본 데이터 상의 충돌 조건 자체를 감지(Conflict Detection)하고 이를 사람이 직접 확인 및 판단하도록 이관(Route to human review)하는 것이 시스템 안정성과 위험 관리 측면에서 가장 올바른 모범 사례입니다.
 
 ---
 
@@ -220,7 +206,7 @@ HITL(Human-in-the-Loop) 및 위험 기반 검토 라우팅(Risk-based Review Rou
 
 During calibration, a team finds that fields the model scores at 0.95 confidence are correct only 78% of the time, while fields scored at 0.6 confidence are correct 90% of the time. What does this pattern indicate, and what should the team do?
 
-A) The model's confidence scores are miscalibrated and inversely related to actual correctness for these ranges, so the team should not use the raw scores directly to set a simple 'route below X' threshold without further investigation.
+A) The model's confidence scores are miscalibrated and inversely related to actual correctness for these ranges, so the team should **not use the raw scores directly** to set a simple 'route below X' threshold **without further investigation**.
 
 B) This pattern is expected behavior for well-calibrated models, since lower scores naturally correspond to higher observed accuracy on any validation set, and the team should therefore continue using the raw confidence scores as a routing threshold without any recalibration.
 
@@ -232,15 +218,13 @@ D) The 0.6-confidence fields must belong to an easier field type, so the team sh
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-A번: The model's confidence scores are miscalibrated and inversely related to actual correctness for these ranges, so the team should not use the raw scores directly to set a simple 'route below X' threshold without further investigation.
+**정답: A번**
 
 **정답 및 해설:**
 
 **핵심 개념:** 
 
-모델 신뢰도 보정(Model Confidence Calibration) 및 라우팅 임계값 설정(Routing Thresholds). 이상적인 캘리브레이션 모델에서는 신뢰도 점수(Confidence Score)와 실제 정답률(Observed Accuracy)이 비례 관계를 나타내야 합니다. 높은 신뢰도(예: 0.95)에서 낮은 정확도(78%)를 보이고 낮은 신뢰도(예: 0.6)에서 높은 정확도(90%)를 보이는 역전 현상은 심각한 미스캘리브레이션(Miscalibration) 상태를 의미하며, 원시 점수를 그대로 임계값 기반 라우팅에 사용해서는 안 됩니다.
+높은 신뢰도(예: 0.95)에서 낮은 정확도(78%)를 보이고 낮은 신뢰도(예: 0.6)에서 높은 정확도(90%)를 보이는 역전 현상은 심각한 미스캘리브레이션(Miscalibration) 상태를 의미하며, 원시 점수를 그대로 임계값 기반 라우팅에 사용해서는 안 됩니다.
 
 **문제 상황 분석:**
 
@@ -251,11 +235,6 @@ A번: The model's confidence scores are miscalibrated and inversely related to a
 **A번이 정답인 이유:**
 
 모델 신뢰도 점수는 실제 정답 확률을 반영해야 합니다. 질문에 제시된 현상은 신뢰도와 정확도가 완벽히 거꾸로 작용하는 Miscalibration의 대표적인 케이스입니다. 이러한 상황에서 원시 점수(Raw Score)를 기준으로 "신뢰도 X 미만은 사람이 검토(Human Review)하도록 라우팅한다"는 식의 단순 임계값 규칙을 적용하면 잘못된 라우팅과 품질 저하가 발생합니다. 따라서 원시 점수를 바로 사용하지 않고 추가 조사 및 재보정을 거쳐야 한다는 A번이 가장 타당합니다.
-
-**오답 분석:**
-- Option B (오답): 낮은 신뢰도 점수가 높은 정확도에 대응하는 것은 결코 '잘 보정된 모델'의 정상 동작(Expected behavior)이 아닙니다.
-- Option C (오답): 필드 수준 신뢰도 점수 체계 자체를 완전히 폐기하고 모든 필드를 사람 검토로 넘기는 것은 자동화 시스템의 이점을 전혀 활용하지 못하는 과도한 조치입니다.
-- Option D (오답): 모델의 신뢰도 보정 조정을 거치지 않은 채 임계값을 0.96으로 무작정 상향하는 것은 역전 현상의 근본 원인을 해결하지 못하며 비효율적인 검토 비용을 초래합니다.
 
 ---
 
@@ -269,7 +248,7 @@ A team is stratifying its ongoing sampling of high-confidence extractions across
 
 A) Pure volume-proportional sampling has no drawback here, since sampling proportional to volume always produces the statistically optimal allocation for detecting errors in every segment.
 
-B) Pure volume-proportional sampling would under-sample the four low-volume document types, so the plan should also ensure a minimum sample size per document type regardless of its share of volume.
+B) Pure volume-proportional sampling would under-sample the four low-volume document types, so the plan should also **ensure a minimum sample size** per document type regardless of its share of volume.
 
 C) Pure volume-proportional sampling would over-sample the high-volume document type unnecessarily, so the team should exclude it from sampling entirely and focus only on the four smaller types.
 
@@ -279,9 +258,7 @@ D) Pure volume-proportional sampling is only a concern if the four low-volume do
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-B번: Pure volume-proportional sampling would under-sample the four low-volume document types, so the plan should also ensure a minimum sample size per document type regardless of its share of volume.
+**정답: B번**
 
 **정답 및 해설:**
 
@@ -297,65 +274,13 @@ LLM 기반 데이터 추출 및 품질 평가 파이프라인에서 계층별 �
 
 **B번이 정답인 이유:**
 
-단순 볼륨 비례 방식을 적용하면 수량이 적은 4가지 문서 유형의 샘플 수가 부족해지는 과소 샘플링(Under-sampling) 문제가 발생합니다. 전체적인 비율을 반영하더라도, 각 문서 유형마다 통계적 신뢰도를 담보할 수 있는 최소 샘플 수(Minimum sample size per document type)를 하한선으로 설정하여 추출하도록 샘플링 플랜을 설계하는 것이 표준적인 품질 보증 방식입니다.
-
-**오답 분석:**
-- Option A (오답): 순수 비례 샘플링은 소량 세그먼트의 오류 감지력을 떨어뜨리므로 아무런 단점이 없다는 설명은 통계적으로 틀렸습니다.
-- Option C (오답): 70%를 차지하는 대량 발생 문서 유형에서 발생하는 오류가 전체 시스템 품질에 미치는 영향이 가장 크므로, 이를 샘플링 대상에서 완전히 제외하는 것은 잘못된 접근입니다.
-- Option D (오답): 프롬프트 템플릿의 동일 여부와 상관없이, 문서 포맷이나 데이터 분포 차이에 의해 에러가 발생할 수 있으므로 소량 발생 세그먼트의 과소 샘플링 문제는 프롬프트와 무관하게 항상 고려해야 합니다.
-
----
+최소 샘플 수(Minimum sample size per document type)를 하한선으로 설정하여 추출하도록 샘플링 플랜을 설계하는 것이 표준적인 품질 보증 방식입니다.
 
 ---
 
 # C. 멀티에이전트 오류 처리 — 재시도 vs 확정 결과 vs 에스컬레이션
 
 61: 접근 실패와 정당한 빈 결과 구분. 93: 일시적 실패와 구조적 실패 구분.
-
-## 10번 문제 (원본 61번)
-
-**어려운 이유** [유사 현상 구분] — 신선도 검사 실패로 인한 abort는 "성공 응답인데 데이터 없음"처럼 보여 유효한 빈 결과(A)로 오인되기 쉬운, 접근 실패와 빈 결과의 경계 사례다.
-
-**1. 문제 원문**
-
-A financial-data subagent queries a market feed for a ticker's after-hours trades. The feed's cache is stale beyond its allowed threshold, so the subagent's read fails an internal freshness check and aborts. A different subagent queries a competitor's after-hours trades and legitimately finds no trades occurred that session. How should the coordinator distinguish these two 'no data' situations?
-
-A) Report the stale-cache abort as a valid empty result, and the no-trades session as a failure needing retry
-
-B) Escalate both as unrecoverable errors that halt processing for both tickers until a human resolves them
-
-C) Report both as plain empty results, since neither subagent has any usable after-hours trade data for the coordinator to review
-
-D) Report the stale-cache abort as an access failure eligible for retry, and the no-trades result as a final empty result
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-D번: Report the stale-cache abort as an access failure eligible for retry, and the no-trades result as a final empty result
-
-**정답 및 해설:**
-
-**핵심 개념:** 
-
-멀티 에이전트 시스템(Multi-Agent System)의 오류 처리 및 데이터 검증 구조에서는 '시스템/데이터 접근 오류(Access/Infrastructure Failure)'와 '정상적으로 데이터가 존재하지 않는 결과(Legitimate Empty Result)'를 명확히 구별해야 합니다. 캐시 만료나 네트워크 실패 등은 시스템 차원의 일시적 오류이므로 재시도 대상(Retryable Failure)으로 분류하고, 데이터가 실제로 존재하지 않는 것은 정상적인 작업 완료 상태인 빈 결과(Final Empty Result)로 명확히 분리하여 처리합니다.
-
-**문제 상황 분석:**
-
-- 첫 번째 서브에이전트는 캐시 만료(Stale Cache) 및 신선도 검사 실패로 인해 조회가 중단되었습니다. 이는 데이터 수집 프로세스의 실패(시스템 오류)입니다.
-- 두 번째 서브에이전트는 실제 해당 세션에 거래 내역이 없어 0건의 결과를 정상적으로 조회했습니다. 이는 유효한 비즈니스 결과(정상 빈 결과)입니다.
-- 상위 코디네이터 에이전트는 겉보기엔 똑같이 '데이터가 없는' 상황이지만, 두 오류의 성격(재시도 가능 여부)을 명확히 구분하여 처리해야 합니다.
-
-**D번이 정답인 이유:**
-
-캐시 신선도 실패는 캐시 갱신이나 백엔드 재요청을 통해 복구될 가능성이 있는 접근/시스템 실패(Access failure eligible for retry)이므로 재시도를 수행해야 합니다. 반면 거래 미발생은 실제 시장 현황을 반영한 확정적인 빈 결과(Final empty result)이므로 작업을 성공적으로 종료하고 결과를 코디네이터에 보고해야 합니다. 이 둘을 명확히 구분하여 전달하는 것이 회복탄력성 있는 오케스트레이션 설계입니다.
-
-**오답 분석:**
-- Option A (오답): 시스템 오류(캐시 만료)를 정당한 빈 결과로 잘못 처리하고, 정상적인 조회 결과(거래 없음)를 실패로 보고하여 재시도하도록 뒤바꿔 설명했으므로 틀렸습니다.
-- Option B (오답): 캐시 만료는 단순 일시적 캐시/네트워크 관련 문제로 재시도 가능성이 높으며, 사람이 개입할 때까지 전체 작업을 중단할 만큼 복구 불가능한 치명적 에러가 아닙니다.
-- Option C (오답): 시스템 실패와 정당한 빈 결과를 모두 '단순 빈 결과'로 뭉뚱그리면 실제 원본 데이터가 존재함에도 캐시 오류 때문에 데이터를 유실하는 심각한 논리적 오류가 발생합니다.
 
 ---
 
