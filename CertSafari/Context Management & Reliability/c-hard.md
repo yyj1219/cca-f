@@ -24,13 +24,11 @@
 
 ## 1번 문제 (원본 66번)
 
-**어려운 이유** [원칙이 깨지는 예외, 덜 틀린 답 고르기] — 2번(86번)과 똑같이 "사람 연결해 달라"는 명시적 요청인데 답이 정반대라 혼란스럽다. 실제 변별 기준은 "명시적 요청 여부"가 아니라 **요청 뒤의 작업이 판단·조사가 필요한가**이다. 이 문제는 요금이 정당한지 확인이 필요한 분쟁 사안이므로, 먼저 설명·해결을 시도하고 반복 요청 시에만 에스컬레이션하는 것이 정답이다.
+**어려운 이유** [원칙이 깨지는 예외, 덜 틀린 답 고르기] — 변별 기준은 "명시적 요청 여부"가 아니라 **요청 뒤의 작업이 판단·조사가 필요한가**이다. 이 문제는 요금이 정당한지 확인이 필요한 분쟁 사안이므로, 먼저 설명·해결을 시도하고 반복 요청 시에만 에스컬레이션하는 것이 정답이다.
 
 **1. 문제 원문**
 
 A customer contacts Anthropic support about a $45 API overage charge and says: "I don't want to discuss this with a bot, connect me to a human agent right now." The support agent has not yet reviewed the account. According to Anthropic's recommended support approach, what should the agent do?
-
-> (문제 원문의 "Anthropic's recommended support approach"라는 표현은 실제 공식 문서에 근거한 것이 아니라 출제자가 만든 가상의 전제이다 — 아래 해설 참고.)
 
 A) Review the account's usage history and attempt to resolve the overage charge before responding to the customer's escalation request
 
@@ -49,8 +47,7 @@ C) Ask the customer to first explain why they don't want to work with an automat
 **정답 및 해설:**
 
 **핵심 개념:** 
-
-"명시적으로 사람 연결을 요청하면 무조건 즉시 에스컬레이션"이라는 단순 규칙은 이 문제 세트 전체를 관통하지 않습니다(2번 문제 참고: 같은 명시적 요청인데 답이 다름). 실제 규칙은 **판단이나 조사가 필요하면 LLM이 먼저 시도한다**입니다. 이 문제의 요금 분쟁은 청구가 정당한지 확인·설명이 필요한 사안, 즉 판단·조사가 필요한 사안이므로 이 규칙이 적용됩니다: LLM이 먼저 계정을 확인하고 요금을 설명·해결 시도(Attempt to resolve)한 뒤, 그럼에도 고객이 반복 요청하거나 문제가 해결되지 않을 때 비로소 사람 상담원에게 이관하는 것이 올바른 흐름입니다.
+실제 규칙은 **판단이나 조사가 필요하면 LLM이 먼저 시도한다**. LLM이 먼저 계정을 확인하고 요금을 설명·해결 시도(Attempt to resolve)한 뒤, 그럼에도 고객이 반복 요청하거나 문제가 해결되지 않을 때 비로소 사람 상담원에게 이관하는 것이 올바른 흐름입니다.
 
 **문제 상황 분석:**
 
@@ -60,7 +57,7 @@ C) Ask the customer to first explain why they don't want to work with an automat
 
 **D번이 정답인 이유:**
 
-이 문제 세트가 기대하는 것은 Anthropic이 문서로 공표한 특정 절차가 아니라, 일반적인 CX/에스컬레이션 설계 상식입니다: 청구가 정당한지 확인·설명이 필요한 사안은 판단·조사가 필요하므로, 먼저 계정을 검토하고 설명·해결을 시도(Attempt to resolve)한 뒤, 그럼에도 고객이 반복 요청하거나 문제가 해결되지 않을 때 사람 상담원에게 이관하는 것이 합리적인 흐름입니다.
+일반적인 CX/에스컬레이션 설계 상식입니다: 청구가 정당한지 확인·설명이 필요한 사안은 판단·조사가 필요하므로, 먼저 계정을 검토하고 설명·해결을 시도(Attempt to resolve)한 뒤, 그럼에도 고객이 반복 요청하거나 문제가 해결되지 않을 때 사람 상담원에게 이관하는 것이 합리적인 흐름입니다.
 
 **오답 분석:**
 - Option A (오답): 에스컬레이션 요청에 전혀 응답하지 않은 채 조사부터 진행하는 것은 고객과의 커뮤니케이션을 무시하므로 올바르지 않으며, 조사 후 어떻게 이관 절차를 밟는지에 대한 완전한 지원 워크플로우를 담고 있지 않습니다.
@@ -73,7 +70,7 @@ C) Ask the customer to first explain why they don't want to work with an automat
 
 ## 2번 문제 (원본 86번)
 
-**어려운 이유** [원칙이 깨지는 예외, 유사 현상 구분] — 1번(66번)과 표면적으로 동일한 "명시적 사람 요청" 상황인데 답이 정반대다. 차이는 요청 뒤 작업의 성격에 있다: 이 문제의 비밀번호 재설정은 판단·조사가 전혀 필요 없는 **즉시 처리 가능한 단순 작업**이므로, "먼저 시도해보고" 식의 완충 없이 요청 그대로 즉시 에스컬레이션하는 것이 정답이다. C(먼저 처리 후 반복 시 에스컬레이션)가 1번의 정답 패턴을 그대로 끌고 와 매력적으로 보이지만, 여기서는 그 패턴이 깨진다.
+**어려운 이유** [원칙이 깨지는 예외, 유사 현상 구분] — 1번(66번)과 표면적으로 동일한 "명시적 사람 요청" 상황인데 답이 정반대다. 차이는 요청 뒤 작업의 성격에 있다: 이 문제의 비밀번호 재설정은 판단·조사가 전혀 필요 없는 **즉시 처리 가능한 단순 작업**이므로, "먼저 시도해보고" 식의 완충 없이 요청 그대로 즉시 에스컬레이션하는 것이 정답이다.
 
 **1. 문제 원문**
 
@@ -107,151 +104,12 @@ D) Walk the customer through the password reset steps first, since the process i
 
 **A번이 정답인 이유:**
 
-이 역시 Anthropic이 문서로 규정한 절차라기보다 일반적인 CX 설계 상식으로 이해하는 것이 정확합니다: 요청된 작업(비밀번호 재설정)이 판단·조사 없이 즉시 처리 가능한 단순 작업이라면, AI가 자체적으로 먼저 처리를 시도하거나 설득하려 들 이유가 없습니다. 그런 상황에서 사용자가 '사람'과의 대화를 직접 지목해 요구했다면, 굳이 먼저 나서지 말고 요구사항을 즉시 받아들여 사람 상담원에게 이관(Escalate)하는 것이 합리적인 대응입니다.
+요청된 작업(비밀번호 재설정)이 판단·조사 없이 즉시 처리 가능한 단순 작업이라면, AI가 자체적으로 먼저 처리를 시도하거나 설득하려 들 이유가 없습니다. 그런 상황에서 사용자가 '사람'과의 대화를 직접 지목해 요구했다면, 굳이 먼저 나서지 말고 요구사항을 즉시 받아들여 사람 상담원에게 이관(Escalate)하는 것이 합리적인 대응입니다.
 
 **오답 분석:**
 - Option B (오답): 왜 사람을 선호하는지 이유를 묻고 따지는 것은 이미 불만을 표시한 고객에게 불필요한 마찰과 거부감을 유발합니다.
 - Option C (오답): 고객이 명시적으로 사람을 원한다고 요구했음에도 이를 무시하고 AI가 먼저 처리를 제안하는 것은 사용자의 직접적인 의사를 위반하는 응답입니다.
 - Option D (오답): 절차가 간단하다는 이유로 고객의 사람 상담원 연결 요청을 무시하고 단계 안내를 강행하는 것은 고객 경험(UX) 관점에서 가장 자제해야 할 거부적 태도입니다.
-
----
-
-## 3번 문제 (원본 68번)
-
-**어려운 이유** [덜 틀린 답 고르기] — 정책 내 해결(C)과 감정 무시 처리(D)가 결론이 같아, 좌절 인정 여부라는 미세한 차이로만 갈린다. 4번(85번)과 짝을 이루는 문제로, 둘 다 "명시적 요청 없음 + 감정적 어조 + 즉시 처리 가능"이라는 같은 구조이지만 정답의 형태가 다르다(3번은 처리만, 4번은 처리+에스컬레이션 옵션 제시) — 차이는 **도메인 민감도**(일반 소매 vs 의료)에서 온다.
-
-**1. 문제 원문**
-
-A customer emails a retailer's support agent: 'This is ridiculous, you sent me the wrong size AGAIN,' asking for an exchange for a plain t-shirt order under the standard 30-day exchange policy. The customer has not asked to speak with a human. How should the agent respond?
-
-A) Escalate to a human agent right away, since the customer's tone signals a case too sensitive to resolve directly
-
-B) Ask the customer to confirm they are not requesting a human agent before proceeding with the exchange
-
-C) Acknowledge the customer's frustration and process the exchange now, since the request is within policy and resolvable
-
-D) Process the exchange without commenting on the frustration, treating the emotional tone as irrelevant to the resolution
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: C번**
-
-**정답 및 해설:**
-
-**핵심 개념:** 
-
-AI 가상 상담원(AI Support Agent) 설계 시 공감적 소통(Empathy & Acknowledgement)과 자동화 해결(Automated Resolution)의 조화가 중요합니다. 고객이 감정적 불만을 표출하더라도 요청 내용이 표준 규정 내에서 즉시 해결 가능한 건이라면, 고객의 불만을 공감하며 빠르게 본 과업(교환)을 수행하는 것이 최선의 응답 전략입니다.
-
-**문제 상황 분석:**
-
-- 고객이 이전에 이어 다시 잘못된 사이즈가 배송되어 감정적으로 분노/좌절한 상태입니다.
-- 요청 자체는 표준 30일 교환 정책에 부합하는 무지 티셔츠 교환 건으로, 단순하고 즉시 해결 가능합니다.
-- 고객이 상담원(사람) 연결을 명시적으로 요구하지는 않았습니다.
-
-**C번이 정답인 이유:**
-
-고객 경험(CX) 측면에서 AI 에이전트는 감정적인 입력을 받았을 때 이를 단순히 무시(D번)하거나, 사람이 처리해야 한다고 지레짐작하여 에스컬레이션(A번)해서는 안 됩니다. 고객의 불만스러운 감정을 먼저 인지하고 공감을 표한 뒤(Acknowledge the frustration), 규정 내에서 해결 가능한 작업(교환)을 지체 없이 즉시 처리하는 것(Process the exchange)이 가장 효과적인 에이전트 대응 방식입니다.
-
-**오답 분석:**
-- Option A (오답): 고객이 사람 상담원 연결을 직접 요구하지 않았고, 규칙 기반으로 즉시 해결 가능한 교환 건이므로 바로 불필요하게 사람에게 이관할 필요가 없습니다.
-- Option B (오답): 고객에게 굳이 불필요한 확인 절차를 거치게 만들어 불만을 가중시키고 교환 프로세스를 지연시킵니다.
-- Option D (오답): 고객의 좌절감을 완전히 무시하고 차갑게 기계적으로 처리하는 것은 에이전트의 공감 능력이 부족해 보여 고객 불만을 악화시킬 수 있습니다.
-
----
-
-## 4번 문제 (원본 85번)
-
-**어려운 이유** [덜 틀린 답 고르기] — 68번과 표면적으로 같은 구조("명시적 요청 없음 + 감정적 어조 + 즉시 처리 가능")지만 정답이 "직접 처리"가 아니라 "직접 처리 + 에스컬레이션 옵션 제시"다. 68번식 규칙을 기계적으로 적용하면 틀린다. 차이를 만드는 변수는 **도메인 민감도**다: 68번은 일반 소매(티셔츠 교환)이지만 이 문제는 헬스케어(환자 대상)라서, 임상적 긴급성이 없더라도 환자가 언제든 사람에게 넘어갈 수 있는 선택지를 항상 열어두는 조치가 추가된다.
-
-**1. 문제 원문**
-
-A patient messages a healthcare scheduling assistant in a clearly irritated tone about needing to reschedule a routine appointment with no clinical urgency. The assistant can complete the rescheduling directly, and the patient has not asked to speak with a staff member. What should the assistant do?
-
-A) Reschedule the appointment without acknowledging the tone, treating it as unrelated to completing the request directly.
-
-B) Ask the patient to confirm they don't want to speak with a staff member before proceeding with the reschedule.
-
-C) Escalate to a staff member immediately, since the irritated tone suggests the situation needs human handling.
-
-D) Acknowledge the patient's frustration, signal that the rescheduling can be handled right away, and also offer to escalate to a staff member if the patient prefers.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: D번**
-
-**정답 및 해설:**
-
-**핵심 개념:** 
-
-3번 문제(68번, 소매 교환)와 뼈대는 같지만, 이 문제는 **헬스케어라는 고민감도 도메인**이라는 점이 답을 바꿉니다. 일반 도메인에서는 공감 표현 후 즉시 처리로 충분하지만, 환자를 상대하는 상황에서는 짜증 난 어조 뒤에 임상 이슈나 더 복잡한 우려가 숨어 있을 가능성을 배제할 수 없으므로, AI가 직접 처리할 수 있음을 알리면서도 사람 상담원에게 넘어갈 수 있는 선택지를 함께 열어두는 것이 안전한 설계입니다. 즉 "요청이 없으면 그냥 처리"가 아니라 "요청이 없어도 도메인이 민감하면 선택지를 제시"가 이 문제의 규칙입니다.
-
-**문제 상황 분석:**
-
-- 환자가 정기 예약 변경 문제로 짜증이 난 어조(Irritated tone)로 메시지를 보냄 (임상적 긴급성 없음).
-- AI 어시스턴트는 예약 변경 작업을 시스템상 직접 처리할 능력이 있음.
-- 환자가 상담 직원과의 연결을 명시적으로 요구하지는 않은 상태임.
-
-**D번이 정답인 이유:**
-
-대화형 AI 시스템 커뮤니케이션 설계 관점에서, 사용자(환자)의 감정을 무시하지 않고 공감적 어조로 먼저 인지(Acknowledge)하는 것이 중요합니다. 또한 임상적 긴급성이 없고 본인이 직접 수행 가능한 작업을 신속히 처리할 수 있음을 안내하여 유저 편의성을 높여야 합니다. 이와 동시에, 짜증이 난 사용자가 원할 경우 언제든 사람이 처리하는 에스컬레이션 경로(Human Escalation Path)를 제공함으로써 환자의 선택권을 보장하는 D번 조치가 가장 이상적이고 정교한 답변입니다.
-
-**오답 분석:**
-- Option A (오답): 환자의 감정 상태나 어조를 완전히 무시하고 불친절하게 로봇처럼 요청만 처리하는 것은 사용자 경험(UX) 측면에서 유저의 불만을 더욱 가중시킬 수 있습니다.
-- Option B (오답): 불필요하게 묻는 과정을 추가하여 환자가 원하지도 않은 불필요한 절차적 불확실성을 더하게 되므로 비효율적입니다.
-- Option C (오답): 임상적 긴급성이 없고 AI가 직접 처리할 수 있으며 환자가 직원 연결을 요청하지 않았음에도 무작위로 직원에게 이관(Escalate)하는 것은 무분별하게 인적 자원을 소모하고 원스톱 처리를 지연시킵니다.
-
----
-
-## 5번 문제 (원본 92번)
-
-**어려운 이유** [덜 틀린 답 고르기, 부분적으로만 맞는 오답] — 자사 사이트 한정 조항이 경쟁사 매칭 불허를 "함의"한다는 D가 법리적으로 그럴듯하지만, 정책 침묵은 거절 근거가 아니라 에스컬레이션 사유다.
-
-**1. 문제 원문**
-
-A retail customer asks a support agent to match a lower price they found on a competitor's website. The store's documented policy only describes price adjustments when the store's own website lowers a price within 14 days of purchase; it does not mention competitor pricing at all. How should the agent proceed?
-
-A) Ask the customer to submit the competitor's listing as proof before independently approving the match
-
-B) Approve the competitor price match by analogy to the store's own-site adjustment provision instead
-
-C) Escalate the request, since the documented policy is silent on competitor price matching entirely
-
-D) Decline the request, since the policy's own-site provision implies competitor price matches are not permitted
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-C번: Escalate the request, since the documented policy is silent on competitor price matching entirely
-
-**정답 및 해설:**
-
-**핵심 개념:** 
-
-AI 에이전트의 정책 준수(Policy Compliance) 및 예외 상황에서의 에스컬레이션(Human Escalation / Policy Ambiguity Resolution). AI 에이전트는 문서화된 지침(Documented Policy)에 명시되지 않은 불확실하거나 정의되지 않은 예외 케이스에 대해 임의로 해석하거나 거절/승인하지 않고, 상위 권한자(Human Manager / Escalation Path)에게 결정을 이관해야 합니다.
-
-**문제 상황 분석:**
-
-- 고객이 경쟁사 웹사이트에서 더 저렴한 가격을 보고 동일 가격 매칭(Price Match)을 요구함.
-- 매장의 공식 지침 문서에는 "자사 웹사이트에서 14일 이내 가격 인하 시 조정 가능"만 명시되어 있고, 경쟁사 가격 매칭에 대해서는 완전히 언급이 없음(Silent).
-- 명확한 지침이 누락된 모호한 상황에서 에이전트가 취해야 할 올바른 조치를 결정해야 함.
-
-**C번이 정답인 이유:**
-
-지침 문서에 명시되지 않은 시나리오(Policy Silence / Edge Cases)에 직면했을 때, AI 시스템이 자체적으로 유연하게 자사 규정을 확장해 적용(Analogy)하거나, 지침이 없다는 이유로 임의로 거부/승인하는 판단을 내리는 것은 자율성 및 규정 관리 측면에서 위험합니다. 규정이 다루지 않는 공백 상황에서는 상위 관리자나 담당자에게 사건을 이관(Escalate)하여 올바른 판단을 받도록 처리하는 것이 최선의 운영 표준입니다.
-
-**오답 분석:**
-- Option A (오답): 지침에 언급조차 없는 사항을 에이전트가 독자적으로 판단하여 증거를 제출받고 승인하는 것은 권한을 넘어서는 독단적 행동입니다.
-- Option B (오답): 자사 웹사이트 가격 조정 조항을 비유적으로 확장(Analogy) 해석하여 임의로 승인하는 것은 환각이나 오판을 초래할 수 있습니다.
-- Option D (오답): 명시되어 있지 않은 사항을 자의적으로 "금지된 것으로 간주(Implies not permitted)"하여 거절하는 것 역시 규정에 없는 자의적 해석에 해당합니다.
-
----
 
 ---
 
