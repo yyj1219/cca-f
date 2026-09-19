@@ -278,61 +278,6 @@ LLM 기반 데이터 추출 및 품질 평가 파이프라인에서 계층별 �
 
 ---
 
-# C. 멀티에이전트 오류 처리 — 재시도 vs 확정 결과 vs 에스컬레이션
-
-61: 접근 실패와 정당한 빈 결과 구분. 93: 일시적 실패와 구조적 실패 구분.
-
----
-
-## 11번 문제 (원본 93번)
-
-**어려운 이유** [유사 현상 구분, 원칙이 깨지는 예외] — 같은 스토어의 두 실패가 표면상 동일하나 일시적 503은 로컬 해결, 자격증명 실패는 재시도로 절대 해소되지 않는 구조적 실패라는 비대칭을 구분해야 한다.
-
-**1. 문제 원문**
-
-A log-analysis subagent's query to a metrics store fails once with a transient 503, then succeeds on an internal retry a second later. A separate subagent's query to the same store fails repeatedly for two minutes because the store's credentials were rotated and never propagated to the subagent's environment. How should each situation be handled?
-
-A) Resolve the transient 503 locally without the coordinator, but escalate the credential failure with what was attempted
-
-B) Escalate the transient 503 to the coordinator but retry the credential failure locally until the rotation eventually completes
-
-C) Retry both failures locally and indefinitely by the subagent until one of them eventually succeeds on its own
-
-D) Escalate both failures to the coordinator immediately, since subagents should never attempt any local retries at all
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답:**
-
-A번: Resolve the transient 503 locally without the coordinator, but escalate the credential failure with what was attempted
-
-**정답 및 해설:**
-
-**핵심 개념:** 
-
-분산 멀티 에이전트 아키텍처의 오류 처리 및 에스컬레이션 전략(Error Handling & Escalation Pattern). 일시적인 일시적 실패(Transient Errors, 예: 503 Service Unavailable)는 하위 에이전트 수준에서 로컬 재시도(Local Retry)로 스스로 해결하고, 자격 증명 누락/만료와 같은 지속적·치명적 실패(Non-transient / Systematic Failures)는 시도 내역 정보와 함께 상위 조율자(Coordinator/Orchestrator)에게 이관(Escalate)해야 합니다.
-
-**문제 상황 분석:**
-
-- **상황 1:** 503 일시적 오류 발생 후 1초 뒤 하위 에이전트 내부 재시도로 정상 성공함.
-- **상황 2:** 인증 정보(Credentials) 로테이션 미반영으로 인해 2분간 지속적으로 오류가 발생함.
-- 두 서로 다른 유형의 오류에 대한 하위 에이전트와 코디네이터 간의 책임 분담 방식을 결정해야 함.
-
-**A번이 정답인 이유:**
-
-네트워크 순간 정체 등으로 발생하는 일시적(Transient) 오류는 상위 코디네이터에게 보고하지 않고 하위 에이전트가 자체 재시도(Local Retry)로 신속히 해결하는 것이 시스템 오버헤드를 줄이는 올바른 방식입니다. 반면, 인증 자격 증명 미전파처럼 하위 에이전트가 스스로 해결할 수 없고 지속되는 문제(Unresolvable/Systematic Failure)는 기존에 무엇을 시도했는지에 대한 맥락(What was attempted)을 첨부하여 상위 코디네이터에게 이관(Escalate)함으로써 시스템 차원의 조치가 이루어지도록 해야 합니다.
-
-**오답 분석:**
-- Option B (오답): 일시적인 503 에러는 코디네이터에 이관할 필요가 없으며, 자격 증명 오류는 환경 설정 문제이므로 로컬에서 무한 재시도한다고 해결되지 않습니다.
-- Option C (오답): 오류 원인과 관계없이 무기한(Indefinitely) 로컬 재시도를 수행하는 것은 시스템 자원을 낭비하고 데드락이나 Infinite Loop를 유발합니다.
-- Option D (오답): 하위 에이전트가 일시적 오류에 대한 로컬 재시도를 전혀 하지 못하게 막고 무조건 즉시 이관하도록 만들면 코디네이터에 과도한 병목 현상이 발생합니다.
-
----
-
----
-
 # D. 출처(Provenance) 보존 — 압축과 병합
 
 74: 압축 시 claim-source 매핑 손실. 76: 병합 시 인용 집합 보존.
@@ -347,25 +292,15 @@ A long-running research agent uses server-side context compaction (`context_mana
 
 A) The compaction step condensed earlier turns without explicitly preserving claim-source mappings alongside the findings
 
-B) The model's context window silently shrank between turns, causing the oldest citations to be truncated regardless of compaction
-
-C) Compaction only operates on tool results and never touches any text the model itself generated, including citations
-
-D) Citations are stored in a separate ephemeral cache that is cleared automatically once a conversation exceeds a fixed number of turns
+B) The model's context window silently **shrank(줄어들었다)** between turns, causing the oldest citations to be truncated regardless of compaction
 
 ---
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-A번: The compaction step condensed earlier turns without explicitly preserving claim-source mappings alongside the findings
+**정답: A번**
 
 **정답 및 해설:**
-
-**핵심 개념:** 
-
-서버 측 컨텍스트 압축(Server-side Context Compaction) 기법은 대화 내역이 컨텍스트 한계에 도달했을 때 이전 메시지들을 요약하여 토큰을 절약합니다. 그러나 압축 알고리즘에 핵심 사실과 출처 간 매핑(Claim-Source Mapping)을 보존하도록 프롬프트/설정이 명시되어 있지 않으면, 요약 과정에서 출처 URL, 문서명 등의 미세한 인용 정보가 생략되고 핵심 사실만 남는 정보 손실이 발생할 수 있습니다.
 
 **문제 상황 분석:**
 
@@ -379,8 +314,6 @@ A번: The compaction step condensed earlier turns without explicitly preserving 
 
 **오답 분석:**
 - Option B (오답): API 호출 중에 모델의 컨텍스트 윈도우 크기가 자동으로 줄어드는 동작은 존재하지 않습니다.
-- Option C (오답): 서버 측 컨텍스트 압축 기능은 도구 결과뿐만 아니라 대화 내역 전체(모델 출력 포함)를 대상으로 동작합니다.
-- Option D (오답): Claude API에는 인용 정보만을 별도로 저장하고 대화 차례 수에 따라 자동 삭제하는 임시 캐시 메커니즘이 없습니다.
 
 ---
 
@@ -390,43 +323,12 @@ A번: The compaction step condensed earlier turns without explicitly preserving 
 
 **1. 문제 원문**
 
-A coordinator agent receives structured claim-source mappings from four subagents researching the same topic from different angles. During merging, several claims are near-duplicates reported by multiple subagents with slightly different wording, and the supporting source citations are not identical across the reports. What is the best way to merge these without losing provenance?
+A coordinator agent receives structured claim-source mappings from four subagents researching the same topic from different angles. During merging, several claims are near-duplicates reported by multiple subagents with slightly different wording, and the supporting source citations are not **identical(동일한)** across the reports. What is the best way to merge these without losing provenance?
 
-A) Rewrite the duplicate claims into a single new sentence that references none of the original subagents' citations
-
-B) Keep only the version of the claim reported by the subagent that produced its output first, discarding the duplicates
-
-C) Consolidate the duplicates into one entry while retaining the full set of source citations that support it
-
-D) Delete all but one occurrence of the claim and drop its source citations, since the claim is now well established
+C) **Consolidate(합치다)** the duplicates into one entry **while((동시에) ~하면서)** retaining the full set of source citations that support it
 
 ---
 
 **3. 정답 및 해설 (Answer & Explanation)**
 
-**정답:**
-
-C번: Consolidate the duplicates into one entry while retaining the full set of source citations that support it
-
-**정답 및 해설:**
-
-**핵심 개념:** 
-
-멀티 에이전트 시스템(Multi-Agent System)의 정보 종합(Data Synthesis & Merging) 과정에서 가장 중요한 원칙은 출처 추적성(Provenance/Traceability)의 유지입니다. 여러 서브에이전트가 동일하거나 유사한 내용의 주장(Claim)을 각기 다른 출처 문헌을 근거로 제시했을 때, 해당 주장들을 하나로 합치더라도 출처 목록(Source Citations)은 유실 없이 모두 병합·유지(Consolidate)해야 합니다.
-
-**문제 상황 분석:**
-
-- 4개의 서브에이전트가 하나의 주제를 조사하여 구조화된 주장-출처 매핑(Claim-Source Mapping) 데이터를 코디네이터 에이전트에 제출했습니다.
-- 병합 과정에서 표현은 약간 다르지만 내용상 거의 동일한 중복 주장들이 발견되었으며, 각 서브에이전트가 제시한 뒷받침 출처 인용 정보도 서로 다릅니다.
-- 출처 정보(Provenance)의 손실 없이 이 중복 데이터들을 통합 병합하는 모범 사례를 찾아야 합니다.
-
-**C번이 정답인 이유:**
-
-정보의 신뢰성과 검증 가능성을 담보하는 출처 추적성(Provenance)을 보존하려면, 내용이 같은 중복 주장들을 하나의 대표 엔트리로 통합(Consolidate)하되 각 서브에이전트가 수집했던 모든 출처 인용 목록(Full set of source citations)을 합집합 형태로 보존하여 연결해 주어야 합니다. 이를 통해 데이터의 중복은 제거하면서도 각 주장을 뒷받침하는 다양한 근거 문헌들을 모두 추적 가능한 상태로 유지할 수 있습니다.
-
-**오답 분석:**
-- Option A (오답): 인용 정보를 모두 빼고 문장을 재작성하면 출처 추적성(Provenance)이 완전히 손실됩니다.
-- Option B (오답): 가장 먼저 출력된 에이전트의 결과만 남기고 나머지 중복을 버리면, 다른 에이전트들이 찾아낸 소중한 출처 인용 정보들이 폐기되어 정보의 풍부함과 추적성이 크게 훼손됩니다.
-- Option D (오답): 주장이 충분히 입증되었다는 이유로 출처 인용 정보를 삭제하는 것은 정보 검증 파이프라인에서 출처 손실을 유발하는 치명적인 오류입니다.
-
----
+**정답: C번**
