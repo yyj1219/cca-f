@@ -2,19 +2,34 @@
 
 ---
 
-## 6번 문제 (★)
+* _inconsistent_ : 일관성 없는
+* _tend to_ : ~하는 경향이 있다
+* _interpret_ : 해석하다
+* _up to date_ : 최신의
+* _capability_ : 기능
+* _presumed_ : 간주된다
+* _sufficient_ : 충분한
+* _happen to + 동사원형_ : 우연히, 공교롭게도
+* _outright_ : 완전히
+* _implicit_ : 암묵적인, 내재된
+* _explicit_ : 명시적인
+* _surface_ : 표면화하다, 드러내다
+* _typically_ : 일반적으로
+* _coerce_ : 억지로 맞추다
+
+---
+
+## 6번 문제
 
 **1. 문제 원문**
 
-A synthesis agent's job is to combine findings that a separate research agent has already gathered into a final answer. Because it shares a tool registry with the research agent, the synthesis agent also has access to a web_search tool. During testing, the synthesis agent repeatedly calls web_search mid-synthesis instead of using the findings already provided to it, producing inconsistent citations. What is the best explanation and fix for this behavior?
+A synthesis agent's job is to combine findings that a separate research agent has already gathered into a final answer. Because it **shares a tool registry with the research agent**, the synthesis agent also has access to a web_search tool. During testing, the synthesis agent repeatedly calls web_search mid-synthesis instead of using the findings already provided to it, **producing(만들어냄) inconsistent(일관성없는) citations(인용)**. What is the best explanation and fix for this behavior?
 
-A) Agents tend to misuse tools outside their specialization when given access to them; web_search should be removed from the synthesis agent's tool set and left with the research agent.
+A) Agents **tend to(경향이 있다)** misuse tools outside their specialization when given access to them; web_search should be **removed from the synthesis agent**'s tool set and **left with the research agent**.
 
-B) The synthesis agent's temperature is likely too high, causing it to explore tool calls rather than follow its findings; lowering it to a more focused value like 0.2 would reduce unnecessary searches.
+C) The web_search tool's description is **too vague(모호한)** for the synthesis agent to **interpret(해석하다)** correctly(종합 에이전트가 제대로 해석하기에는 너무 모호하다);  rewriting it(웹서치의 디스크립션) with guidance that it is a research tool and should not be used during synthesis would prevent the extra calls.
 
-C) The web_search tool's description is too vague for the synthesis agent to interpret correctly; rewriting it with guidance that it is a research tool and should not be used during synthesis would prevent the extra calls.
-
-D) The research agent is passing incomplete findings, so the synthesis agent searches for missing information; updating the research agent to include complete source lists would prevent the extra calls.
+D) The research agent is passing incomplete findings(불완전한 결과를 줬는지를 문제 내용으로는 알 수 없으니 오답이다), so the synthesis agent searches for missing information; updating the research agent to include complete source lists would prevent the extra calls. => 이 답을 선택했다니, 나는 문제에 없는 내용을 추정하는 오류를 자주 일으키는 것 같다.
 
 ---
 
@@ -25,7 +40,7 @@ D) The research agent is passing incomplete findings, so the synthesis agent sea
 **정답 및 해설:**
 
 **핵심 개념**: 멀티 에이전트 역할 분리 및 최소 권한 도구 노출 (Least Privilege / Tool Scoping)  
-멀티 에이전트 시스템(Multi-Agent Architecture) 설계 시 각 에이전트에 필요한 도구만 선택적으로 전달(Tool Scoping)해야 합니다. 수행할 필요가 없는 도구(예: 종합 단계에서의 검색 도구)에 접근 권한이 열려 있으면 에이전트가 불필요하게 해당 도구를 호출하여 환각(Hallucination)을 일으키거나 출처의 일관성을 깨뜨릴 수 있습니다.
+멀티 에이전트 시스템(Multi-Agent Architecture) 설계 시 각 에이전트에 필요한 도구만 선택적으로 전달(Tool Scoping)해야 합니다. **수행할 필요가 없는 도구**(예: 종합 단계에서의 검색 도구)에 **접근 권한이 열려 있으면 에이전트가 불필요하게 해당 도구를 호출**하여 환각(Hallucination)을 일으키거나 출처의 일관성을 깨뜨릴 수 있습니다.
 
 **문제 상황 분석:**  
 - 종합(Synthesis) 에이전트의 본래 역할은 이미 조사된 데이터만 취합하는 것임.
@@ -33,12 +48,11 @@ D) The research agent is passing incomplete findings, so the synthesis agent sea
 - 에이전트가 불필요하게 `web_search`를 호출하여 일관성 없는 인용 결과를 생성하는 오작동 발생.
 
 **A번이 정답인 이유:**  
-- **최소 권한의 원칙 준수**: 에이전트에 목적에 맞지 않는 도구가 주어지면 이를 오용할 가능성이 매우 높습니다. 가장 근본적이고 철저한 해결책은 종합 에이전트의 도구 목록에서 `web_search`를 아예 제거(Scope 제거)하고, 검색 권한은 리서치 에이전트에만 한정하는 것입니다.
+
+- **최소 권한의 원칙 준수**: **에이전트에 목적에 맞지 않는 도구가 주어지면 이를 오용할 가능성이 매우 높습니다**. 가장 근본적이고 철저한 해결책은 종합 에이전트의 도구 목록에서 `web_search`를 아예 제거(Scope 제거)하고, 검색 권한은 리서치 에이전트에만 한정하는 것입니다.
 
 **오답 분석:**  
-- Option B (오답): 온도를 낮춘다고 해서 불필요하게 노출된 도구에 대한 오호출을 근본적으로 막을 수 없으며, 확률적인 미봉책에 불과합니다.
 - Option C (오답): 도구 설명(Description)에 "종합 시 사용하지 말 것"이라는 텍스트 지침을 넣더라도, 프롬프트 지시를 우회하거나 무시하는 LLM의 특성상 도구 자체를 차단하는 것보다 불안정합니다.
-- Option D (오답): 문제의 원인은 리서치 결과의 완전성 부족이 아니라, 필요 없는 검색 도구가 종합 에이전트에 제공되었기 때문입니다.
 
 ---
 
@@ -46,15 +60,9 @@ D) The research agent is passing incomplete findings, so the synthesis agent sea
 
 **1. 문제 원문**
 
-A support agent has both `search_web` and `fetch_webpage_results` as separate tools. Testing shows the model almost always calls `search_web`, even for tasks better suited to `fetch_webpage_results`. The system prompt contains "Always prefer searching for the most up to date information." What most likely explains the bias?
+A support agent has both `search_web` and `fetch_webpage_results` as separate tools. Testing shows the model almost always calls `search_web`, even for tasks better suited to `fetch_webpage_results`. The system prompt contains "Always prefer searching for the most **up to date(최신의)** information." What most likely explains the bias?
 
-A) The fetch tool cannot be selected during parallel tool use, so it is filtered out before the model can consider it.
-
-B) Keyword-sensitive system prompt wording creates an unintended association that overrides the more accurate tool description.
-
-C) The search tool carries a lower internal temperature value in its schema, making it statistically favored during sampling.
-
-D) The fetch tool's description exceeds a fixed token threshold, causing the model to systematically avoid tools of that length.
+B) Keyword-sensitive system prompt wording creates an unintended association that overrides the more accurate(정확한) tool description.
 
 ---
 
@@ -65,7 +73,7 @@ D) The fetch tool's description exceeds a fixed token threshold, causing the mod
 **정답 및 해설:**
 
 **핵심 개념**: 프롬프트 엔지니어링 및 편향(Prompt Bias / Keyword Association)  
-시스템 프롬프트에 작성된 특정 키워드 문구("searching")는 모델이 도구를 선택할 때 강한 정렬 편향(Alignment Bias)을 유발할 수 있습니다. 도구 설명(Tool Description)이 아무리 정확하더라도, 상위 수준인 시스템 프롬프트의 강한 지시어와 특정 도구명(`search_web`) 간의 키워드 연관성이 도구 설명에 의한 합리적 판단을 덮어버릴(Override) 수 있습니다.
+시스템 프롬프트에 작성된 특정 키워드 문구("searching")는 모델이 도구를 선택할 때 강한 **정렬 편향(Alignment Bias)을 유발할 수 있습니다**. 도구 설명(Tool Description)이 아무리 정확하더라도, 상위 수준인 시스템 프롬프트의 강한 지시어와 특정 도구명(`search_web`) 간의 키워드 연관성이 도구 설명에 의한 합리적 판단을 덮어버릴(Override) 수 있습니다.
 
 **문제 상황 분석:**  
 - 에이전트에 `search_web`과 `fetch_webpage_results`라는 두 도구가 존재함.
@@ -75,11 +83,6 @@ D) The fetch tool's description exceeds a fixed token threshold, causing the mod
 **B번이 정답인 이유:**  
 - 시스템 프롬프트 내의 "searching"이라는 키워드가 모델에게 강한 앵커링 효과(Anchoring Effect)를 일으켜, 개별 도구의 정확한 설명보다 우선하여 `search_web` 도구를 선택하도록 만든 원인입니다.
 
-**오답 분석:**  
-- Option A (오답): 특정 도구가 병렬 도구 사용 시 자동으로 필터링되어 고려 대상에서 제외되는 메커니즘은 존재하지 않습니다.
-- Option C (오답): 도구 스키마 내부에는 별도의 `temperature` 설정값이 존재하지 않으며, 온도는 모델 호출 단위의 생성 파라미터입니다.
-- Option D (오답): 설명 길이가 길다고 해서 모델이 해당 도구를 체계적으로 회피한다는 임계값 설정이나 동작 방식은 사실이 아닙니다.
-
 ---
 
 ## 8번 문제 (★)
@@ -88,13 +91,9 @@ D) The fetch tool's description exceeds a fixed token threshold, causing the mod
 
 A team member tries to add a custom MCP server named `computer-use` to give the agent a specialized screenshot tool. What should the architect expect to happen?
 
-A) Claude Code loads the custom server but silently strips its screenshot tool since that capability is presumed reserved for the built-in server
+A) Claude Code loads the custom server but silently strips its screenshot tool since that **capability(기능)** is **presumed(간주된다)** reserved for the built-in server
 
 B) Claude Code rejects or skips the server because `computer-use` is a reserved built-in name, so the team member needs to pick a different name
-
-C) Claude Code loads the custom server normally and simply hides the built-in server named `computer-use` for the rest of that session
-
-D) Claude Code merges the tools from the custom server directly into the built-in server's own tool set under the shared reserved name
 
 ---
 
@@ -105,7 +104,7 @@ D) Claude Code merges the tools from the custom server directly into the built-i
 **정답 및 해설:**
 
 **핵심 개념**: Claude Code 내장 예약어(Reserved Names) 및 MCP 서버 네이밍 충돌  
-Claude Code에는 시스템 내부 기능(예: `computer-use` 등)을 위해 미리 지정된 내장 MCP 서버 예약 명칭이 존재합니다. 커스텀 MCP 서버를 등록할 때 내부 예약어와 동일한 식별자 이름을 사용할 경우, 이름 충돌 방지 및 시스템 안정성을 위해 해당 서버 등록을 거부(Reject)하거나 스킵(Skip)하도록 설계되어 있습니다.
+Claude Code에는 시스템 내부 기능(예: `computer-use` 등)을 위해 미리 지정된 **내장 MCP 서버 예약어**가 존재합니다. 커스텀 MCP 서버를 등록할 때 **내부 예약어와 동일한 식별자 이름을 사용할 경우**, 이름 충돌 방지 및 시스템 안정성을 위해 해당 **서버 등록을 거부(Reject)하거나 스킵(Skip)하도록 설계**되어 있습니다.
 
 **문제 상황 분석:**  
 - 팀원이 `computer-use`라는 이름의 커스텀 MCP 서버를 등록하려고 함.
@@ -119,7 +118,6 @@ Claude Code에는 시스템 내부 기능(예: `computer-use` 등)을 위해 미
 **오답 분석:**  
 - Option A (오답): 서버를 로드한 뒤 도구만 일부 몰래 제거(silently strip)하는 부분적인 비정상 로드 동작을 수행하지 않습니다.
 - Option C (오답): 사용자 정의 커스텀 서버가 기본 내장(Built-in) 서버의 기능을 덮어씌워 숨기는 것(Override/Hide)을 허용하지 않습니다.
-- Option D (오답): 사용자 정의 커스텀 도구를 내장 서버의 내부 도구 세트로 임의 병합(Merge)하지 않으며, 네이밍이 충돌하면 로드 자체를 거부합니다.
 
 ---
 
@@ -129,13 +127,7 @@ Claude Code에는 시스템 내부 기능(예: `computer-use` 등)을 위해 미
 
 An architect is designing tool access for a three-agent pipeline: an intake agent, a processing agent, and a delivery agent. The intake agent occasionally needs to check processing status, which is normally a processing-agent operation. Following the principle of scoped tool access with limited cross-role tools, how should the architect handle this?
 
-A) Give the intake agent the processing agent's full tool set, enabling it to directly perform status checks and execute any processing operation as part of its intake workflow.
-
-B) Remove status checking from the pipeline, redesigning the three-agent workflow so the intake agent never requires a tool outside its core responsibility of accepting intakes.
-
 C) Give the intake agent only a narrow check_status tool for that specific high-frequency need, while routing deeper processing operations through the processing agent.
-
-D) Give the processing agent a copy of the intake agent's status check tool, so that either agent can independently perform status checks without routing through the processing agent's operations.
 
 ---
 
@@ -145,8 +137,9 @@ D) Give the processing agent a copy of the intake agent's status check tool, so 
 
 **정답 및 해설:**
 
-**핵심 개념**: 범위 지정 도구 접근 권한 (Scoped Tool Access) 및 최소 권한의 원칙 (Principle of Least Privilege)
-멀티 에이전트 아키텍처에서는 각 에이전트가 자신의 본래 역할에 필요한 최소한의 도구에만 접근할 수 있도록 도구 스코프(Scope)를 제한해야 합니다. 다른 에이전트의 역할 영역에 속하는 작업이 예외적으로 필요하더라도 전체 도구 세트를 부여하는 대신, 해당 목적에 국한된 좁은 범위(Narrow Scope)의 특정 도구만 제한적으로 허용하는 것이 보안 및 시스템 안정성 측면에서 올바른 설계입니다.
+**핵심 개념**: 
+
+멀티 에이전트 아키텍처에서는 **각 에이전트가** 자신의 본래 역할에 필요한 **최소한의 도구에만 접근**할 수 있도록 도구 스코프(Scope)를 제한해야 합니다. **다른 에이전트의 역할 영역에 속하는 작업이 예외적으로 필요하더라도** 전체 도구 세트를 부여하는 대신, **해당 목적에 국한된 좁은 범위(Narrow Scope)의 특정 도구만 제한적으로 허용**하는 것이 보안 및 시스템 안정성 측면에서 올바른 설계입니다.
 
 **문제 상황 분석:**
 - 접수(Intake) 에이전트가 원래 처리(Processing) 에이전트의 담당 영역인 '처리 상태 확인'을 가끔 실행해야 하는 상황임.
@@ -157,12 +150,6 @@ D) Give the processing agent a copy of the intake agent's status check tool, so 
 - 접수 에이전트에 처리 에이전트의 모든 권한을 주는 대신, 상태 조회 목적에만 국한된 읽기 전용/단일 목적의 `check_status` 도구만 최소한으로 부여합니다.
 - 실제 데이터의 수정이나 깊은 처리 작업(Deeper processing operations)은 기존대로 처리 에이전트를 거치도록 유지함으로써, 최소 권한 원칙과 역할 분리(Separation of Concerns)를 완벽하게 달성합니다.
 
-**오답 분석:**
-
-- Option A (오답): 단지 상태 조회가 필요하다는 이유로 처리 에이전트의 전체 도구 세트(Full tool set)를 제공하는 것은 과도한 권한 부여(Over-privileging)이며, 에이전트가 예기치 않게 처리 작업을 직접 실행할 위험이 생깁니다.
-- Option B (오답): 시스템에 필요한 필수 기능(상태 확인)을 아예 제거해 버리는 것은 유용성을 해치는 잘못된 접근 방식입니다.
-- Option D (오답): 상태 확인 작업이 필요한 쪽은 접수 에이전트인데, 처리 에이전트에 접수 에이전트의 도구를 사본으로 넘겨주는 방식은 문제의 요구사항과 맞지 않으며 논리적으로 불필요합니다.
-
 ---
 
 ## 11번 문제 (★)
@@ -171,13 +158,9 @@ D) Give the processing agent a copy of the intake agent's status check tool, so 
 
 A `book_meeting_room` MCP tool fails because the requested room is already reserved for the requested time slot. The tool author wants the agent to be able to explain the conflict to the user in natural language and suggest picking a different time, without the agent needing to parse a raw exception message. Which element of the structured error response most directly enables this?
 
-A) Returning the raw exception stack trace from the scheduling library so the agent can extract the room name using text parsing
-
 B) A human-readable description field stating the room is already booked for that slot, separate from any machine-oriented errorCategory or isRetryable flags
 
-C) Setting isRetryable to true so the agent automatically resubmits the identical booking request until the room becomes free on its own
-
-D) Omitting the description field entirely, since errorCategory alone is sufficient for the agent to generate an accurate, context-specific explanation
+D) Omitting the description field entirely, since errorCategory alone is **sufficient(충분한)** for the agent to generate an accurate, context-specific explanation
 
 ---
 
@@ -187,8 +170,9 @@ D) Omitting the description field entirely, since errorCategory alone is suffici
 
 **정답 및 해설:**
 
-**핵심 개념**: MCP(Model Context Protocol) 구조화된 오류 응답 설계  
-MCP 표준 에러 응답은 기계적인 제어를 위한 플래그(`errorCategory`, `isRetryable` 등)와, LLM 에이전트가 이해하고 사용자에게 전달할 수 있는 사람이 읽기 쉬운 설명 텍스트(`description` / `message`)를 분리하여 작성합니다. 명확한 자연어 메시지가 제공될 때 에이전트는 복잡한 파싱 없이 사용자에게 원인을 명확히 안내할 수 있습니다.
+**핵심 개념**: 
+  
+MCP 표준 에러 응답은 기계적인 제어를 위한 플래그(`errorCategory`, `isRetryable` 등)와, LLM 에이전트가 이해하고 사용자에게 전달할 수 있는 **사람이 읽기 쉬운 설명 텍스트(`description` / `message`)를 분리하여 작성**합니다. 명확한 자연어 메시지가 제공될 때 에이전트는 복잡한 파싱 없이 사용자에게 원인을 명확히 안내할 수 있습니다.
 
 **문제 상황 분석:**  
 - 회의실 예약 도구 실행 시 시간대 충돌로 인한 에러가 발생함.
@@ -196,90 +180,11 @@ MCP 표준 에러 응답은 기계적인 제어를 위한 플래그(`errorCatego
 - 사용자에게 자연어로 상황을 설명하고 대안(다른 시간 선택)을 제시하도록 만들기 위한 에러 응답 요소를 찾아야 함.
 
 **B번이 정답인 이유:**  
-- `errorCategory`나 `isRetryable` 같은 기계 판별용 메타데이터와 구분되는 '사람이 읽기 쉬운 설명 필드(human-readable description field)'를 전달하면, 에이전트가 해당 텍스트의 맥락을 즉시 파악할 수 있습니다. 이를 바탕으로 별도의 스택 트레이스 파싱 없이 자연스럽게 사용자에게 다른 시간 선택을 유도하는 대화형 안내 문구를 생성할 수 있습니다.
+- 기계 판별용 메타데이터와 구분되는 '사람이 읽기 쉬운 설명 필드'를 전달하면, 에이전트가 해당 텍스트의 맥락을 즉시 파악할 수 있습니다.
 
 **오답 분석:**  
-- Option A (오답): 날것의 스택 트레이스를 반환하고 텍스트 파싱을 요구하는 것은 "raw exception message를 파싱할 필요 없이"라는 문제 조건에 직접적으로 위배됩니다.
-- Option C (오답): 예약 충돌은 사용자가 시간대를 바꾸지 않는 한 동일한 요청을 무한 재시도(`isRetryable: true`)한다고 해서 해결되지 않으며, 잘못된 로직을 일으킵니다.
+
 - Option D (오답): 구체적인 세부 사유(어떤 이유로 거절되었는지)를 포함하는 description 필드를 생략하고 대분류 카테고리만 제공하면, 에이전트가 사용자에게 맥락에 맞는 정확한 안내를 제공할 수 없습니다.
-
----
-
-## 17번 문제 (★)
-
-**1. 문제 원문**
-
-A project-scoped stdio server's `.mcp.json` entry sets `"args": ["--root", "${CLAUDE_PROJECT_DIR}"]` with no fallback value. What happens when a teammate runs Claude Code from a shell where this variable happens not to be set in their own environment?
-
-A) It resolves correctly, since Claude Code injects `CLAUDE_PROJECT_DIR` into the spawned server's own environment, though a default like `${CLAUDE_PROJECT_DIR:-.}` remains the safer practice
-
-B) The expansion silently becomes an empty string in this case, since Claude Code never provides a value for this variable unless a plugin explicitly sets one
-
-C) The expansion fails outright, because `${CLAUDE_PROJECT_DIR}` can only ever be read from the invoking shell's own environment, never from a value Claude Code injects itself
-
-D) The expansion falls back automatically to the user's home directory, since that is treated as the implicit default whenever no fallback is written in `.mcp.json`
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: A번**
-
-**정답 및 해설:**  
-**핵심 개념**: Claude Code 내장 환경 변수 주입 (Built-in Environment Variables Injection)  
-Claude Code는 프로젝트 실행 환경을 정교하게 제어하기 위해 실행 시 `CLAUDE_PROJECT_DIR`와 같은 핵심 프로젝트 환경 변수를 내부적으로 자동 생성하여 자식 프로세스(MCP 서버 등)의 환경 변수로 주입합니다.
-
-**문제 상황 분석:**
-- 팀원의 로컬 OS/쉘 환경변수에는 `CLAUDE_PROJECT_DIR` 변수가 직접 정의되어 있지 않은 상태입니다.
-- 프로젝트 내 `.mcp.json` 설정 파일에는 `"args": ["--root", "${CLAUDE_PROJECT_DIR}"]` 형태로 해당 변수를 참조하도록 등록되어 있습니다.
-- 환경 변수 미설정 시 대체값(fallback syntax, 예: `${CLAUDE_PROJECT_DIR:-.}`)이 지정되지 않은 경우 정상 작동 여부가 질문의 핵심입니다.
-
-**A번이 정답인 이유:**
-Claude Code는 쉘 실행 환경에 해당 변수가 설정되어 있지 않더라도 프로세스를 구동할 때 프로젝트 루트 경로를 가리키는 `CLAUDE_PROJECT_DIR` 값을 자동으로 할당하여 실행 환경(spawned environment)에 주입(inject)합니다. 따라서 매개변수 치환은 올바르게 동작합니다. 다만, 시스템 환경 간 호환성을 보장하기 위해 기본값(`${CLAUDE_PROJECT_DIR:-.}`)을 작성해 두는 것이 보안 및 모범 사례(Safer practice)로 권장됩니다.
-
-**오답 분석:**
-- Option B (오답): Claude Code는 `CLAUDE_PROJECT_DIR` 값을 내장 제공하므로 플러그인 유무와 상관없이 빈 문자열로 처리되지 않습니다.
-- Option C (오답): 변수를 오직 호출 쉘(Invoking shell)에서만 읽을 수 있는 것은 아니며, Claude Code가 스스로 주입한 값을 정상 수신합니다.
-- Option D (오답): `.mcp.json`에서 대체 값이 없을 때 자동으로 홈 디렉터리(`~`)로 대체되는 암묵적 메커니즘은 존재하지 않습니다.
-
----
-
-## 19번 문제 (★)
-
-**1. 문제 원문**
-
-An architect asks Claude Code to find every place in a large monorepo that calls a function named `parseInvoice`, including calls inside a minified bundle that is gitignored but still needs to be checked. Which approach correctly locates all call sites?
-
-A) Run Glob with the pattern `**/*parseInvoice*` to find files whose names contain the function, then treat that file list as the complete set of callers
-
-B) Run Glob with the pattern `**/*.js` to list every JavaScript file, then judge from file names alone which ones likely reference parseInvoice
-
-C) Run Grep across the repo for parseInvoice, then Grep the gitignored bundle's path directly, since a direct path is still searched
-
-D) Run Grep once with the multiline flag enabled, assuming multiline mode makes Grep search gitignored files as a side effect of that flag
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: C번**
-
-**정답 및 해설:**  
-**핵심 개념**: Claude Code 도구 검색 동작 방식 (`Grep` 및 `.gitignore` 메커니즘)  
-Claude Code의 `Grep` 도구(ripgrep 기반)는 기본적으로 프로젝트의 `.gitignore` 규칙을 준수하여 무시된 파일 및 디렉터리(예: `dist/`, `build/`, `node_modules/` 등)를 전체 검색 대상에서 제외합니다. 하지만 `.gitignore`에 등록된 경로라 할지라도 검색 명령어에 대상 파일이나 디렉터리 경로를 명시적으로 직접 지정하면 해당 경로 내부를 검색합니다.
-
-**문제 상황 분석:**
-- 대규모 모노레포에서 `parseInvoice` 함수가 호출되는 모든 위치를 찾아야 합니다.
-- 전체 코드베이스 외에도, `.gitignore`에 등록되어 검색 기본 대상에서 제외되는 경량화된 번들(Minified bundle) 파일 내부까지 확인해야 하는 조건이 존재합니다.
-- `.gitignore` 처리된 파일까지 빠짐없이 검색하기 위한 정확한 탐색 전략을 도출해야 합니다.
-
-**C번이 정답인 이유:**
-일반적인 리포지토리 전체 `Grep` 실행은 `.gitignore`에 지정된 무시 대상을 자동으로 스킵합니다. 따라서 전체 리포지토리에 대해 1차 검색을 수행한 후, `.gitignore` 처리된 번들 파일의 경로를 직접(Direct path) 지정하여 추가 `Grep`을 실행하면 제외되었던 경로까지 정확하게 검색하여 모든 호출 위치를 누락 없이 확보할 수 있습니다.
-
-**오답 분석:**
-- Option A (오답): `Glob`은 파일/디렉터리의 '이름'이나 '경로 패턴'을 검색하는 도구입니다. 코드 내부에서 함수가 호출된 내용(텍스트)을 검색하는 데 사용할 수 없으며, 파일명에 함수 이름이 포함되어 있지 않으면 찾을 수 없습니다.
-- Option B (오답): `Glob`으로 자바스크립트 파일 목록만 나열한 뒤 파일명만 보고 함수 참조 여부를 추측하는 것은 실제 코드 내용을 탐색하지 못하므로 오탐 및 누락이 발생합니다.
-- Option D (오답): `multiline` 옵션은 여러 줄에 걸친 문자열 패턴 검색을 지원하는 플래그일 뿐, `.gitignore` 규칙을 무시하거나 우회하는 효과를 제공하지 않습니다.
 
 ---
 
@@ -287,15 +192,13 @@ Claude Code의 `Grep` 도구(ripgrep 기반)는 기본적으로 프로젝트의 
 
 **1. 문제 원문**
 
-A `charge_card` MCP tool receives a request with an amount field formatted as `"$45.00"` instead of a numeric type as specified by its input schema. Before the tool's handler logic even runs, how does the MCP client typically surface this failure, and how should that differ from the tool later reporting a declined charge?
+A `charge_card` MCP tool receives a request with an amount field formatted as `"$45.00"` instead of a numeric type as specified by its input schema. Before the tool's handler logic even runs, how does the MCP client typically **surface(표면화하다)** this failure, and how / **should that differ(달라야 하는가)** / from the tool later reporting a **declined charge(카드 승인 거절)**? => 프로토콜 오류와 비즈니스 오류가 각각 어떻게 달라야 하는가를 묻고 있다.
 
 A) The malformed argument triggers a JSON-RPC protocol error from schema validation before the tool executes, while a declined charge is reported inside the tool result with `isError:true`.
 
-B) The client silently coerces the malformed argument to a number before invocation, so neither a schema validation error nor a declined charge occurs; the handler receives a valid amount, and any decline is a business result.
+B) The client silently **coerces(억지로 맞추다)** the malformed argument to a number before invocation, so neither a schema validation error nor a declined charge occurs; the handler receives a valid amount, and any decline is a business result.
 
-C) Both failures are reported inside a tool result with `isError:true`, because protocol errors are reserved for unknown tool names; all other issues, like malformed arguments or declined charges, appear as tool-level errors.
-
-D) Both failures are reported identically as JSON-RPC protocol errors with code -32602 (Invalid params), because the client validates the request against the schema before calling the tool handler.
+D) Both failures are reported **identically(동일하게)** as JSON-RPC protocol errors with code -32602 (Invalid params), because the client validates the request against the schema before calling the tool handler. => 프로토콜 오류와 카드 승인 거절을 동일하게 취급하면 안 되므로 오류다. `code -32602 (Invalid params)` 자체는 프로토콜 오류 맞다.
 
 ---
 
@@ -304,10 +207,12 @@ D) Both failures are reported identically as JSON-RPC protocol errors with code 
 **정답: A번**
 
 **정답 및 해설:**  
-**핵심 개념**: 프로토콜 수준 에러(Protocol Errors) vs 도구 실행 결과 에러(Tool Execution Errors)  
+
+**핵심 개념**: 
+
 MCP(Model Context Protocol) 시스템에서 에러는 명확히 두 개의 계층으로 구분됩니다.  
-1. **프로토콜 수준 에러 (JSON-RPC Protocol Error)**: 도구 호출 전, 입력 스키마 위반(타입 불일치, 필드 누락, JSON 파싱 실패 등)이 발생할 때 반환됩니다. (예: `-32602 Invalid params`) 핸들러 로직이 실행되지 않습니다.  
-2. **도구/비즈니스 수준 에러 (Tool Result Error)**: 도구 핸들러 로직은 정상적으로 구동되었으나, 외부 결제 거절/잔액 부족 등 업무 로직상 실패가 발생했을 때 반환됩니다. 이는 도구 실행 결과(`tool result`) 내에 `isError: true` 항목으로 포함되어 전달됩니다.
+1. 프로토콜 수준 에러 (**JSON-RPC Protocol Error**): 도구 호출 전, **입력 스키마 위반**(타입 불일치, 필드 누락, JSON 파싱 실패 등)이 발생할 때 반환됩니다.  
+2. 도구/비즈니스 수준 에러 (Tool Result Error): 도구 핸들러 로직은 정상적으로 구동되었으나, 외부 결제 거절/잔액 부족 등 업무 로직상 실패가 발생했을 때 반환됩니다. 이는 도구 실행 결과(`tool result`) 내에 `isError: true` 항목으로 포함되어 전달됩니다.
 
 **문제 상황 분석:**
 - `charge_card` 도구의 스키마는 숫자 타입을 요구하나, 문자열 `"$45.00"` 형태의 잘못된 인자가 입력되었습니다.
@@ -318,8 +223,7 @@ MCP(Model Context Protocol) 시스템에서 에러는 명확히 두 개의 계�
 형식이 잘못된 인자(Malformed argument)는 스키마 검증 단계에서 도구 핸들러 실행 전에 **JSON-RPC 프로토콜 에러**를 유발합니다. 반면 도구가 정상 호출된 후 카드사 응답 등에 의해 발생하는 결제 거절(Declined charge)은 도구 실행 응답(`tool result`) 객체 내부에서 **`isError: true`** 상태로 반환됩니다. 두 에러의 발생 시점과 표출 형태를 정확히 구분하고 있습니다.
 
 **오답 분석:**
-- Option B (오답): MCP 클라이언트는 잘못된 데이터 타입을 수동으로 암묵적 타입 변환(Silent coercion)하지 않고 엄격한 스키마 검증을 수행합니다.
-- Option C (오답): 프로토콜 에러는 알 수 없는 도구 이름뿐만 아니라 잘못된 파라미터 규격(Invalid params)에도 적용됩니다. 따라서 두 에러가 모두 도구 수준 에러로 반환되지 않습니다.
+- Option B (오답): MCP 클라이언트는 잘못된 데이터 타입을 수동으로 암묵적 타입 변환(Silent coercion)하지 않고 엄격한 스키마 검증을 수행합니다
 - Option D (오답): 카드 결제 거절은 비즈니스 로직 실행 결과이므로, 스키마 검증 실패에 사용하는 JSON-RPC 프로토콜 에러 코드(-32602)로 반환되지 않습니다.
 
 ---
