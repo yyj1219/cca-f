@@ -430,59 +430,15 @@ LLM 기반 에이전트 시스템에서 임의의 인자(예: 임의의 바이�
 
 ---
 
-## 51번 문제 (★)
-
-**1. 문제 원문**
-
-A team is building an agent that uses manual extended thinking (`thinking: {"type": "enabled"}`) to reason before acting, and they want to force it to always call a tool rather than answer directly. They set `tool_choice` to `{"type": "any"}` while manual extended thinking is enabled, and the request fails. What is the correct explanation and recommended remedy?
-
-A) The request failed because extended thinking disables all `tool_choice` options; to fix this, remove all tools from the request and let the model output its reasoning steps as text before acting.
-
-B) The request failed because `{"type": "any"}` requires at least two tools to be defined; adding a second tool, such as a calculator, resolves the incompatibility with extended thinking.
-
-C) The request failed because `{"type": "any"}` is deprecated; replace it with `{"type": "forced"}` and specify a tool name like `search` to satisfy the forced tool choice requirement.
-
-D) When manual extended thinking is enabled, the `tool_choice` values `{"type": "any"}` and `{"type": "tool", ...}` are not supported; set it to `{"type": "auto"}` or `{"type": "none"}` instead. To force a tool call while still using thinking, migrate to adaptive thinking (supported on newer models), or disable manual extended thinking.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: D번**
-
-**정답 및 해설:**
-
-**핵심 개념**: Anthropic Claude API의 Extended Thinking과 Tool Choice 제한사항  
-Anthropic API에서 수동 확장 사고(Manual Extended Thinking, `thinking: {"type": "enabled"}`) 기능을 사용할 때, 도구 호출을 강제하는 `tool_choice: {"type": "any"}` 또는 특정 도구를 지정하는 `tool_choice: {"type": "tool", "name": "..."}` 옵션은 서로 비호환되어 API 레벨에서 에러를 반환합니다. 수동 사고 모드에서는 `auto` 또는 `none`만 지원됩니다.
-
-**문제 상황 분석:**
-- 개발팀이 사고 과정(Extended Thinking)을 거친 후 반드시 도구를 호출하도록 `tool_choice: {"type": "any"}` 설정
-- 수동 확장 사고(`type: "enabled"`)가 활성화된 상태에서 도구 강제 제약조건(`any` / `tool`)을 함께 적용함
-- 두 파라미터 간의 제약조건 충돌로 인해 API 요청 실패 발생
-
-**D번이 정답인 이유:**
-수동 확장 사고(Manual Extended Thinking)를 사용할 때 Anthropic API 사상 `tool_choice`는 `auto` 및 `none`만 허용됩니다. 따라서 강제 도구 호출(`any`, `tool`)을 적용하면 안 되며, 만약 사고 과정과 도구 강제 호출을 함께 사용해야 한다면 지원하는 적응형 사고(Adaptive Thinking) 모드로 전환하거나 수동 확장 사고 기능을 비활성화해야 합니다.
-
-**오답 분석:**
-- **Option A (오답)**: 확장 사고가 모든 `tool_choice` 옵션을 비활성화하는 것은 아닙니다. `auto` 및 `none` 설정은 정상 지원됩니다.
-- **Option B (오답)**: `{"type": "any"}`는 단 1개의 도구만 정의되어 있어도 올바르게 동작하는 옵션이며, 도구 개수의 문제가 아닙니다.
-- **Option C (오답)**: Anthropic API에서 `{"type": "any"}`는 정상적인 파라미터이며, `{"type": "forced"}`라는 값은 존재하지 않습니다.
-
----
-
 ## 53번 문제 (★)
 
 **1. 문제 원문**
 
 Claude needs to reorganize a file by moving several scattered `export` statements into one grouped block near the top. Which tool sequence should Claude use?
 
-A) Issue one `Edit` call per export statement, each targeting a short unique snippet, relying on the accumulated edits to produce the new grouped layout.
-
-B) Call `Glob` for the file's own path to confirm it exists, then call `Edit` with `old_string` set to the whole file's text and `new_string` as the new version.
-
 C) Read the file to load its full contents, then call `Write` with the complete restructured file content back over that same path.
 
-D) Call `Grep` with output mode `content` to retrieve the matching export lines, treating the returned text as already written back to the file.
+D) Call `Grep` with output mode `content` to retrieve the matching export lines, treating the returned text as already ~~written back~~ to the file.
 
 ---
 
@@ -492,7 +448,8 @@ D) Call `Grep` with output mode `content` to retrieve the matching export lines,
 
 **정답 및 해설:**
 
-**핵심 개념**: 파일 대규모 재구성을 위한 `Edit` vs `Write` 도구 선택 기준  
+**핵심 개념**: 
+
 Claude Code 도구 세트에서 `Edit` 도구는 파일의 **일부 구간(부분 수정)**을 고유한 `old_string`을 기반으로 안전하게 치환할 때 적합합니다. 반면 파일 전체에 걸쳐 코드를 대대적으로 이동하거나 레이아웃을 완전히 재구성(Restructure/Reorganize)할 때는, 여러 번의 부분 수정보다 파일 전체 내용을 읽어온 후 **`Write` 도구로 전체 내용을 덮어쓰는 것**이 훨씬 안정적이고 오류를 최소화할 수 있습니다.
 
 **문제 상황 분석:**
@@ -500,51 +457,8 @@ Claude Code 도구 세트에서 `Edit` 도구는 파일의 **일부 구간(부�
 - 파일 전체의 여러 줄이 동시에 삭제 및 이동되는 광범위한 변화가 발생함
 - 이 상황에서 가장 적절하고 효율적인 파일 수정 도구 사용 패턴을 찾아야 함
 
-**C번이 정답인 이유:**
-파일의 전체 구조를 재배치할 때 여러 개의 부분 `Edit`을 연쇄적으로 수행하면 코드 오프셋이 달라지거나 인접 코드가 꼬여 에러가 발생하기 쉽습니다. 따라서 먼저 파일 내용을 읽어온 뒤, 재구성된 전체 코드를 `Write` 도구를 통해 동일한 경로에 통째로 새로 작성(Overwriting)하는 방식이 모범 사례(Best Practice)입니다.
-
 **오답 분석:**
-- **Option A (오답)**: 흩어진 각 구문마다 `Edit`을 여러 번 연속으로 호출하면 중간 과정에서 고유 문자열 일치가 깨지거나 코드가 꼬일 위험이 매우 큽니다.
-- **Option B (오답)**: 단일 파일의 존재 여부를 확인하기 위해 `Glob`을 호출하는 것은 불필요하며, `Edit`의 `old_string`에 파일 전체 텍스트를 넣는 것은 `Edit` 도구의 취지에도 맞지 않으며 `Write` 도구를 사용하는 것이 올바른 방법입니다.
 - **Option D (오답)**: `Grep`은 단순 파일 내용 검색 도구일 뿐, 파일에 데이터를 다시 쓰거나(Write) 수정하는 기능이 전혀 없습니다.
-
----
-
-## 58번 문제 (★)
-
-**1. 문제 원문**
-
-A newly onboarded architect asks Claude Code to trace how a login request flows from the HTTP route handler through to the database call, in a codebase Claude has not explored yet. To build this understanding efficiently while keeping context usage low, what is the best incremental strategy?
-
-A) Start by reading CLAUDE.md or AGENTS.md if they exist to gain high-level architecture context, then use Grep to locate the route handler and its imports, and read files incrementally along the call chain.
-
-B) Use Bash to run a full-text word count across the repository and read the files with the highest counts, on the assumption larger files hold core business logic.
-
-C) Use Read to open every file under the src directory up front, building a complete mental model of the whole codebase before looking for the login flow specifically.
-
-D) Use Glob to list every file in the repository sorted by modification time, then read the twenty most recently modified files on the assumption they relate to login.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: A번**
-
-**정답 및 해설:**
-
-**핵심 개념**: 컨텍스트 윈도우 효율적 코드 탐색(Context Window Efficient Exploration)
-
-**문제 상황 분석:**
-- 새로운 아키텍트가 아직 Claude가 읽어보지 않은 프로젝트에서 로그인 흐름 추적을 요청함.
-- 목적은 코드베이스를 효율적으로 이해하면서 토큰 사용량을 최소한으로 유지하는 것임.
-- 무작위 파일 열람이나 전체 파일 일괄 로딩을 피하고 필요한 경로만 점진적으로 파악해야 함.
-
-**A번이 정답인 이유:**
-- 프로젝트 설정 문서(`CLAUDE.md` 등)를 먼저 읽어 전체 아키텍처를 파악합니다.
-- `Grep` 도구로 라우트 핸들러 위치를 검색한 뒤 호출 체인을 따라 필요한 파일만 순차적으로 읽어 토큰 소모를 방지합니다.
-
-**오답 분석:**
-- Option A 외 오답들(B, C, D)은 대용량 파일 가정, 전체 파일 일괄 오픈, 무작위 최근 수정 파일 열람 등으로 컨텍스트 낭비 및 비효율성을 초래하므로 오답입니다.
 
 ---
 
