@@ -22,6 +22,7 @@
 * _appropriate_ : 적절한
 * _distinguish_ : 구별하다
 * _worthwhile_ : 해볼 가치가 있는지
+* _occurrence_ : (문자열이나 패턴이) 나타나는 지점
 
 ---
 
@@ -373,15 +374,9 @@ MCP(Model Context Protocol) 및 에이전트 기반 오류 처리에서, 도구�
 
 **1. 문제 원문**
 
-A developer wants Claude Code to update a deprecated log statement `logger.warn("legacy-path")` that appears twice in the same file, in two different functions, where only one of the two occurrences should change. Claude issues an Edit call with old_string set to exactly that log statement and the call fails. What is the correct next step?
+A developer wants Claude Code to update a deprecated log statement `logger.warn("legacy-path")` that appears twice in the same file, in two different functions, where only one of the two **occurrences(나타나는 지점들)** should change. Claude issues an Edit call with old_string set to exactly that log statement and the call fails. What is the correct next step?
 
-A) Call Write with only the new log line as content, expecting Write to merge that single line into the correct spot in the existing file
-
-B) Set replace_all to true on the same Edit call so both occurrences update identically, then manually revert whichever one should have stayed
-
-C) Switch to Grep with the multiline flag to rewrite the matching line directly, since Grep can modify file contents once a match is found
-
-D) Widen old_string to include enough surrounding context to uniquely identify the intended occurrence, then retry Edit with that string
+D) Widen old_string to include enough surrounding context to uniquely identify the **intended(의도한)** **occurrence(나타나는 지점)**, then retry Edit with that string
 
 ---
 
@@ -391,8 +386,8 @@ D) Widen old_string to include enough surrounding context to uniquely identify t
 
 **정답 및 해설:**
 
-**핵심 개념**: Claude Code의 Edit 도구 동작 원리 (Uniqueness & Context Matching)
-Claude Code의 `Edit` 도구는 파일 내에서 교체하고자 하는 대상 문자열(`old_string`)이 **단 하나만 존재(Unique)**할 때 안전하게 치환을 수행합니다. 만약 동일한 문자열이 파일 내에 여러 번 등장하는데 어떤 것을 바꿀지 고유하게 식별되지 않으면, 오작동을 방지하기 위해 Edit 호출이 실패합니다.
+**핵심 개념**: 
+Claude Code의 `Edit` 도구는 파일 내에서 교체하고자 하는 대상 문자열(`old_string`)이 **단 하나만 존재(Unique)할 때 안전하게 치환을 수행**합니다. 만약 동일한 문자열이 파일 내에 여러 번 등장하는데 어떤 것을 바꿀지 고유하게 식별되지 않으면, 오작동을 방지하기 위해 Edit 호출이 실패합니다.
 
 **문제 상황 분석:**
 - `logger.warn("legacy-path")` 구문이 동일 파일 내에 2번 존재함
@@ -401,11 +396,6 @@ Claude Code의 `Edit` 도구는 파일 내에서 교체하고자 하는 대상 �
 
 **D번이 정답인 이유:**
 동일한 문자열이 여러 곳에 존재하여 구분이 불가능할 때는, 변경하고자 하는 위치 주변의 코드(함수 선언부, 이전/다음 줄의 코드 등)를 `old_string`에 함께 포함시켜(**Widen**) 파일 내에서 대상 문자열이 유일(Unique)하게 식별되도록 context를 확장한 뒤 Edit을 재시도해야 합니다.
-
-**오답 분석:**
-- **Option A (오답)**: `Write` 도구는 파일 전체를 덮어쓰는 도구입니다. 단일 줄만 전달한다고 해서 기존 파일의 특정 위치에 자동으로 병합(Merge)해주지 않으며 파일 전체가 손상될 수 있습니다.
-- **Option B (오답)**: 문제가 의도한 바는 2개 중 1개만 변경하는 것인데, `replace_all: true`로 두 곳 모두 바꾼 뒤 수동으로 되돌리는 방식은 비효율적이고 비정상적인 우회 방법입니다.
-- **Option C (오답)**: `Grep`은 파일 내용을 검색(Search)하기 위한 도구일 뿐, 파일의 내용을 직접 수정(Modify)할 수 있는 기능을 가지고 있지 않습니다.
 
 ---
 
