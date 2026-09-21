@@ -405,13 +405,9 @@ Claude Code의 `Edit` 도구는 파일 내에서 교체하고자 하는 대상 �
 
 A legal-document analysis agent has a single `retrieve_clause` tool that can pull arbitrary text ranges from any uploaded file by byte offset, which the model frequently misuses to grab unrelated or malformed spans. The team wants to replace it with a constrained alternative that only ever returns whole, well-defined clauses. Which redesign best follows the pattern of replacing a generic tool with a constrained one?
 
-A) Keep `retrieve_clause` unchanged and add a second agent whose only job is to double-check the byte ranges after retrieval
-
-B) Keep `retrieve_clause` but double the number of example byte-offset calls in its description so the model learns better offsets
+A) Keep `retrieve_clause` unchanged and add a second agent whose only job is to double-check the byte ranges after retrieval => 근본 원인(제네릭한 인터페이스)을 안 고치고 우회한다는 것 때문에 C 보다 부적합하다.
 
 C) Replace `retrieve_clause` with a `get_clause_by_id` tool that only accepts a validated clause identifier from a pre-parsed clause index
-
-D) Give the agent broader access by also adding a `raw_file_read` tool so it can cross-check offsets against the full document
 
 ---
 
@@ -421,8 +417,8 @@ D) Give the agent broader access by also adding a `raw_file_read` tool so it can
 
 **정답 및 해설:**
 
-**핵심 개념**: 제약된 도구 인터페이스 설계 (Constrained Tool Design)
-LLM 기반 에이전트 시스템에서 임의의 인자(예: 임의의 바이트 범위, 자유 형식 SQL 문 등)를 받는 범용적이고 유연한(Generic) 도구는 모델의 예측 불가능한 오용 및 환각을 유발하기 쉽습니다. 이를 미리 정의되고 검증된 구조(구조화된 식별자, 사전 처리된 인덱스)만 허용하는 제약된(Constrained) 도구로 교체하는 것은 에이전트의 신뢰성을 극대화하는 핵심 아키텍처 패턴입니다.
+**핵심 개념**: 
+LLM 기반 에이전트 시스템에서 임의의 인자(예: 임의의 바이트 범위, 자유 형식 SQL 문 등)를 받는 범용적이고 유연한(Generic) 도구는 모델의 예측 불가능한 오용 및 환각을 유발하기 쉽습니다. 이를 미리 정의되고 **검증된 구조(구조화된 식별자, 사전 처리된 인덱스)만 허용하는 제약된(Constrained) 도구로 교체**하는 것은 에이전트의 신뢰성을 극대화하는 핵심 아키텍처 패턴입니다.
 
 **문제 상황 분석:**
 - 기존 `retrieve_clause` 도구는 바이트 오프셋 기반으로 임의의 텍스트 범위를 잘라오도록 되어 있어 generic함
@@ -431,11 +427,6 @@ LLM 기반 에이전트 시스템에서 임의의 인자(예: 임의의 바이�
 
 **C번이 정답인 이유:**
 바이트 오프셋 지정과 같은 임의의 파라미터 입력을 제거하고, 문서 파싱 단계에서 미리 정제된 조항 인덱스(pre-parsed index)의 유효한 ID만을 입력받는 `get_clause_by_id` 도구로 교체하는 것이 가장 확실하고 구조적인 제약(Constraint)을 거는 방법입니다. 이를 통해 모델은 잘못된 오프셋 계산을 할 여지 자체가 차단됩니다.
-
-**오답 분석:**
-- **Option A (오답)**: 문제가 있는 범용 도구를 그대로 둔 채 교체 검증용 2차 에이전트를 추가하는 것은 시스템 복잡도와 토큰 비용만 증가시킬 뿐, 근본적인 도구 인터페이스의 결함을 해결하지 못합니다.
-- **Option B (오답)**: 도구 설명란에 프롬프트 예시(Few-shot)만 늘리는 방식은 LLM의 바이트 오프셋 실수라는 근본적 한계를 완벽히 통제할 수 없으며, 제약된 도구로의 교체 패턴이 아닙니다.
-- **Option D (오답)**: 원시 파일 읽기 도구(`raw_file_read`)를 추가하여 에이전트에게 더 넓은 권한을 주는 것은 문제의 의도인 '도구 제약(Constrained Tooling)'과 완전히 반대되는 접근입니다.
 
 ---
 
