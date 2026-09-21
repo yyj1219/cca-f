@@ -338,46 +338,6 @@ LLM의 도구 선택(Tool Selection) 과정에서 시스템 프롬프트(System 
 
 ---
 
-## 37번 문제 (★)
-
-**1. 문제 원문**
-
-A coordinator agent delegates a three-step data migration to a subagent: extract, transform, and load, but the load step fails twice on a database connection reset, a known transient condition, before finally succeeding on the third attempt inside the subagent's own execution. What should the subagent report back to the coordinator?
-
-A) An `isError: true` result describing both connection resets in detail, so the coordinator can decide independently whether the migration should be retried
-
-B) A success result summarizing the completed migration, since the transient failures were resolved locally and never needed to surface above the subagent
-
-C) An escalation asking the coordinator to obtain new database credentials, since two consecutive connection resets indicate the credentials have expired
-
-D) A partial-results payload listing only the extract and transform steps as done, omitting the load step entirely since it initially failed twice
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: B번**
-
-**정답 및 해설:**
-
-**핵심 개념**: 
-계층적 에이전트 구조(Hierarchical Agent Architecture) 및 서브에이전트 패턴에서, 서브에이전트는 위임받은 작업을 자체적으로 관리하고 복구하는 캡슐화(Encapsulation) 책임을 가집니다. 일시적 오류(Transient Fault)가 서브에이전트 내부 재시도 로직을 통해 최종 해결되어 전체 작업이 완수되었다면, 상위 코디네이터에게는 불필요한 오류 메시지 대신 **성공 결과**만 보고하는 것이 올바른 설계입니다.
-
-**문제 상황 분석:**
-- 상위 코디네이터가 서브에이전트에게 3단계 데이터 마이그레이션(추출 $\rightarrow$ 변환 $\rightarrow$ 로드)을 위임함.
-- 마지막 '로드' 단계에서 일시적인 연결 재설정(Transient Condition)으로 2회 실패가 발생했으나, 서브에이전트 내부에서 3번째 시도 만에 최종 성공함.
-- 전체 태스크 관점에서는 3단계가 모두 최종 성공적으로 완료된 상태임.
-
-**B번이 정답인 이유:**
-일시적인 장애는 서브에이전트 수준에서 이미 성공적으로 복구(Resolved locally)되어 전체 마이그레이션 과업이 완성되었으므로, 코디네이터에게는 최종 작업의 성공 결과만 상위로 보고하는 것이 계층적 위임 구조 및 카오스 차단(Fault Containment) 원칙에 부합합니다.
-
-**오답 분석:**
-- **Option A (오답)**: 이미 내부 재시도로 최종 성공했음에도 불구하고 `isError: true`를 반환하면 상위 코디네이터가 불필요하게 전체 태스크를 재시도하거나 에러 처리를 수행하여 중복 작업 및 시스템 혼란을 유발합니다.
-- **Option C (오답)**: 연결 재설정이 일시적 오류(Transient Condition)라고 문제에 명시되어 있고 세 번째에 성공했으므로, 자격 증명 만료로 단정 짓고 자격 증명을 재요청하는 것은 잘못된 진단입니다.
-- **Option D (오답)**: 세 번째 시도에서 '로드' 단계가 최종 성공했음에도 불구하고 처음에 실패했다는 이유로 결과를 누락하거나 부분 성공으로만 보고하는 것은 데이터 상태 불일치를 일으킵니다.
-
----
-
 ## 40번 문제 (★)
 
 **1. 문제 원문**
