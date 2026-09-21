@@ -16,6 +16,10 @@
 * _surface_ : 표면화하다, 드러내다
 * _typically_ : 일반적으로
 * _coerce_ : 억지로 맞추다
+* _significantly_ : 상당히
+* _influence_ : 영향력
+* _assessment_ : 평가
+* _appropriate_ : 적절한
 
 ---
 
@@ -234,13 +238,9 @@ MCP(Model Context Protocol) 시스템에서 에러는 명확히 두 개의 계�
 
 A `cancel_subscription` MCP tool rejects a cancellation because the account is locked in a legal hold, a policy condition that will not change no matter how the request is retried or reformatted. The engineer must choose between labeling this a validation error or a business error. Which choice is correct, and why?
 
-A) Validation error, because any rejection after initial schema checks indicates the input, when checked against account state, does not pass full system validation.
-
-B) Business error, because the legal hold check occurs in a separate service after request validation, so the rejection is a business rule violation, not a schema issue.
+B) Business error, because the legal hold check occurs in a separate service(별도 서비스에서) after request validation(검증 이후에), so the rejection is a business rule violation, not a schema issue. => 문제에서 "검증 이후"나 "별도 서비스"에 대한 내용이 전혀 없다. 문제에 없는 내용을 추정했으므로 오답이다.
 
 C) It is a business error because the request itself is well-formed and the rejection stems from a policy rule about the account's state rather than malformed input.
-
-D) Validation fails because the account ID in the request is the specific field that, when evaluated against the account's legal hold status, causes the rejection.
 
 ---
 
@@ -262,9 +262,7 @@ D) Validation fails because the account ID in the request is the specific field 
 요청 문맥 및 스키마 관점에서 입력값 형태 자체는 정상적이지만, 시스템의 비즈니스 정책(계정 상태가 법적 보류)에 의해 거부된 것이므로 '비즈니스 에러(Business error)'로 분류하는 것이 정확합니다. C번은 입력 데이터의 결함(Malformed input)이 아닌 계정 상태 정책(Policy rule)이 원인임을 명확히 설명합니다.
 
 **오답 분석:**
-- **Option A (오답)**: 시스템 상태 체크 과정에서 거부된다고 해서 이를 유효성 검증(Validation) 에러로 분류하는 것은 에러의 본질(입력 오류 vs 도메인 정책 위반)을 혼동한 설명입니다.
 - **Option B (오답)**: 비즈니스 에러로 분류한 결론은 맞지만, 이유로서 '별도의 서비스에서 실행되기 때문'이라는 구조적/실행 위치 조건은 에러의 개념적 원인 분류 표준이 아닙니다.
-- **Option D (오답)**: 계정 ID 필드가 법적 보류 상태와 평가된다는 이유로 이를 검증 실패(Validation fails)로 규정하는 것은 잘못되었습니다. 필드의 형식적 유효성과 데이터가 가리키는 대상의 상태 정책 위반은 엄격히 구분됩니다.
 
 ---
 
@@ -272,15 +270,13 @@ D) Validation fails because the account ID in the request is the specific field 
 
 **1. 문제 원문**
 
-Claude Code is fixing a bug and wants to reproduce it first by running the project's test suite and capturing the failing stack trace before making any code changes. Which tool should Claude use to run the suite and view its output?
-
-A) Grep, to search the codebase for the word test and treat matching file names as evidence that the suite has already passed
+Claude Code is fixing a bug and wants to reproduce it first by running the project's test suite and capturing the failing stack trace before making any code changes. Which tool should Claude use to **run the suite and view its output**? => 실행과 결과 확인이 목적이다. 목적 달성에 가장 근접한 답을 찾아야 한다.
 
 B) Bash, to invoke the project's test runner command and capture its stdout and stderr, including the stack trace, in the result
 
-C) Read, to open the test runner's configuration file and infer the current pass or fail status of the suite from its settings
+C) Read, to open the test runner's configuration file and infer the current pass or fail status of the suite from its settings => 선택적으로 Read를 할 수도 있겠지만, 문제에서 실행과 결과 확인이 목적이라서 오답. Read는 안전을 위해 Write/Edit에서만 선행되는 것 뿐이다. 헷갈리지 말라.
 
-D) Glob, to list all files matching **/*.test.* and treat the presence of test files as confirmation that the suite runs cleanly
+D) Glob, to list all files matching **/*.test.* and treat the presence of test files as confirmation that the suite runs cleanly => 테스트 파일의 존재 유무는 확인되겠지만, 그게 테스트를 한다는 것과 같은 것은 아니다. 따라서 오답.
 
 ---
 
@@ -291,6 +287,7 @@ D) Glob, to list all files matching **/*.test.* and treat the presence of test f
 **정답 및 해설:**
 
 **핵심 개념**: 
+
 Claude Code 환경에서 `Bash` 도구는 터미널 명령어를 실행하고 그 결과로 나오는 표준 출력(`stdout`)과 표준 에러(`stderr`)를 캡처하는 데 사용됩니다. 외부 명령어(예: `npm test`, `pytest` 등 테스트 러너)를 직접 실행하여 실제 오류 발생 현상 및 스택 트레이스를 확인하기 위해서는 Shell 명령을 실행할 수 있는 `Bash` 도구가 필수적입니다.
 
 **문제 상황 분석:**
@@ -302,7 +299,6 @@ Claude Code 환경에서 `Bash` 도구는 터미널 명령어를 실행하고 �
 `Bash` 도구는 프로젝트에 설정된 테스트 러너 명령어(예: `pytest`, `jest`, `cargo test` 등)를 실제로 실행(invoke)하고, 이 과정에서 출력되는 스택 트레이스를 포함한 `stdout`과 `stderr` 결과를 받아올 수 있는 유일한 도구입니다.
 
 **오답 분석:**
-- **Option A (오답)**: `Grep`은 텍스트 패턴을 검색하는 도구일 뿐, 명령어를 실행하거나 테스트 결과를 얻을 수 없습니다. 또한 파일 이름 존재 여부를 테스트 통과 증거로 간주한다는 설명 역시 부적절합니다.
 - **Option C (오답)**: `Read`는 파일을 읽는 도구입니다. 설정 파일의 내용을 읽는 것만으로는 실제 테스트 실행 결과나 에러 발생 시의 스택 트레이스를 알 수 없습니다.
 - **Option D (오답)**: `Glob`은 패턴에 맞는 파일 목록을 찾는 도구입니다. 테스트 파일이 존재하는지 확인하는 것과 실제 테스트를 실행하여 버그를 재현하는 것은 무관합니다.
 
@@ -312,15 +308,11 @@ Claude Code 환경에서 `Bash` 도구는 터미널 명령어를 실행하고 �
 
 **1. 문제 원문**
 
-A team observes that adding 'If in doubt, use the search tool' to the system prompt caused the model to call `search_web` even when the `lookup_internal_docs` tool was more appropriate. What does this scenario illustrate?
+A team observes that adding 'If in doubt, use the search tool' to the system prompt caused the model to call `search_web` even when the `lookup_internal_docs` tool was more **appropriate(적절한)**. What does this scenario illustrate?
 
-A) System prompts can significantly influence tool selection, and explicit instructions may override the model's assessment of which tool is most appropriate.
+A) System prompts can **significantly(상당히)** **influence(영향력)** tool selection, and explicit instructions may override the model's **assessment(평가)** of which tool is most **appropriate(적절한)**.
 
-B) System prompts have no measurable effect on tool selection; the behavior must be caused by a defect in the model.
-
-C) The word 'search' appearing anywhere in a tool's name always takes absolute priority over any other tool regardless of prompt content.
-
-D) The `lookup_internal_docs` tool must have a malformed JSON schema, since that is the only way a tool can be excluded from selection.
+C) The word 'search' appearing anywhere in a tool's name always takes absolute priority over any other tool regardless of prompt content. => 절대적 우선순위를 갖지는 않는다. 그런 경향이 있는 것과 절대적인 것은 다르다.
 
 ---
 
@@ -331,7 +323,7 @@ D) The `lookup_internal_docs` tool must have a malformed JSON schema, since that
 **정답 및 해설:**
 
 **핵심 개념**: 
-LLM의 도구 선택(Tool Selection) 과정에서 시스템 프롬프트(System Prompt)에 포함된 지시사항은 모델의 의사결정에 결정적인 영향을 미칩니다. 프롬프트에 명시된 지시나 편향(Bias) 문구는 도구의 개별 설명이나 맥락적 적합성에 대한 모델 자체의 가치 평가보다 우선시되어 적용될 수 있습니다.
+LLM의 도구 선택(Tool Selection) 과정에서 시스템 프롬프트(System Prompt)에 포함된 지시사항은 모델의 의사결정에 결정적인 영향을 미칩니다. **프롬프트에 명시된 지시나 편향(Bias) 문구**는 도구의 개별 설명이나 맥락적 적합성에 대한 **모델 자체의 가치 평가보다 우선시되어 적용될 수** 있습니다.
 
 **문제 상황 분석:**
 - 시스템 프롬프트에 'If in doubt, use the search tool(확신이 없으면 검색 도구를 사용하라)'이라는 강한 지시 지침을 추가함.
@@ -342,9 +334,7 @@ LLM의 도구 선택(Tool Selection) 과정에서 시스템 프롬프트(System 
 시스템 프롬프트는 모델의 도구 선택 동작에 강력한 영향을 미치며, 명시적으로 주어진 프롬프트 지침은 모델이 본래 판단했을 최선의 도구 선택 기준보다 우선하여 작용함을 정확히 설명하고 있습니다.
 
 **오답 분석:**
-- **Option B (오답)**: 시스템 프롬프트가 도구 선택에 아무런 영향이 없으며 모델의 결함 때문이라는 주장은 거짓입니다. 프롬프트는 모델의 행동 제어에 핵심적 역할을 합니다.
 - **Option C (오답)**: 'search'라는 단어의 포함 여부만으로 무조건 절대적 우선순위가 정해진다는 것은 프롬프트의 지침(지시어) 역할을 무시한 자의적인 해석입니다.
-- **Option D (오답)**: 도구가 선택에서 제외되는 이유가 JSON 스키마 오류 때문이라는 것은 단정적 오류이며, 이 시나리오는 스키마 결함이 아닌 프롬프트 지시어에 의한 의사결정 편향 현상을 보여줍니다.
 
 ---
 
