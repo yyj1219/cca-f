@@ -23,6 +23,7 @@
 * _distinguish_ : 구별하다
 * _worthwhile_ : 해볼 가치가 있는지
 * _occurrence_ : (문자열이나 패턴이) 나타나는 지점
+* _specification_ : 사양
 
 ---
 
@@ -466,15 +467,11 @@ Claude Code 도구 세트에서 `Edit` 도구는 파일의 **일부 구간(부�
 
 **1. 문제 원문**
 
-A platform team is designing error responses for a fleet of internal MCP tools. One engineer proposes that every tool failure, regardless of cause, return the same generic text "Operation failed" with `isError: true`, arguing this keeps the interface simple for tool authors. What is the strongest architectural objection to this proposal?
+A platform team is designing error responses for a fleet(다수의 집합, 무리) of internal MCP tools. One engineer proposes that every tool failure, regardless of cause, return the same generic text "Operation failed" with `isError: true`, arguing this keeps the interface simple for tool authors. What is the strongest architectural objection to this proposal?
 
-A) Returning a constant error string for every failure adds metadata overhead that pushes the total block size beyond the MCP protocol's maximum content length, so the server rejects the tool result as non-compliant.
+B) A uniform generic message gives the agent no basis for choosing among retrying, adjusting input, or escalating, so it cannot make an **appropriate(적절한)** recovery decision for each failure.
 
-B) A uniform generic message gives the agent no basis for choosing among retrying, adjusting input, or escalating, so it cannot make an appropriate recovery decision for each failure.
-
-C) Uniform error text prevents the server from ever setting isError:true because the MCP specification requires a unique diagnostic string to accompany the flag for each failure, so the tool cannot activate the error state.
-
-D) The MCP specification requires every isError:true result to include a machine-parseable stack trace, so a generic text response without that structured data violates the protocol and is rejected by the platform.
+C) Uniform error text prevents the server from ever setting isError:true because the MCP **specification(사양)** requires a unique diagnostic string to accompany the flag for each failure, so the tool cannot activate the error state.
 
 ---
 
@@ -483,8 +480,6 @@ D) The MCP specification requires every isError:true result to include a machine
 **정답: B번**
 
 **정답 및 해설:**
-
-**핵심 개념**: AI 에이전트 오류 복구 및 유익한 오류 피드백(AI Agent Error Recovery & Informative Error Feedback)
 
 **문제 상황 분석:**
 - 모든 도구 실패에 동일한 텍스트("Operation failed")를 반환하자고 제안함.
