@@ -430,46 +430,6 @@ LLM 기반 에이전트 시스템에서 임의의 인자(예: 임의의 바이�
 
 ---
 
-## 50번 문제 (★)
-
-**1. 문제 원문**
-
-Claude Code is asked to rename an environment variable from `API_TIMEOUT_MS` to `REQUEST_TIMEOUT_MS` everywhere it is referenced across a codebase of several hundred files, with each occurrence sitting in different surrounding code. Which approach best discovers the full scope of the change before applying it?
-
-A) Run Grep with output mode content and a glob scope to list every file and line referencing API_TIMEOUT_MS, then review that list before editing
-
-B) Run Bash to open every file in an interactive editor, since a variable rename of this kind must be reviewed visually rather than located programmatically
-
-C) Run Write on the project's environment configuration file first, then rely on Claude to infer other affected files from that one change afterward
-
-D) Run Glob with the pattern **/API_TIMEOUT_MS to locate files whose names contain the variable, then edit only those matching files
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: A번**
-
-**정답 및 해설:**
-
-**핵심 개념**: 코드베이스 검색 및 탐색 도구(Grep vs Glob)의 역할 분담  
-Claude Code 도구 생태계에서 `Grep`은 파일 **내부 텍스트 내용(Content)**을 패턴으로 검색할 때 사용하며, `Glob`은 **파일 경로/이름(Filename/Path)** 패턴으로 파일 목록을 찾을 때 사용합니다. 코드 전체에서 특정 변수명이 언급된 위치를 탐색할 때는 `Grep`을 사용하여 영향 범위를 사전에 파악하는 것이 표준적인 접근법입니다.
-
-**문제 상황 분석:**
-- 수백 개의 파일에 걸쳐 환경 변수 `API_TIMEOUT_MS`가 참조되고 있음
-- 각 참조 지점의 주변 코드가 서로 다름
-- 변경 작업(Edit)을 적용하기 전에 영향받는 전체 범위(파일 및 정확한 줄 위치)를 완벽히 파악해야 함
-
-**A번이 정답인 이유:**
-`Grep` 도구에 검색 대상 패턴(`API_TIMEOUT_MS`)과 출력 모드(`content`)를 지정하여 실행하면, 코드베이스 전체에서 해당 변수를 참조하는 모든 파일과 해당 줄(Line) 번호/내용을 수집할 수 있습니다. 이를 통해 변경을 적용하기 전 영향 범위를 명확히 검토(Review)할 수 있으므로 최선의 접근법입니다.
-
-**오답 분석:**
-- **Option B (오답)**: Bash로 대화형 에디터를 여는 것은 에이전트 환경에서 비효율적일 뿐만 아니라 자동화 및 정확한 검색 목적에 맞지 않습니다.
-- **Option C (오답)**: 하나의 파일만 먼저 수정한 뒤 모델의 '추론'에만 의존해 나머지 파일을 찾는 방식은 수백 개 파일 중 일부 참조를 누락(Missing reference)시키는 치명적인 결과를 가져올 수 있습니다.
-- **Option D (오답)**: `Glob`은 **파일 이름** 패턴을 일치시키는 도구입니다. 변수명이 파일 이름에 포함되어 있지 않고 파일 내용 속에 포함되어 있는 일반적인 상황에서는 `Glob`으로 참조 위치를 찾을 수 없습니다.
-
----
-
 ## 51번 문제 (★)
 
 **1. 문제 원문**
