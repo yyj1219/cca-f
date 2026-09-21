@@ -20,6 +20,8 @@
 * _influence_ : 영향력
 * _assessment_ : 평가
 * _appropriate_ : 적절한
+* _distinguish_ : 구별하다
+* _worthwhile_ : 해볼 가치가 있는지
 
 ---
 
@@ -342,15 +344,9 @@ LLM의 도구 선택(Tool Selection) 과정에서 시스템 프롬프트(System 
 
 **1. 문제 원문**
 
-An MCP server's `create_invoice` tool calls a downstream billing API that returns a 503 while the service is deploying. The tool wraps this in a result with `isError: true` and a text block reading only "Operation failed." The agent retries the same call five times in a row, each time failing the same way, before giving up. What is the most direct cause of the wasted retries?
+An MCP server's `create_invoice` tool calls a downstream billing API that returns a 503(배포 중 일시 장애) while the service is deploying. The tool wraps this in a result with `isError: true` and a text block reading only "Operation failed." The agent retries the same call five times in a row, each time failing the same way, before giving up. What is the most direct cause of the wasted retries?
 
-A) The result carries no structured metadata distinguishing transient from non-retryable failures. The agent thus has no basis for deciding whether retrying is worthwhile.
-
-B) The downstream billing API returned an HTTP status code rather than a JSON-RPC error object, so the MCP client could not parse the response and defaulted to retrying repeatedly.
-
-C) The agent's context window ran out of space to store the error text, so it could not remember that the same request had just failed and therefore repeated the call as if it were a new attempt.
-
-D) The tool set `isError` to true instead of false, which signals to the agent that unlimited retries are the correct response and prevents it from recognizing that the error is transient.
+A) The result carries no structured metadata **distinguishing(구별하는)** transient from non-retryable failures. The agent thus has no **basis(근거)** for deciding whether retrying is **worthwhile(해볼 가치가 있는지)**.
 
 ---
 
@@ -370,11 +366,6 @@ MCP(Model Context Protocol) 및 에이전트 기반 오류 처리에서, 도구�
 
 **A번이 정답인 이유:**
 반환된 결과에 에러가 일시적(transient)인지 재시도 불가능(non-retryable)한지를 구분해 주는 구조화된 메타데이터가 전혀 포함되어 있지 않기 때문에, 에이전트가 재시도 여부 및 전략을 판단할 근거가 부족하여 무의미한 재시도를 반복한 것이 가장 직접적인 원인입니다.
-
-**오답 분석:**
-- **Option B (오답)**: 다운스트림 HTTP 코드 수신 여부보다, MCP 도구가 클라이언트/에이전트에 래핑하여 전달한 응답 결과의 메타데이터 부재가 원인입니다. MCP 클라이언트의 파싱 오류나 기본 재시도 동작 문제가 아닙니다.
-- **Option C (오답)**: "Operation failed."라는 단문 에러 텍스트 하나로 컨텍스트 윈도우가 가득 차서 이전 실패 기록을 기억하지 못했다는 주장은 현실적이지 않습니다.
-- **Option D (오답)**: 오류가 발생했을 때 `isError`를 `true`로 설정하는 것은 정상입니다. `isError: true` 자체가 무제한 재시도를 의미하거나 일시적 오류 인식을 막는 것은 아닙니다.
 
 ---
 
