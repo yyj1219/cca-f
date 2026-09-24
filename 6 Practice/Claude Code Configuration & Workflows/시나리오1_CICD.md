@@ -38,11 +38,6 @@ CLAUDE.md은 인라인 가져오기(import) 문법을 지원한다. 파일 텍�
 
 가져오기 문법, 해석 규칙, 로드 순서는 Manage Claude's memory 문서를 참고하고, /memory와 /context로 세션이 실제로 무엇을 로드했는지 확인하는 방법은 Debug your configuration 문서를 참고하라.
 
-### 도메인
-
-Claude Code Configuration & Workflows
-
-
 
 ## 질문 2
 
@@ -83,11 +78,6 @@ Claude Code에 여러 이슈를 넘길 때 결정 요인이 되는 것은 개수
 
 유용한 사고 모델은 "설계 결정 하나당 메시지 하나"이다. 세 가지 발견 사항이 검증 레이어에 대한 하나의 결정으로 해결된다면 그것은 하나의 메시지이고, 각각 독립적으로 존재하는 네 가지 발견 사항은 네 개의 결정이므로 각각 검증을 마친 뒤 다음으로 넘어가는 네 번의 턴이 된다. 작업의 범위를 정하고 반복하는 방법에 대해서는 Claude Code Best Practices와 Claude Code 문서를 참고하라.
 
-### 도메인
-
-Claude Code Configuration & Workflows
-
-
 
 ## 질문 3
 
@@ -126,11 +116,6 @@ Claude Code Configuration & Workflows
 여기서의 사고 모델은 경로 범위 규칙이 항상 켜져 있는 컨텍스트를 관련성(relevance)과 교환한다는 것이다. 무조건적인 메모리(루트 CLAUDE.md, 또는 paths 필드가 없는 규칙)는 시작 시 로드되어 모든 작업에서 주의를 경쟁하지만, 경로 범위 규칙은 그 예산을 깨끗하게 유지하면서 정확히 필요한 순간에 컨벤션을 드러낸다. 이는 개발자가 없어 누락된 컨텍스트를 채워 넣을 수 없는 무인 실행 환경인 CI에서 두 배로 중요하다.
 
 디렉터리 단위 CLAUDE.md 파일은 컨벤션이 실제로 한 폴더에 속할 때는 여전히 유용하지만, 관련 파일이 위치가 아니라 유형으로 식별되는 코드베이스 전체를 다룰 수는 없다. 디렉터리별로 이를 중복시키면 결국 어긋나게(drift) 된다. 스킬은 완전히 다른 문제, 즉 온디맨드 작업별 절차를 해결한다. 파일 유형 컨벤션을 옵트인 스킬로 바꾸면 정확성이 스킬 호출을 기억하는 것에 의존하게 된다. 규칙 디렉터리, paths 프론트매터, 지원되는 글롭 패턴에 대해서는 Manage Claude's memory 문서를 참고하라.
-
-### 도메인
-
-Claude Code Configuration & Workflows
-
 
 
 ## 질문 4
@@ -173,11 +158,6 @@ Claude에게 이슈를 전달하는 방식을 결정하는 규칙은 개수가 �
 
 Claude Code로 작업의 범위를 정하고 반복하는 방법에 대해서는 Claude Code Best Practices와 Claude Code Common Workflows를 참고하라.
 
-### 도메인
-
-Claude Code Configuration & Workflows
-
-
 
 ## 질문 5
 
@@ -216,11 +196,6 @@ Claude Code는 여러 위치의 계층 구조에서 메모리를 로드한다. �
 /memory 명령은 이런 종류의 문제를 관리하는 진입점이다. 메모리 파일 위치를 나열하고 열고 편집하고 생성할 수 있게 해주므로, 기준이 저장소가 아니라 사용자 수준 파일에 있다는 것을 확인해준다. 특정 세션이 실제로 컨텍스트에 무엇을 로드했는지 확인하려면 /context가 Memory files 섹션을 보여주므로, 로컬 세션과 CI 실행을 비교하면 그 차이가 드러난다. 진단이 끝나면 해결책은 절차적인 것이 아니라 구조적인 것이다. 기준을 커밋된 프로젝트 CLAUDE.md로 옮겨서, CI 체크아웃을 포함한 모든 클론이 동일하게 그것을 받도록 하는 것이다.
 
 대안들은 모두 같은 실패를 다른 형태로 다시 끌고 온다. 홈 디렉터리 파일을 러너에 수동으로 복사하면 원본과 어긋나는 버전 관리 안 된 설정이 생긴다. .claude/settings.json은 지침용 텍스트가 아니라 권한, 도구, 훅을 위한 것이다. 그리고 각 -p 호출에 기준을 인라인으로 넣으면 팀의 정본 가이드가 파이프라인 스크립트로 갈라져 나가 영원히 발맞춰 갱신해야 한다. 공유 지침에는 설계상 정해진 하나의 자리가 있으며, 그것이 바로 버전 관리 하의 프로젝트 메모리 파일이다. Manage Claude's memory와 슬래시 커맨드 레퍼런스를 참고하라.
-
-### 도메인
-
-Claude Code Configuration & Workflows
-
 
 
 ## 질문 6
@@ -261,11 +236,6 @@ Claude Code Configuration & Workflows
 
 오답들은 모두 같은 오해를 다른 형태로 드러낸다. 철저함 수준은 검색이 얼마나 깊이 이루어지는지를 정할 뿐, 에이전트가 무엇을 건드릴 수 있는지를 정하지 않는다. 더 큰 모델로 교체하는 것은 추론 능력을 바꿀 뿐 도구 권한을 바꾸지 않는다. 그리고 서브에이전트는 일반적으로 쓰기 권한이 있으면 파일 변경을 지속시킨다. "변경사항이 버려진다"는 이론은 에이전트별 도구 제한을 서브에이전트 메커니즘 자체의 문제로 잘못 돌리는 것이다. 내장 에이전트와 그 도구 경계에 대해서는 Subagents in Claude Code를 참고하라.
 
-### 도메인
-
-Claude Code Configuration & Workflows
-
-
 ## 질문 7
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
@@ -303,11 +273,6 @@ Claude Code가 --output-format json과 --json-schema로 실행될 때, CLI는 �
 인라인 PR 댓글을 게시하는 CI 파이프라인의 경우, 올바른 계약은 따라서 연결 조건(conjunctive)이어야 한다. 실행이 성공했고 structured_output 필드가 존재할 때만 진행하고, 그 외 모든 경우는 재시도나 실패 경로로 보내야 한다. 이렇게 하면 형식이 잘못되었거나 없는 발견 사항이 게시 단계에 도달하지 않고, 실패가 조용히 묻히지 않고 관찰 가능해진다. result 텍스트에 대한 정규식 대체는 이 플래그가 제공하는 검증 보장을 저버리는 것이다. 0 종료 코드를 믿는 것은 잘못된 신호를 확인하는 것인데, 성공과 구조화된 출력은 문서상 서로 분리될 수 있다고 명시되어 있기 때문이다. 그리고 프롬프트 지침으로는 검증 계층 자체가 생성하며 생성하지 않을 수도 있는 필드를 강제할 수 없다.
 
 문서화된 엔벨로프 필드와 실패 서브타입은 Structured outputs와 Headless mode를 참고하라.
-
-### 도메인
-
-Claude Code Configuration & Workflows
-
 
 
 ## 질문 8
@@ -348,11 +313,6 @@ Claude Code Configuration & Workflows
 
 유용한 사고 모델은 다음과 같다. 원하는 동작은 스킬 본문에 두고, 반드시 보장해야 하는 경계는 allowed-tools 같은 설정(또는 세션의 모든 도구 호출에 걸쳐 유지되어야 하는 규칙이라면 훅)에 둔다. 스킬은 프로젝트 범위라면 .claude/skills/<name>/SKILL.md에 있고(버전 관리를 통해 공유되며, 이것이 CI 체크아웃이 받는 방식이다), 개인 용도라면 ~/.claude/skills/에 있다. 스킬이 어떻게 정의되고 설정되는지는 Claude Code 슬래시 커맨드 문서를 참고하라.
 
-### 도메인
-
-Claude Code Configuration & Workflows
-
-
 
 ## 질문 9
 
@@ -392,11 +352,6 @@ Claude Code가 파이프라인 안에서 실행될 때는 인간 리뷰어가 �
 
 거부된 두 선택지는 범위와 메커니즘 모두에서 실패한다. ~/.claude/CLAUDE.md의 사용자 수준 설정은 한 사람의 머신에 속한다. CI 러너는 이를 절대 보지 못하고, 팀원들 사이에서도 공유되지 않기 때문에 결국 어긋나게 된다. 그리고 CLAUDE.md는 가이드일 뿐 강제가 아니다. 도구 접근을 부여하거나 제한할 수 없다. 자동화에서 권한은 헤드리스 모드 문서에서 다루는 allowed-tools 설정, 권한 규칙, 또는 액션 설정에서 나온다. 유용한 사고 모델은, CLAUDE.md가 Claude에게 무엇이 좋은 결과인지를 말해주는 반면, 권한과 훅이 Claude가 무엇을 하도록 허용되는지를 결정한다는 것이다.
 
-### 도메인
-
-Claude Code Configuration & Workflows
-
-
 ## 질문 10
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
@@ -434,11 +389,6 @@ Claude Code의 메모리 시스템은 지침을 두 축으로 구분한다. 어�
 이런 구분이 설계된 이유는 지침이 곧 컨텍스트이며, 컨텍스트는 관련 있는 곳에서만 로드되어야 한다는 것이다. 초안 기준을 사용자 수준 파일에 두면 무관한 프로젝트에도 주입되어 버린다. 공유 프로젝트 파일에 두면 아직 합의되지 않은 정책을 팀원과 파이프라인에 강제로 밀어붙이게 된다. Claude Code는 작업 디렉터리와 그 상위 디렉터리에서 CLAUDE.md와 CLAUDE.local.md를 찾아 컨텍스트로 연결(concatenate)하므로, 로컬 파일은 공유 파일을 대체하는 것이 아니라 보완한다.
 
 설정 파일들은 병렬적이지만 별개인 체계를 따른다. .claude/settings.local.json도 마찬가지로 사용자별, 프로젝트별이지만, 자연어 가이드가 아니라 기계가 읽는 설정(권한, 도구 설정)을 담는다. 설정 계층과 메모리 계층을 혼동하는 것은 흔한 실수이다. 각각 자신만의 개인 계층과 공유 계층을 갖는다. Manage Claude's memory와 Claude Code settings를 참고하라.
-
-### 도메인
-
-Claude Code Configuration & Workflows
-
 
 
 ## 질문 11
@@ -479,11 +429,6 @@ Claude Code가 정확한 동작 목표로 수렴하게 만드는 가장 신뢰�
 
 CI 맥락에서는 이 패턴도 잘 조합된다. 사전에 작성된 스위트가 파이프라인의 관문이 되며, 이를 통과하지 못하는 재생성은 사람이 검사하는 것이 아니라 기계적으로 거부된다. 테스트 먼저 작성 후 실패를 고치는 반복 루프에 대해서는 Claude Code best practices와 common workflows 가이드를 참고하라.
 
-### 도메인
-
-Claude Code Configuration & Workflows
-
-
 
 ## 질문 12
 
@@ -522,11 +467,6 @@ Claude Code Configuration & Workflows
 context: fork는 정확히 이를 위해 설계된 프론트매터 메커니즘이다. SKILL.md에서 context: fork를 설정하면 스킬이 포크된 서브에이전트에서 실행된다. 스킬 본문이 서브에이전트의 프롬프트가 되고, 장황한 작업은 그 격리된 컨텍스트 안에서 이루어지며, 요약된 결과만 메인 대화로 흘러 들어온다. 이해해야 할 트레이드오프는, 포크된 서브에이전트가 메인 대화 기록을 보지 못하므로 스킬의 지침이 자체 완결적이어야 한다는 것이다. 메인 컨텍스트를 보호하는 그 격리가 스킬을 메인 컨텍스트로부터 차단하는 것과 동일한 격리이다. 이는 또한 context: fork가 소극적인 가이드라인이 아니라 명시적인 지침을 가진 스킬에서만 의미가 있다는 뜻이기도 하다.
 
 오답들은 각각 잘못된 레버를 조작한다. /compact를 실행하는 것은 이미 피해가 발생한 후에 대화를 요약하는 것이며, 요약 과정에서 정확한 세부사항을 잃을 수 있다. allowed-tools는 스킬이 호출할 수 있는 것을 제한하는데, 여기서 물량을 만들어내는 것은 정확히 읽기 전용 탐색 도구들이다. 지침을 CLAUDE.md로 옮기면 항상 로드되게 만들어, 실행 시 출력에는 손도 대지 않으면서 영구적인 컨텍스트 비용만 추가하게 된다. 격리 모델과 메인 대화보다 이를 선호해야 할 때에 대해서는 Agent Skills와 Subagents를 참고하라.
-
-### 도메인
-
-Claude Code Configuration & Workflows
-
 
 
 ## 질문 13
@@ -567,11 +507,6 @@ Claude Code에는 근본적으로 다른 두 가지 실행 모드가 있다. 기
 
 전체 플래그 목록과 스크립팅 패턴은 Run Claude Code non-interactively와 CLI 레퍼런스를 참고하라.
 
-### 도메인
-
-Claude Code Configuration & Workflows
-
-
 
 ## 질문 14
 
@@ -611,11 +546,6 @@ context: fork 프론트매터 필드는 컨텍스트 공유를 컨텍스트 위�
 
 다른 해결책들은 메커니즘을 놓치거나 목표를 희생시킨다. 도구 접근은 allowed-tools가 관리하며, 어떤 도구 부여로도 대화 기록이 포크에 다시 붙지 않는다. context: fork를 제거하는 것은 팀이 없애려 했던 오염을 그대로 다시 끌어들인다. 그리고 세션별 발견 사항은 CLAUDE.md가 담도록 만들어진 지속적인 프로젝트 가이드가 아니라 임시 상태이다. 포크된 스킬 실행과 서브에이전트 컨텍스트 격리가 어떻게 작동하는지는 Agent Skills와 Subagents를 참고하라.
 
-### 도메인
-
-Claude Code Configuration & Workflows
-
-
 
 ## 질문 15
 
@@ -654,10 +584,5 @@ Claude Code는 코드베이스의 일부에 컨벤션을 범위 지정하기 위
 문제의 지문은 첫 번째 형태를 설명한다. 단일 디렉터리에 묶여 있고 그 디렉터리의 소유자가 유지 관리하는 컨벤션이다. Anthropic의 모노레포 가이드는 정확히 이 경계를 긋는데, 디렉터리 소유자가 코드와 함께 컨벤션을 유지 관리할 때는 디렉터리별 CLAUDE.md를, 같은 규칙이 여러 흩어진 경로에 적용될 때는 경로 범위 규칙을 권장한다. 내용을 루트 CLAUDE.md에 두면 무관한 서비스에 대한 리뷰를 포함한 모든 세션에 로드되는데, 이는 두 메커니즘 모두가 애초에 피하려는 컨텍스트 비대화이다. 사용자 수준 ~/.claude/CLAUDE.md는 버전 관리가 전혀 되지 않아 CI 실행과 팀원들에게 보이지 않으므로, 공유 및 자동화 용도로는 완전히 실패한다.
 
 디렉터리별 방식과 경로 범위 방식의 비교는 Large codebases를, CLAUDE.md 파일과 .claude/rules/가 어떻게 로드되는지는 Memory 문서를 참고하라.
-
-### 도메인
-
-Claude Code Configuration & Workflows
-
 
 

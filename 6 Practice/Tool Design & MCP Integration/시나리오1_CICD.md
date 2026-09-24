@@ -39,12 +39,6 @@ Claude는 이름이나 주변 프롬프트 텍스트에서 의도를 추론하�
 
 대안들은 구조적인 이유로 부족하다. 프롬프트 안의 퓨샷 라우팅 예시는 설명이 직접 담아야 할 구분을 가르치는 데 토큰을 소비하며, 모델은 선택 시점에 여전히 구분되지 않는 두 정의를 마주하게 된다. 모드 파라미터 뒤로 도구를 병합하는 것은 안티패턴이다. 이는 결정을 제거하는 것이 아니라 설명이 더 이상 안내할 수 없는 단일 도구 안에 결정을 묻어버리는 것이며, 이것이 바로 과부하된 도구를 목적별로 분리하는 것이 반대 방향이 아니라 권장되는 방향인 이유다. 설명이 Claude의 도구 선택을 어떻게 이끄는지에 대해서는 도구 사용 개요를 참조하라.
 
-### 도메인
-
-Tool Design & MCP Integration
-
-
-
 ## 질문 2
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
@@ -82,12 +76,6 @@ Claude Code에서 MCP 통합에 대한 사고 모델은, 디스커버리를 소�
 이러한 설계 때문에 파이프라인에서의 활성화 단계는 불필요할 뿐만 아니라 오히려 역효과를 낳는다. 이미 프로토콜이 처리하고 있는 것을 통제하기 위한 오케스트레이션 로직을 추가하게 되고, 예를 들어 GitHub 서버의 풀 리퀘스트 diff와 커버리지 서버의 커버리지 리포트를 같은 리뷰에서 하나의 추론 과정 안에서 연관 짓는 것과 같이, 에이전트가 여러 서버의 도구를 결합해 사용하는 것을 막게 된다. 서버는 재연결 없이 list_changed 알림을 통해 도구 목록을 동적으로 갱신할 수도 있다.
 
 정확히 유지해야 할 한 가지 경계는, 사용 가능함(available)과 허용됨(permitted)이 같지 않다는 점이다. 디스커버리된 MCP 도구라도 Claude가 호출하기 전에는 여전히 권한이 필요하다. 자동화된 CI 실행에서는 일반적으로 mcp__github__*와 같은 와일드카드를 포함한 allowedTools 항목을 통해 이를 처리한다. 디스커버리 및 권한 모델에 대해서는 Agent SDK MCP 문서와 Claude Code MCP 문서를 참조하라.
-
-### 도메인
-
-Tool Design & MCP Integration
-
-
 
 ## 질문 3
 
@@ -127,12 +115,6 @@ Anthropic의 문서는 도구 설명이 도구 사용 성능에서 가장 중요
 
 숫자로 된 PR 식별자처럼 형식에 민감한 파라미터의 경우, 설명 안에 구체적인 예시 입력을 직접 포함시키고 input_schema가 기대하는 파라미터 타입과 형식을 명시하도록 하여, 스키마와 서술문이 서로를 보강하게 하라. 도구 설명 작성에 대한 전체 모범 사례 지침은 How to implement tool use를 참조하라.
 
-### 도메인
-
-Tool Design & MCP Integration
-
-
-
 ## 질문 4
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
@@ -170,12 +152,6 @@ Model Context Protocol은 에이전트를 백엔드 시스템에 연결하기 �
 사고 모델은, 에이전트가 실제 작업을 하기 전에 반복적으로 탐침하는 모든 것이 리소스의 후보라는 것이다. 카탈로그가 얼마나 최신 상태인지는 서버가 그 리소스를 어떻게 구현하는지에 달려 있지만, 이를 최신으로 유지하는 것은 프롬프트 유지보수의 부담이 아니라 서버 측의 관심사가 된다. 이것이 CLAUDE.md에 인벤토리를 박아 넣는 것에 비해 갖는 핵심적인 장점이다. CLAUDE.md는 시간이 지나면서 오래되고, 카탈로그가 필요하든 아니든 매 세션에 토큰 부담을 더한다. 동일한 기능을 맞춤형 인벤토리 도구로 감싸는 것은 기계적으로는 동작하지만, 프로토콜의 기본 요소를 중복시키고 모델이 선택해야 할 도구 목록을 늘려서 선택 신뢰도 자체를 떨어뜨린다. 단순히 도구 호출 예산을 늘리는 것이 가장 약한 선택이다. 이는 지연 시간과 컨텍스트 공간이 리뷰 품질과 처리량에 직접 영향을 미치는 CI 환경에서 낭비되는 호출에 보조금을 지급하는 것과 같다.
 
 CI/CD 파이프라인에서는 이것이 두 배로 중요하다. 정적 카탈로그를 다시 디스커버리하는 데 소비되는 모든 토큰은 diff를 분석하는 데 사용할 수 없는 컨텍스트이며, 매 추가 왕복은 풀 리퀘스트에 대한 피드백 루프를 늘린다. MCP Resources와 Connect Claude Code to tools via MCP를 참조하라.
-
-### 도메인
-
-Tool Design & MCP Integration
-
-
 
 ## 질문 5
 
@@ -217,12 +193,6 @@ Claude Code의 프로젝트 수준 .mcp.json은 팀이 MCP 서버 설정을 버�
 
 확장 문법과 지원되는 필드에 대해서는 Claude Code MCP 문서를 참조하고, ${API_KEY} 형태의 자리표시자를 사용하는 예시는 Agent SDK MCP 문서를 참조하라.
 
-### 도메인
-
-Tool Design & MCP Integration
-
-
-
 ## 질문 6
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
@@ -261,12 +231,6 @@ Claude Code가 세션을 시작하면, 설정된 모든 MCP 서버에 연결하�
 
 이 설계는 예측 가능성을 얻기 위해 약간의 사전 연결 작업을 대가로 지불한다. 에이전트는 매 턴을 자신의 전체 도구 집합을 알고 시작하며, 운영자는 그중 정확히 어떤 부분 집합을 사용할 수 있는지를 통제한다. 디스커버리, 네이밍, 권한에 대한 세부 사항은 MCP in the Agent SDK와 Connect Claude Code to tools via MCP를 참조하라.
 
-### 도메인
-
-Tool Design & MCP Integration
-
-
-
 ## 질문 7
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
@@ -304,12 +268,6 @@ Glob은 파일 이름과 경로를 패턴과 매칭하는 것이며, 파일 내�
 여기서 도구를 나누는 배경이 되는 사고 모델이 중요하다. Grep은 파일 내부(식별자, 임포트, 오류 문자열 등)를 검색하며, 어떤 이름을 찾아야 하는지 알고 있을 때 적합한 도구다. Glob은 파일 경로를 패턴과 매칭하며 파일 내용 안에 묻혀 있는 참조는 볼 수 없으므로, 함수 이름으로부터 Glob 패턴을 도출하는 것은 두 도구의 영역을 혼동하는 것이다. 또한 Grep은 기본적으로 파일 경로만 반환한다는 점도 유의해야 한다. 에이전트가 개별 호출 지점을 살펴봐야 할 때는 콘텐츠 모드로 전환하거나(또는 이어서 Read를 사용하여) 정확히 일치하는 줄을 보여주게 해야 한다.
 
 원래 이름만 검색하는 것은 더 미묘한 함정이다. 모든 래퍼가 그 구현체로 위임한다는 사실 때문에 충분할 것처럼 느껴지지만, 위임은 실행 시점에 일어나는 일이며 검색이 살펴보는 소스 텍스트 안에서는 일어나지 않는다. 별칭을 임포트하는 코드에는 별칭만 존재한다. 그리고 호출 그래프를 만들기 위해 모든 파일을 읽는 것은 점진적 조사가 피하고자 하는 안티패턴이다. 이는 검색이 먼저 범위를 좁히도록 하지 않고 컨텍스트 예산을 무차별적으로 소비하는 것이다. 이 작업 흐름을 뒷받침하는 Grep과 Glob의 동작에 대해서는 Claude Code tools reference를 참조하라.
-
-### 도메인
-
-Tool Design & MCP Integration
-
-
 
 ## 질문 8
 
@@ -351,12 +309,6 @@ Tool Design & MCP Integration
 
 도구 정의에 대한 Anthropic의 지침과 주변 맥락이 도구 선택에 어떻게 영향을 미치는지에 대해서는 Implement tool use를 참조하라.
 
-### 도메인
-
-Tool Design & MCP Integration
-
-
-
 ## 질문 9
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
@@ -395,12 +347,6 @@ ${VAR:-default} 형태가 바로 여기서 필요한 메커니즘이다. CI는 R
 
 오답들은 실제로는 실패한다. 단순 자리표시자는 폴백을 개발자가 잊을 수 있는 수동 export 단계에 의존하게 만든다. 각 개발자의 ~/.claude.json에 중복된 스테이징 서버를 밀어넣는 것은 사용자 범위 설정을 공유 도구용으로 오용하고 동기화해야 할 정의를 늘린다. 스크립트로 교체되는 두 개의 하드코딩된 파일 변형을 유지하는 것은 자리표시자 확장이 제거하고자 설계된 바로 그 설정 드리프트를 다시 끌어들인다. 확장 문법과 지원되는 필드에 대해서는 Connect Claude Code to tools via MCP를 참조하라.
 
-### 도메인
-
-Tool Design & MCP Integration
-
-
-
 ## 질문 10
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
@@ -438,12 +384,6 @@ Tool Design & MCP Integration
 Anthropic의 지침은 도구 오류를 정보성 있고 실행 가능하게 만들라는 것이다. 단순한 실패 문자열을 반환하는 대신 무엇이 잘못되었는지와 모델이 다음에 무엇을 해야 하는지를 말해야 한다. 오류 분류와 isRetryable 플래그 같은 구조화된 메타데이터는 복구를 에이전트가 결과 자체로부터 결정론적으로 내릴 수 있는 판단으로 바꾸어준다. 권한 오류의 경우 isRetryable: false는 즉시 재시도 루프를 종료시키고, 사람이 읽을 수 있는 메시지는 에이전트에게 유지관리자가 토큰 범위를 고칠 수 있도록 풀 리퀘스트 실행 결과에 주석을 남기는 등의 유용한 대안 행동을 제시해준다. 사고 모델은, 도구 결과가 에이전트가 외부 세계를 인지하는 유일한 통로라는 것이다. 도구가 생략하는 뉘앙스가 무엇이든, 에이전트는 그것에 대해 행동할 수 없다.
 
 각 대안은 이 계약을 서로 다른 방식으로 깨뜨린다. 실패를 일시적이라고 표시하고 백오프를 적용하는 것은 결코 성공할 수 없는 루프를 그저 느리게 만들 뿐이다. 빈 성공을 반환하는 것은 오류를 완전히 억눌러 피드백이 조용히 사라지고 잘못된 설정이 발견되지 않은 채로 남게 된다. 원시 HTTP 403 본문을 그대로 쏟아내는 것은 세부 정보를 보존하지만 재시도 가능성에 대한 명시적인 신호가 없는 형태로 전달하여 해석을 운에 맡기게 된다. is_error: true와 함께 설명적이고 복구 지향적인 오류 내용을 반환하는 문서화된 패턴에 대해서는 Handle tool calls and errors를 참조하라.
-
-### 도메인
-
-Tool Design & MCP Integration
-
-
 
 ## 질문 11
 
@@ -485,12 +425,6 @@ Grep을 완전히 제거하는 것은 설명 문제를 기능을 삭제함으로
 
 설명 작성의 모범 사례에 대해서는 Anthropic의 tool use implementation guidance를 참조하고, 서버가 클라이언트에게 도구 정의를 어떻게 노출하는지에 대해서는 MCP tools를 참조하라.
 
-### 도메인
-
-Tool Design & MCP Integration
-
-
-
 ## 질문 12
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
@@ -529,12 +463,6 @@ Glob에 대한 사고 모델은, 이것이 순수한 경로 패턴 매처라는 
 
 오답들은 각각 도구에 대한 잘못된 모델에 근거하고 있다. .gitignore를 고치는 것은 Glob이 그것을 참조한다고 가정하지만, 기본적으로는 그렇지 않다. Grep으로 바꾸는 것은 역할을 잘못 배정하는 것이다. Grep은 파일 내부를 검색하며, ignore 규칙을 존중하기는 하지만 파일 디스커버리의 기본 도구는 아니다. 뒤쪽 결과를 잘라내는 것은 존재하지 않는 정렬 보장을 가정한다. Glob은 수정 시간으로 정렬하므로, 방금 빌드된 산출물이 목록의 끝이 아니라 앞쪽에 오는 경우가 흔하다. Glob과 Grep의 문서화된 동작에 대해서는 Claude Code tools reference를 참조하라.
 
-### 도메인
-
-Tool Design & MCP Integration
-
-
-
 ## 질문 13
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
@@ -572,10 +500,4 @@ Tool Design & MCP Integration
 유지해야 할 사고 모델은, Claude가 주로 설명을 읽음으로써 도구들 사이를 라우팅한다는 것이다. Anthropic의 문제 해결 지침은 Claude가 도구 B를 원했는데 도구 A를 호출하는 경우의 유력한 원인으로 설명의 모호함을 든다. 그리고 문서화된 해결책은 각 설명을 다듬어서, 무엇을 하는지뿐만 아니라 언제 사용해야 하는지로 도구들을 구분하게 만드는 것이다. 상세한 설명은 도구 성능에서 단연 가장 중요한 요소로 지목된다. 따라서 해결책은 도구 정의 자체에 있다. 스타일 도구와 보안 도구에 서로 겹치지 않는 영역을 구획하는 설명을 부여하는 것이다.
 
 대안적인 조치들은 이 기능의 경계를 잘못 읽은 것에 근거하고 있다. 엄격한 강제 적용은 강제된 tool_choice에 의해 게이트되지 않으며, 하나의 도구를 강제하면 라우팅 자체가 완전히 깨진다. 엄격 모드는 모델이 생성한 입력을 제약하는 것이며 하니스가 반환하는 결과를 제약하는 것이 아니다. 그리고 input_examples는 복잡한 입력 구조를 명확히 하기 위한 선택적 필드이며 엄격 모드의 전제 조건이 아니다. 각 메커니즘이 정확히 무엇을 보장하고 무엇을 건드리지 않는지를 아는 것이야말로, 아키텍트가 올바른 실패에 올바른 해결책을 적용할 수 있게 해준다. Strict tool use, Troubleshooting tool use, Implement tool use를 참조하라.
-
-### 도메인
-
-Tool Design & MCP Integration
-
-
 
