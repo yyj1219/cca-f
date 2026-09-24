@@ -11,33 +11,33 @@
 
 **설명**
 
-Descriptions are the primary mechanism the model uses to select tools, so adding input expectations and explicit boundary language directly resolves ambiguous routing. Stating when not to use the tool draws the line that the current identical descriptions erase.
+설명은 모델이 도구를 선택할 때 사용하는 주된 메커니즘이므로, 입력 조건과 명확한 경계 표현을 추가하면 모호한 라우팅 문제가 직접적으로 해소된다. 언제 사용하지 말아야 하는지를 명시하면 현재의 동일한 설명들이 지워버린 경계선을 다시 그릴 수 있다.
 
 **B(정답).** Rename scan_code to run_security_scan and update its description to reference vulnerability detection specifically.
 
 **설명**
 
-Renaming the tool to reflect its actual function and rewriting its description to name its specific domain removes the semantic overlap at the point where the model makes its selection. This is the documented remedy for tools whose names and descriptions blur into each other.
+도구의 실제 기능을 반영하도록 이름을 변경하고, 설명을 다시 작성하여 구체적인 도메인을 명시하면 모델이 선택을 수행하는 지점에서 발생하는 의미상의 중복이 제거된다. 이는 이름과 설명이 서로 뒤섞이는 도구에 대해 문서화된 해결책이다.
 
 **C.** Add few-shot routing examples to the review prompt showing which tool handles each request type.
 
 **설명**
 
-Prompt examples add token overhead and place the guidance away from where selection actually happens, since the model reads tool descriptions at decision time. The underlying descriptions remain identical, so the ambiguity persists beneath the workaround.
+프롬프트 예시는 토큰 오버헤드를 추가하고, 모델이 실제로 도구 설명을 읽는 시점인 선택 지점과는 다른 곳에 지침을 배치한다. 근본적인 설명들은 여전히 동일하게 남아 있으므로, 이 우회 방법 아래에서 모호성은 그대로 지속된다.
 
 **D.** Merge both tools into a single analyze_code tool with a mode parameter that selects scanning or linting behavior.
 
 **설명**
 
-Merging the tools converts a visible selection problem into a hidden mode-selection problem inside one overloaded interface. The model must still choose correctly between the two behaviors, but now without distinct descriptions to guide the choice.
+두 도구를 병합하면 겉으로 드러나던 선택 문제가 하나의 과부하된 인터페이스 안에 숨겨진 모드 선택 문제로 바뀔 뿐이다. 모델은 여전히 두 동작 중 올바른 것을 선택해야 하지만, 이제는 그 선택을 안내할 별도의 설명이 없어진다.
 
 ### 전반적인 설명
 
-Claude selects tools primarily by reading their descriptions, not by inferring intent from their names or from surrounding prompt text. When two tools carry identical or near-identical descriptions, the model has no signal to distinguish them, and misrouting is the predictable result. The mental model to hold is that the tool description is the interface contract the model consults at the moment of selection; anything you want to influence that choice must live there.
+Claude는 이름이나 주변 프롬프트 텍스트에서 의도를 추론하는 것이 아니라, 주로 설명을 읽음으로써 도구를 선택한다. 두 도구의 설명이 동일하거나 거의 동일하면 모델은 이들을 구분할 신호를 얻지 못하며, 잘못된 라우팅은 예측 가능한 결과다. 유지해야 할 사고 모델은, 도구 설명이 모델이 선택 시점에 참조하는 인터페이스 계약이라는 것이다. 그 선택에 영향을 주고자 하는 것은 무엇이든 바로 그곳에 있어야 한다.
 
-The fix therefore operates on two levers at once. Renaming scan_code to something like run_security_scan and grounding its description in vulnerability detection eliminates the name-level overlap, while rewriting check_code's description to specify what it lints, what inputs it expects, and when it should not be used draws an explicit boundary between the two territories. Together these changes make each tool's purpose unambiguous without adding any new machinery.
+따라서 해결책은 두 개의 지렛대를 동시에 작동시키는 것이다. scan_code를 run_security_scan과 같은 이름으로 변경하고 설명을 취약점 탐지에 근거시키면 이름 수준의 중복이 제거되며, check_code의 설명을 다시 작성하여 무엇을 린트하는지, 어떤 입력을 기대하는지, 언제 사용해서는 안 되는지를 명시하면 두 영역 사이에 명확한 경계가 그려진다. 이 두 변경을 함께 적용하면 새로운 장치를 추가하지 않고도 각 도구의 목적이 명확해진다.
 
-The alternatives fall short for structural reasons. Few-shot routing examples in the prompt spend tokens teaching a distinction that the descriptions should encode directly, and the model still confronts two indistinguishable definitions at selection time. Merging the tools behind a mode parameter is an anti-pattern: it does not remove the decision, it buries it inside a single tool where descriptions can no longer guide it, which is precisely why splitting overloaded tools into purpose-specific ones is the recommended direction, not the reverse. See the tool use overview for how descriptions drive Claude's tool selection.
+대안들은 구조적인 이유로 부족하다. 프롬프트 안의 퓨샷 라우팅 예시는 설명이 직접 담아야 할 구분을 가르치는 데 토큰을 소비하며, 모델은 선택 시점에 여전히 구분되지 않는 두 정의를 마주하게 된다. 모드 파라미터 뒤로 도구를 병합하는 것은 안티패턴이다. 이는 결정을 제거하는 것이 아니라 설명이 더 이상 안내할 수 없는 단일 도구 안에 결정을 묻어버리는 것이며, 이것이 바로 과부하된 도구를 목적별로 분리하는 것이 반대 방향이 아니라 권장되는 방향인 이유다. 설명이 Claude의 도구 선택을 어떻게 이끄는지에 대해서는 도구 사용 개요를 참조하라.
 
 ### 도메인
 
@@ -55,33 +55,33 @@ Tool Design & MCP Integration
 
 **설명**
 
-This is incorrect. Discovery is driven by the server connection, not by mentions in the system prompt. Referencing a tool name in a prompt does not trigger any connection or discovery behavior; the tools are already discovered and listed once the server connects.
+이는 틀렸다. 디스커버리는 시스템 프롬프트에서의 언급이 아니라 서버 연결에 의해 이루어진다. 프롬프트에서 도구 이름을 언급하는 것은 어떤 연결이나 디스커버리 동작도 일으키지 않는다. 서버가 연결되는 순간 도구들은 이미 디스커버리되어 목록화되어 있다.
 
 **B.** Tell the teammate the agent must call a listing tool on each server mid-session to load that server's tools before it can use them.
 
 **설명**
 
-This is incorrect. Capability discovery, including the tools/list request, is performed by the Claude Code host when the server connects, not by the agent as an explicit mid-session step. The agent simply sees the discovered tools in its available tool set without having to fetch them itself.
+이는 틀렸다. tools/list 요청을 포함한 기능 디스커버리는 서버가 연결될 때 Claude Code 호스트가 수행하며, 에이전트가 세션 중간에 명시적으로 수행하는 단계가 아니다. 에이전트는 스스로 도구를 가져올 필요 없이 사용 가능한 도구 집합에서 이미 디스커버리된 도구들을 그대로 보게 된다.
 
 **C(정답).** Explain that tools from all configured servers are discovered at connection time and available simultaneously; the agent selects among them by description.
 
 **설명**
 
-This is correct. When Claude Code connects to MCP servers, it sends discovery requests to each one, and the tools from every connected server become available to the agent at the same time. No activation or switching step is needed; the model chooses among the combined tool set based on tool names and descriptions.
+이것이 맞다. Claude Code가 MCP 서버에 연결되면 각 서버로 디스커버리 요청을 보내며, 연결된 모든 서버의 도구가 에이전트에게 동시에 제공된다. 별도의 활성화나 전환 단계는 필요 없다. 모델은 도구 이름과 설명을 기반으로 통합된 도구 집합 중에서 선택한다.
 
 **D.** Advise that only one server's tools can be loaded per session, so the pipeline needs to run a separate Claude Code invocation for each configured server.
 
 **설명**
 
-This is incorrect. There is no one-server-per-session restriction; multiple MCP servers can be configured and connected in the same session, with all their tools available together. Splitting the pipeline into separate invocations would add complexity to solve a limitation that does not exist.
+이는 틀렸다. 세션당 서버 하나라는 제한은 존재하지 않는다. 여러 MCP 서버를 동일한 세션에서 설정하고 연결할 수 있으며, 모든 서버의 도구가 함께 사용 가능하다. 파이프라인을 여러 개의 개별 실행으로 분리하는 것은 존재하지 않는 제약을 해결하기 위해 불필요한 복잡성을 추가하는 것이다.
 
 ### 전반적인 설명
 
-The mental model for MCP integration in Claude Code is that the host, not the agent, owns discovery. When a session starts, Claude Code connects to every configured server (project-scoped .mcp.json and user-scoped configuration alike) and issues capability discovery requests such as tools/list, prompts/list, and resources/list against each one. The results are merged into a single tool inventory, with each tool namespaced as mcp__<server-name>__<tool-name> so a GitHub server's list_issues becomes mcp__github__list_issues. From the model's perspective there is no concept of an active server: every discovered tool sits in one flat catalog, and selection happens the same way it does for built-in tools, by reading names and descriptions.
+Claude Code에서 MCP 통합에 대한 사고 모델은, 디스커버리를 소유하는 주체가 에이전트가 아니라 호스트라는 것이다. 세션이 시작되면 Claude Code는 설정된 모든 서버(프로젝트 범위의 .mcp.json과 사용자 범위 설정 모두)에 연결하고, 각각에 대해 tools/list, prompts/list, resources/list와 같은 기능 디스커버리 요청을 보낸다. 그 결과들은 하나의 도구 인벤토리로 병합되며, 각 도구는 mcp__<서버명>__<도구명> 형태로 네임스페이스가 지정되어, 예를 들어 GitHub 서버의 list_issues는 mcp__github__list_issues가 된다. 모델의 관점에서는 활성 서버라는 개념이 존재하지 않는다. 디스커버리된 모든 도구는 하나의 평평한 카탈로그에 놓이며, 선택은 내장 도구와 동일한 방식으로 이름과 설명을 읽어 이루어진다.
 
-This design is why an activation step in the pipeline is unnecessary and counterproductive. It would add orchestration logic to gate something the protocol already handles, and it would prevent the agent from combining tools across servers in one reasoning pass, for example correlating a pull request diff from the GitHub server with a coverage report from the coverage server in the same review. Servers can even update their tool lists dynamically through list_changed notifications without reconnecting.
+이러한 설계 때문에 파이프라인에서의 활성화 단계는 불필요할 뿐만 아니라 오히려 역효과를 낳는다. 이미 프로토콜이 처리하고 있는 것을 통제하기 위한 오케스트레이션 로직을 추가하게 되고, 예를 들어 GitHub 서버의 풀 리퀘스트 diff와 커버리지 서버의 커버리지 리포트를 같은 리뷰에서 하나의 추론 과정 안에서 연관 짓는 것과 같이, 에이전트가 여러 서버의 도구를 결합해 사용하는 것을 막게 된다. 서버는 재연결 없이 list_changed 알림을 통해 도구 목록을 동적으로 갱신할 수도 있다.
 
-One boundary worth keeping precise: available is not the same as permitted. Discovered MCP tools still require permission before Claude can call them; in automated CI runs this is typically handled through allowedTools entries, including wildcards like mcp__github__*. See Agent SDK MCP documentation and Claude Code MCP documentation for the discovery and permission model.
+정확히 유지해야 할 한 가지 경계는, 사용 가능함(available)과 허용됨(permitted)이 같지 않다는 점이다. 디스커버리된 MCP 도구라도 Claude가 호출하기 전에는 여전히 권한이 필요하다. 자동화된 CI 실행에서는 일반적으로 mcp__github__*와 같은 와일드카드를 포함한 allowedTools 항목을 통해 이를 처리한다. 디스커버리 및 권한 모델에 대해서는 Agent SDK MCP 문서와 Claude Code MCP 문서를 참조하라.
 
 ### 도메인
 
@@ -99,33 +99,33 @@ Tool Design & MCP Integration
 
 **설명**
 
-A clearer name can help, but names cannot carry input formats, examples, or scope boundaries, and the description remains the dominant selection and construction signal. A well-described tool with an ordinary name outperforms a well-named tool with a one-line description.
+더 명확한 이름은 도움이 될 수 있지만, 이름만으로는 입력 형식, 예시, 범위 경계를 전달할 수 없으며, 설명이 여전히 선택과 입력 구성을 지배하는 신호로 남는다. 설명이 잘 작성된 평범한 이름의 도구가, 한 줄짜리 설명을 가진 이름 좋은 도구보다 더 나은 성능을 낸다.
 
 **B.** Keep the description minimal and return structured validation errors, letting the agent correct its inputs through repeated retry attempts.
 
 **설명**
 
-Structured errors are a valuable complement, but they are reactive: every malformed call still consumes a turn before correction happens. When the failure originates from an underspecified description, improving the description helps avoid the bad calls instead of paying to recover from them.
+구조화된 오류는 유용한 보완책이지만 사후 대응적이다. 잘못된 호출마다 수정이 이루어지기 전에 한 번의 턴을 소비하게 된다. 실패의 원인이 불충분한 설명에 있을 때는, 설명을 개선하는 것이 잘못된 호출을 복구하는 비용을 지불하는 대신 그것을 애초에 피하도록 돕는다.
 
 **C.** Add the input format rules and the merged-PR restriction to the pipeline's system prompt rather than to the tool itself.
 
 **설명**
 
-System prompt instructions can influence tool use, but the tool description is the primary and most localized signal for tool selection and argument construction. Keeping usage guidance away from the tool definition weakens the signal at the decision point and scales poorly as more tools are added.
+시스템 프롬프트 지침은 도구 사용에 영향을 줄 수 있지만, 도구 설명이 도구 선택과 인자 구성에 대해 가장 주된, 가장 지역화된 신호다. 사용 지침을 도구 정의로부터 떨어뜨려 두면 결정 지점에서의 신호가 약해지고, 도구가 늘어날수록 확장성이 나빠진다.
 
 **D(정답).** Rewrite the description to state the numeric identifier format, show an example input, and note that merged PRs are out of scope.
 
 **설명**
 
-This is correct because the tool description is the primary information the model reads when deciding whether and how to call a tool. Specifying the input format, an example, and the merged-PR boundary substantially reduces both malformed calls and out-of-scope calls at generation time, addressing the failure before wasted attempts occur.
+이것이 맞는 이유는, 모델이 도구를 호출할지, 어떻게 호출할지를 결정할 때 읽는 주된 정보가 도구 설명이기 때문이다. 입력 형식, 예시, 그리고 병합된 PR에 대한 경계를 명시하면 생성 시점에 잘못된 호출과 범위 밖 호출을 모두 크게 줄일 수 있으며, 헛된 시도가 발생하기 전에 실패를 해결하게 된다.
 
 ### 전반적인 설명
 
-Anthropic's documentation is explicit that the tool description is the most important factor in tool-use performance, recommending at least 3 to 4 sentences per tool and more for complex ones. A strong description covers what the tool does, when to use it and when not to, what each parameter means and what format it expects, and caveats such as what the tool cannot serve. The mental model: the model constructs every tool call from the definition it reads at that moment, so the definition is the most direct and localized place to shape both selection and argument construction. A one-line description like "Retrieves a diff" gives the model nothing to infer the identifier format from and no signal that merged pull requests are outside the tool's contract.
+Anthropic의 문서는 도구 설명이 도구 사용 성능에서 가장 중요한 요소라고 명시하며, 도구당 최소 3~4개의 문장을 권장하고 복잡한 도구는 더 많이 작성하라고 권한다. 좋은 설명은 도구가 무엇을 하는지, 언제 사용하고 언제 사용하지 말아야 하는지, 각 파라미터가 무엇을 의미하고 어떤 형식을 기대하는지, 그리고 도구가 처리할 수 없는 것과 같은 주의사항을 다룬다. 사고 모델은 이렇다: 모델은 그 순간 읽는 정의로부터 모든 도구 호출을 구성하므로, 정의는 선택과 인자 구성 모두를 형성하는 가장 직접적이고 지역화된 지점이다. "Retrieves a diff"와 같은 한 줄짜리 설명은 모델이 식별자 형식을 추론할 근거를 전혀 주지 않으며, 병합된 풀 리퀘스트가 도구의 계약 범위 밖이라는 신호도 주지 않는다.
 
-The alternatives each miss that leverage point. Relying on validation errors and retries treats a largely avoidable defect as a recoverable one; error metadata should exist, but as a safety net rather than the primary teaching mechanism, since each malformed call still burns a turn in the pipeline. Pushing usage rules into the system prompt can influence behavior, but it moves guidance away from the tool definition the model consults during call construction, and that approach degrades as the tool catalog grows. Renaming helps at the margin, yet a name cannot express formats, examples, or boundaries; documentation examples show a detailed description outperforming a well-chosen name paired with a sparse one.
+각 대안은 이 지렛대 지점을 놓치고 있다. 검증 오류와 재시도에 의존하는 것은 대체로 피할 수 있는 결함을 복구 가능한 것으로 취급하는 것이다. 오류 메타데이터는 존재해야 하지만, 주된 학습 메커니즘이 아니라 안전망으로서 존재해야 한다. 왜냐하면 잘못된 호출마다 파이프라인에서 한 턴을 소모하기 때문이다. 사용 규칙을 시스템 프롬프트에 넣는 것은 동작에 영향을 줄 수 있지만, 모델이 호출을 구성할 때 참조하는 도구 정의로부터 지침을 떨어뜨려 놓는 것이며, 이 방식은 도구 카탈로그가 커질수록 성능이 저하된다. 이름 변경은 미미하게 도움이 되지만, 이름은 형식, 예시, 경계를 표현할 수 없다. 문서의 예시들은 상세한 설명이, 잘 선택된 이름과 빈약한 설명의 조합보다 더 나은 성능을 낸다는 것을 보여준다.
 
-For format-sensitive parameters like a numeric PR identifier, include concrete example inputs directly in the description and make the input_schema specify the expected parameter type and format, so the schema and prose reinforce each other. See How to implement tool use for the full best-practice guidance on writing tool descriptions.
+숫자로 된 PR 식별자처럼 형식에 민감한 파라미터의 경우, 설명 안에 구체적인 예시 입력을 직접 포함시키고 input_schema가 기대하는 파라미터 타입과 형식을 명시하도록 하여, 스키마와 서술문이 서로를 보강하게 하라. 도구 설명 작성에 대한 전체 모범 사례 지침은 How to implement tool use를 참조하라.
 
 ### 도메인
 
@@ -143,33 +143,33 @@ Tool Design & MCP Integration
 
 **설명**
 
-MCP resources are the protocol's designed primitive for exposing readable contextual data such as schemas, documentation, and indexes. The agent can read the catalog directly instead of reconstructing it through repeated exploratory tool calls, which reduces discovery overhead at the start of each review.
+MCP 리소스는 스키마, 문서, 인덱스와 같은 읽기 가능한 컨텍스트 데이터를 노출하기 위해 프로토콜이 설계한 기본 요소다. 에이전트는 반복적인 탐색성 도구 호출을 통해 카탈로그를 재구성하는 대신 직접 읽을 수 있으며, 이는 각 리뷰 시작 시점의 디스커버리 오버헤드를 줄여준다.
 
 **B.** Raise the per-review tool-call budget so the discovery phase can complete before the review's turn limit is reached.
 
 **설명**
 
-Increasing the budget pays for the inefficiency instead of removing it. Every review still burns calls and context on rediscovering the same catalogs, which slows the pipeline and leaves less context for the actual code analysis.
+예산을 늘리는 것은 비효율을 제거하는 대신 그 비용을 지불하는 것이다. 매 리뷰마다 동일한 카탈로그를 다시 디스커버리하는 데 호출과 컨텍스트를 계속 소모하게 되며, 이는 파이프라인을 느리게 만들고 실제 코드 분석에 사용할 컨텍스트를 줄인다.
 
 **C.** Hard-code the current lint rules, schema names, and documentation index into CLAUDE.md so they load with every session.
 
 **설명**
 
-Static content in CLAUDE.md goes stale the moment lint rules, schemas, or documentation change, reintroducing incorrect reviews. It also inflates every request with catalog data regardless of whether that review needs it.
+CLAUDE.md 안의 정적 콘텐츠는 린트 규칙, 스키마, 문서가 변경되는 순간 오래된 정보가 되어, 잘못된 리뷰를 다시 불러들인다. 또한 그 리뷰에 필요하든 아니든 매 요청에 카탈로그 데이터를 부풀린다.
 
 **D.** Add a list_available_inventory tool that the agent must call once per review to fetch the full catalog in one response.
 
 **설명**
 
-This rebuilds as a bespoke tool what MCP resources already provide as a first-class primitive for exposing readable data. It also adds another tool to the selection space, when resources are the protocol's designed mechanism for surfacing this kind of catalog.
+이는 MCP 리소스가 읽기 가능한 데이터를 노출하기 위한 일급 기본 요소로서 이미 제공하는 것을 맞춤형 도구로 다시 만드는 것이다. 또한 리소스가 이런 종류의 카탈로그를 드러내기 위해 프로토콜이 설계한 메커니즘임에도, 선택 공간에 또 하나의 도구를 추가하는 셈이 된다.
 
 ### 전반적인 설명
 
-The Model Context Protocol defines two complementary primitives for connecting agents to backend systems: tools, which perform actions the way POST endpoints do, and resources, which expose data for reading the way GET endpoints do. Content catalogs such as lint rule indexes, database schemas, and documentation hierarchies are exactly the kind of contextual data resources exist to expose: instead of probing for what exists through a sequence of exploratory tool calls at the start of every review, the agent can read the catalog as a resource, cutting discovery down substantially.
+Model Context Protocol은 에이전트를 백엔드 시스템에 연결하기 위한 두 가지 상호 보완적인 기본 요소를 정의한다. 도구는 POST 엔드포인트처럼 동작을 수행하고, 리소스는 GET 엔드포인트처럼 읽기용 데이터를 노출한다. 린트 규칙 인덱스, 데이터베이스 스키마, 문서 계층 구조와 같은 콘텐츠 카탈로그는 정확히 리소스가 노출하기 위해 존재하는 종류의 컨텍스트 데이터다. 매 리뷰 시작 시 일련의 탐색성 도구 호출을 통해 무엇이 존재하는지 탐침하는 대신, 에이전트는 그 카탈로그를 리소스로 읽어 디스커버리를 크게 줄일 수 있다.
 
-The mental model is that anything an agent repeatedly probes for before doing real work is a candidate for a resource. How fresh the catalog is depends on how the server implements the resource, but keeping it current becomes a server-side concern rather than a prompt-maintenance chore; that is the key advantage over baking an inventory into CLAUDE.md, which drifts out of date and adds token weight to every session whether or not the catalog is needed. Wrapping the same capability in a custom inventory tool works mechanically, but it duplicates a protocol primitive and enlarges the tool list the model must choose among, which itself degrades selection reliability. Simply raising the tool-call budget is the weakest option: it subsidizes wasted calls in a CI context where latency and context space directly affect review quality and throughput.
+사고 모델은, 에이전트가 실제 작업을 하기 전에 반복적으로 탐침하는 모든 것이 리소스의 후보라는 것이다. 카탈로그가 얼마나 최신 상태인지는 서버가 그 리소스를 어떻게 구현하는지에 달려 있지만, 이를 최신으로 유지하는 것은 프롬프트 유지보수의 부담이 아니라 서버 측의 관심사가 된다. 이것이 CLAUDE.md에 인벤토리를 박아 넣는 것에 비해 갖는 핵심적인 장점이다. CLAUDE.md는 시간이 지나면서 오래되고, 카탈로그가 필요하든 아니든 매 세션에 토큰 부담을 더한다. 동일한 기능을 맞춤형 인벤토리 도구로 감싸는 것은 기계적으로는 동작하지만, 프로토콜의 기본 요소를 중복시키고 모델이 선택해야 할 도구 목록을 늘려서 선택 신뢰도 자체를 떨어뜨린다. 단순히 도구 호출 예산을 늘리는 것이 가장 약한 선택이다. 이는 지연 시간과 컨텍스트 공간이 리뷰 품질과 처리량에 직접 영향을 미치는 CI 환경에서 낭비되는 호출에 보조금을 지급하는 것과 같다.
 
-In a CI/CD pipeline this matters doubly, because every token spent rediscovering static catalogs is context unavailable for analyzing the diff, and every extra round trip lengthens the feedback loop on the pull request. See MCP Resources and Connect Claude Code to tools via MCP.
+CI/CD 파이프라인에서는 이것이 두 배로 중요하다. 정적 카탈로그를 다시 디스커버리하는 데 소비되는 모든 토큰은 diff를 분석하는 데 사용할 수 없는 컨텍스트이며, 매 추가 왕복은 풀 리퀘스트에 대한 피드백 루프를 늘린다. MCP Resources와 Connect Claude Code to tools via MCP를 참조하라.
 
 ### 도메인
 
@@ -187,35 +187,35 @@ Tool Design & MCP Integration
 
 **설명**
 
-This is the documented pattern: .mcp.json supports environment variable expansion such as ${GITHUB_TOKEN}, so the shared config can be committed while each environment supplies its own secret. The CI system injects the token as a pipeline variable, and developers set it locally, so no credential ever enters version control.
+이것이 문서화된 패턴이다. .mcp.json은 ${GITHUB_TOKEN}과 같은 환경 변수 확장을 지원하므로, 공유 설정 파일을 커밋하면서도 각 환경이 자신만의 비밀 값을 제공할 수 있다. CI 시스템은 토큰을 파이프라인 변수로 주입하고, 개발자는 로컬에서 이를 설정하므로 자격 증명이 버전 관리에 들어가는 일이 결코 없다.
 
 **B.** Configure the server and its token in ~/.claude.json on each contributor machine and CI runner, documenting the setup steps.
 
 **설명**
 
-The user-level ~/.claude.json is for personal and experimental servers, not shared team infrastructure. Requiring every contributor and runner to replicate the configuration manually causes drift and abandons the version-control distribution the team needs.
+사용자 수준의 ~/.claude.json은 개인용 및 실험용 서버를 위한 것이며, 팀 공유 인프라를 위한 것이 아니다. 모든 기여자와 러너가 설정을 수동으로 복제하도록 요구하면 드리프트가 발생하고, 팀이 필요로 하는 버전 관리 기반 배포를 포기하게 된다.
 
 **C.** Paste the token directly into the project .mcp.json, since the repository is private and only contributors can read it.
 
 **설명**
 
-Committing a live credential to version control is a security anti-pattern regardless of repository visibility. The token would persist in git history, be exposed to every current and future contributor, and require history rewriting to rotate safely.
+실제 자격 증명을 버전 관리에 커밋하는 것은 저장소의 가시성과 무관하게 보안 안티패턴이다. 토큰은 git 히스토리에 계속 남아, 현재와 미래의 모든 기여자에게 노출되며, 안전하게 교체하려면 히스토리를 다시 작성해야 한다.
 
 **D.** Store the token in CLAUDE.md so it is loaded into context on every session and available whenever the server needs it.
 
 **설명**
 
-CLAUDE.md provides project instructions to the model, not server configuration, so the MCP server would never receive the credential this way. It would also place a secret in a committed file and expose it in model context on every request.
+CLAUDE.md는 모델에게 프로젝트 지침을 제공하는 것이며 서버 설정이 아니므로, MCP 서버는 이런 방식으로는 자격 증명을 결코 받을 수 없다. 이는 또한 비밀 값을 커밋된 파일에 두고, 모든 요청에서 모델 컨텍스트에 노출시키는 셈이 된다.
 
 ### 전반적인 설명
 
-Claude Code's project-level .mcp.json exists to let a team distribute MCP server configuration through version control: it lives at the repository root and is checked in like any other config file. That creates an obvious tension with credentials, and environment variable expansion is the mechanism designed to resolve it. A placeholder such as ${GITHUB_TOKEN} is committed instead of the secret, and Claude Code expands it at runtime from the environment. Expansion works in the command, args, env, url, and headers fields, and a ${VAR:-default} form supplies a fallback when a variable is unset.
+Claude Code의 프로젝트 수준 .mcp.json은 팀이 MCP 서버 설정을 버전 관리를 통해 배포할 수 있도록 존재한다. 이 파일은 저장소 루트에 위치하며 다른 설정 파일처럼 커밋된다. 이는 자격 증명과 명백한 긴장 관계를 만들고, 환경 변수 확장은 이를 해결하기 위해 설계된 메커니즘이다. ${GITHUB_TOKEN}과 같은 자리표시자가 비밀 값 대신 커밋되고, Claude Code는 실행 시점에 환경에서 이를 확장한다. 확장은 command, args, env, url, headers 필드에서 동작하며, ${VAR:-default} 형태는 변수가 설정되지 않았을 때 대체값을 제공한다.
 
-This design fits CI/CD particularly well: the pipeline injects the token as a protected pipeline variable, developers export it locally, and the single committed file works identically in both places. Rotating the credential means updating the environment, not rewriting git history.
+이 설계는 CI/CD에 특히 잘 맞는다. 파이프라인은 토큰을 보호된 파이프라인 변수로 주입하고, 개발자는 이를 로컬에서 export하며, 하나의 커밋된 파일이 양쪽에서 동일하게 동작한다. 자격 증명을 교체한다는 것은 git 히스토리를 다시 쓰는 것이 아니라 환경을 업데이트하는 것을 의미한다.
 
-The alternatives each break one side of the requirement. Hard-coding the token satisfies sharing but leaks the secret into the repository permanently. Moving the server into ~/.claude.json keeps the secret out of the repo but sacrifices version-controlled distribution; that file is scoped for personal, experimental servers, and per-machine manual setup drifts out of sync. CLAUDE.md is a context file for instructing the model; it plays no role in MCP server configuration, so a token placed there would both fail to configure anything and be committed and surfaced in context.
+각 대안은 요구사항의 한쪽 측면을 깨뜨린다. 토큰을 하드코딩하면 공유 요구는 충족되지만 비밀 값이 저장소에 영구적으로 유출된다. 서버를 ~/.claude.json으로 옮기면 비밀 값은 저장소 밖에 두지만 버전 관리 기반 배포를 희생하게 된다. 그 파일은 개인용, 실험용 서버를 위한 범위이며, 머신별 수동 설정은 동기화에서 벗어나게 된다. CLAUDE.md는 모델에게 지침을 제공하는 컨텍스트 파일이며 MCP 서버 설정에는 아무런 역할을 하지 않는다. 따라서 그곳에 토큰을 두면 아무것도 설정되지 않으면서 커밋되어 컨텍스트에 노출되는 두 가지 문제가 동시에 발생한다.
 
-See Claude Code MCP documentation for the expansion syntax and supported fields, and the Agent SDK MCP documentation for examples using ${API_KEY}-style placeholders.
+확장 문법과 지원되는 필드에 대해서는 Claude Code MCP 문서를 참조하고, ${API_KEY} 형태의 자리표시자를 사용하는 예시는 Agent SDK MCP 문서를 참조하라.
 
 ### 도메인
 
@@ -233,33 +233,33 @@ Tool Design & MCP Integration
 
 **설명**
 
-This is not how MCP discovery works. Servers are connected up front and Claude Code issues discovery requests such as tools/list once a server connects, so tool catalogs are gathered at connection time rather than at first use. There is no lazy per-request connection mode to configure.
+이는 MCP 디스커버리가 동작하는 방식이 아니다. 서버는 미리 연결되며, Claude Code는 서버가 연결되는 즉시 tools/list와 같은 디스커버리 요청을 보낸다. 따라서 도구 카탈로그는 최초 사용 시점이 아니라 연결 시점에 수집된다. 요청별로 지연 연결되는 모드는 설정할 수 있는 것이 존재하지 않는다.
 
 **B(정답).** Write permission rules using the namespaced form mcp____, which keeps same-named tools distinct.
 
 **설명**
 
-This is the right approach. Claude Code prefixes every MCP tool with its server name, for example mcp__github__list_issues, so permission rules must use that namespaced form, and tools from different servers never collide even when the underlying names are identical. The namespacing also enables wildcard patterns like mcp__github__* in permission settings.
+이것이 올바른 접근 방식이다. Claude Code는 모든 MCP 도구 앞에 서버 이름을 붙인다. 예를 들어 mcp__github__list_issues처럼. 따라서 권한 규칙은 이 네임스페이스가 지정된 형태를 사용해야 하며, 기저의 이름이 동일하더라도 서로 다른 서버의 도구들이 충돌하는 일은 결코 없다. 이 네임스페이스 부여는 또한 권한 설정에서 mcp__github__*와 같은 와일드카드 패턴을 가능하게 한다.
 
 **C(정답).** Pre-approve the tools the pipeline needs through allowedTools entries, since unattended runs cannot answer interactive prompts.
 
 **설명**
 
-This is the right approach. Availability and permission are separate concerns: discovery makes tools visible to the model, but MCP tools need explicit approval before Claude can call them. In a headless CI run there is no human to approve prompts, so allowedTools (or wildcard patterns) must grant the calls in advance.
+이것이 올바른 접근 방식이다. 사용 가능함과 허용됨은 별개의 관심사다. 디스커버리는 도구를 모델에게 보이게 만들지만, Claude가 호출하기 전에는 MCP 도구에 명시적인 승인이 필요하다. 헤드리스 CI 실행에는 프롬프트를 승인할 사람이 없으므로, allowedTools(또는 와일드카드 패턴)가 미리 그 호출을 승인해 두어야 한다.
 
 **D.** Rename any tools that share a name across servers so Claude Code does not merge them into one deduplicated definition.
 
 **설명**
 
-This step is unnecessary because no merging occurs; server-name prefixes keep every tool distinct regardless of name overlap. Each server's tools remain independently addressable and independently permissioned without any renaming.
+이 단계는 불필요하다. 병합은 일어나지 않기 때문이다. 서버 이름 접두사는 이름이 중복되더라도 모든 도구를 구분되게 유지한다. 각 서버의 도구는 이름을 바꾸지 않아도 독립적으로 참조되고 독립적으로 권한이 부여된 상태를 유지한다.
 
 ### 전반적인 설명
 
-When Claude Code starts a session, it connects to every configured MCP server and runs capability discovery, sending requests such as tools/list, prompts/list, and resources/list to each server as it connects. The result is a single combined catalog: tools from all connected servers are available simultaneously, and the model selects among them based on their names and descriptions. There is no lazy, on-demand connection triggered by the model's first request, and there is no merging of similarly named tools.
+Claude Code가 세션을 시작하면, 설정된 모든 MCP 서버에 연결하고 기능 디스커버리를 실행하며, 연결되는 각 서버에 tools/list, prompts/list, resources/list와 같은 요청을 보낸다. 그 결과는 하나의 통합된 카탈로그다. 연결된 모든 서버의 도구가 동시에 사용 가능해지고, 모델은 이름과 설명을 기반으로 그중에서 선택한다. 모델의 첫 요청에 의해 촉발되는 지연 방식의 온디맨드 연결은 존재하지 않으며, 이름이 비슷한 도구들의 병합도 일어나지 않는다.
 
-Two mechanisms make this combined catalog workable. First, namespacing: every MCP tool is exposed as mcp__<server-name>__<tool-name>, so a github server's list_issues becomes mcp__github__list_issues, and a second server exposing its own list_issues would never collide with it. Second, the separation of available from permitted: discovery only makes tools visible. Before Claude can actually invoke an MCP tool, permission must be granted, either interactively or through configuration such as allowedTools, which supports wildcards like mcp__github__* to auto-approve everything from one server. That separation matters most in CI, where runs are unattended and any tool not pre-approved simply cannot be called.
+이 통합 카탈로그를 실제로 동작하게 만드는 두 가지 메커니즘이 있다. 첫째는 네임스페이스 부여다. 모든 MCP 도구는 mcp__<서버명>__<도구명> 형태로 노출되므로, github 서버의 list_issues는 mcp__github__list_issues가 되고, 자체적으로 list_issues를 노출하는 두 번째 서버가 있더라도 결코 충돌하지 않는다. 둘째는 사용 가능함과 허용됨의 분리다. 디스커버리는 도구를 보이게만 만든다. Claude가 실제로 MCP 도구를 호출하기 전에는 대화형으로든, 아니면 mcp__github__*와 같은 와일드카드로 한 서버의 모든 것을 자동 승인할 수 있는 allowedTools와 같은 설정을 통해서든 권한이 부여되어야 한다. 이 분리는 무인 실행이 이루어지고 사전 승인되지 않은 도구는 아예 호출될 수 없는 CI에서 가장 중요해진다.
 
-This design trades a small amount of upfront connection work for predictability: the agent begins every turn knowing its full toolset, and operators control exactly which subset it may exercise. See MCP in the Agent SDK and Connect Claude Code to tools via MCP for the discovery, naming, and permission details.
+이 설계는 예측 가능성을 얻기 위해 약간의 사전 연결 작업을 대가로 지불한다. 에이전트는 매 턴을 자신의 전체 도구 집합을 알고 시작하며, 운영자는 그중 정확히 어떤 부분 집합을 사용할 수 있는지를 통제한다. 디스커버리, 네이밍, 권한에 대한 세부 사항은 MCP in the Agent SDK와 Connect Claude Code to tools via MCP를 참조하라.
 
 ### 도메인
 
@@ -277,33 +277,33 @@ Tool Design & MCP Integration
 
 **설명**
 
-Exhaustive reading burns the context window on files that never touch the helper, degrading the analysis before it starts. Targeted content search finds the relevant files at a fraction of the cost.
+모든 파일을 다 읽는 방식은 헬퍼와 전혀 관련 없는 파일들에까지 컨텍스트 윈도우를 소모시켜, 분석이 시작되기도 전에 성능을 저하시킨다. 목표를 좁힌 콘텐츠 검색은 훨씬 적은 비용으로 관련 파일을 찾아낸다.
 
 **B.** Glob with a pattern derived from the helper function's name to find all files that reference it, then Read each match.
 
 **설명**
 
-Glob matches file names and paths against patterns; it does not look inside file contents. A function referenced inside a file named something unrelated would never be found, so this approach swaps the tools' roles.
+Glob은 파일 이름과 경로를 패턴과 매칭하는 것이며, 파일 내용 안을 들여다보지 않는다. 관련 없어 보이는 이름의 파일 안에서 참조되는 함수는 결코 찾을 수 없으므로, 이 접근 방식은 두 도구의 역할을 서로 바꿔버린 것이다.
 
 **C.** Grep the codebase for the helper function's original name, since every wrapper ultimately delegates to that one implementation.
 
 **설명**
 
-Callers that import a wrapper's re-exported alias never mention the original name in their code. Searching only the original identifier finds direct usages but silently misses every call site that goes through a renamed export, understating the change's impact.
+래퍼가 다시 내보낸 별칭을 임포트하는 호출자들은 자신의 코드에서 원래 이름을 전혀 언급하지 않는다. 원래 식별자만 검색하면 직접적인 사용처는 찾아내지만, 이름이 바뀐 내보내기를 통해 호출되는 모든 지점을 조용히 놓쳐 변경의 영향 범위를 과소평가하게 된다.
 
 **D(정답).** Read the wrapper modules to enumerate every exported name, then Grep file contents for each of those names across the codebase.
 
 **설명**
 
-This is the correct tracing pattern for wrapped functions. Wrapper modules create aliases, so callers may reference any of the exported names; enumerating them first and then content-searching for each one is the only way to find all call sites.
+이것이 래핑된 함수를 추적하는 올바른 패턴이다. 래퍼 모듈은 별칭을 만들어내므로 호출자는 내보내진 이름들 중 어느 것이든 참조할 수 있다. 먼저 그 이름들을 모두 나열하고, 각각에 대해 콘텐츠 검색을 하는 것만이 모든 호출 지점을 찾는 유일한 방법이다.
 
 ### 전반적인 설명
 
-Wrapper modules break the assumption that one function has one name. When a helper is re-exported (often under aliases), the codebase contains call sites that reference the wrapper's exported names, not the original identifier. The reliable tracing workflow therefore has two phases: first Read the wrapper modules to build the full list of names under which the function is visible, then Grep file contents for each of those names. Only after the alias inventory is complete does a content search actually cover every path to the implementation.
+래퍼 모듈은 하나의 함수가 하나의 이름을 갖는다는 가정을 무너뜨린다. 헬퍼가 (흔히 별칭으로) 다시 내보내지면, 코드베이스에는 원래 식별자가 아니라 래퍼가 내보낸 이름들을 참조하는 호출 지점들이 존재하게 된다. 따라서 신뢰할 수 있는 추적 작업 흐름은 두 단계로 이루어진다. 먼저 래퍼 모듈을 Read하여 그 함수가 보이는 모든 이름의 전체 목록을 만들고, 그다음 그 각각의 이름으로 파일 내용을 Grep한다. 별칭 인벤토리가 완성된 이후에야 콘텐츠 검색이 구현체로 가는 모든 경로를 실제로 커버하게 된다.
 
-The mental model behind the tool split matters here. Grep searches inside files (identifiers, imports, error strings) and is the right tool once you know which names to look for; Glob matches file paths against patterns and cannot see references buried in file contents, so deriving a Glob pattern from a function name confuses the two tools' territories. Note also that Grep defaults to returning file paths only; switching to content mode (or following up with Read) shows the exact matching lines when the agent needs to inspect individual call sites.
+여기서 도구를 나누는 배경이 되는 사고 모델이 중요하다. Grep은 파일 내부(식별자, 임포트, 오류 문자열 등)를 검색하며, 어떤 이름을 찾아야 하는지 알고 있을 때 적합한 도구다. Glob은 파일 경로를 패턴과 매칭하며 파일 내용 안에 묻혀 있는 참조는 볼 수 없으므로, 함수 이름으로부터 Glob 패턴을 도출하는 것은 두 도구의 영역을 혼동하는 것이다. 또한 Grep은 기본적으로 파일 경로만 반환한다는 점도 유의해야 한다. 에이전트가 개별 호출 지점을 살펴봐야 할 때는 콘텐츠 모드로 전환하거나(또는 이어서 Read를 사용하여) 정확히 일치하는 줄을 보여주게 해야 한다.
 
-Searching only the original name is the subtler trap: it feels sufficient because all wrappers delegate to that implementation, but delegation happens at runtime, not in the source text the search examines. Code that imports an alias contains only the alias. And reading every file to build a call graph is the anti-pattern incremental investigation exists to avoid; it spends the context budget indiscriminately instead of letting search narrow the field first. See the Claude Code tools reference for the Grep and Glob semantics that underpin this workflow.
+원래 이름만 검색하는 것은 더 미묘한 함정이다. 모든 래퍼가 그 구현체로 위임한다는 사실 때문에 충분할 것처럼 느껴지지만, 위임은 실행 시점에 일어나는 일이며 검색이 살펴보는 소스 텍스트 안에서는 일어나지 않는다. 별칭을 임포트하는 코드에는 별칭만 존재한다. 그리고 호출 그래프를 만들기 위해 모든 파일을 읽는 것은 점진적 조사가 피하고자 하는 안티패턴이다. 이는 검색이 먼저 범위를 좁히도록 하지 않고 컨텍스트 예산을 무차별적으로 소비하는 것이다. 이 작업 흐름을 뒷받침하는 Grep과 Glob의 동작에 대해서는 Claude Code tools reference를 참조하라.
 
 ### 도메인
 
@@ -321,35 +321,35 @@ Tool Design & MCP Integration
 
 **설명**
 
-When descriptions are already explicit and repeated rewrites do not change the misrouting rate, the selection bias is likely coming from elsewhere in the context. System prompt wording, such as language framing every finding as a potential security concern, can create keyword associations that override well-written tool descriptions, so reviewing and neutralizing that wording targets the actual root cause.
+설명이 이미 명시적이고 반복된 재작성으로도 잘못된 라우팅 비율이 바뀌지 않는다면, 선택 편향은 맥락의 다른 곳에서 비롯되고 있을 가능성이 높다. 모든 발견 사항을 잠재적 보안 문제로 프레이밍하는 문구와 같은 시스템 프롬프트 표현은 잘 작성된 도구 설명을 압도하는 키워드 연관을 만들어낼 수 있으므로, 그 문구를 검토하고 중화하는 것이 실제 근본 원인을 겨냥한다.
 
 **B.** Rewrite both descriptions a third time, embedding few-shot examples of past misrouted issues in each one.
 
 **설명**
 
-The situation establishes that two rounds of description improvements produced no change, which is strong evidence the descriptions are not the failure point. A third rewrite adds token overhead while leaving the real source of the bias untouched.
+상황 설명 자체가 두 차례의 설명 개선에도 변화가 없었다는 것을 명시하고 있으며, 이는 설명이 실패 지점이 아니라는 강력한 증거다. 세 번째 재작성은 토큰 오버헤드를 더할 뿐, 편향의 실제 원인은 그대로 남겨둔다.
 
 **C.** Merge the two tools into a single flag_issue tool that takes a category parameter, so the model never selects between them.
 
 **설명**
 
-Merging tools converts a visible selection decision into a hidden mode decision inside one overloaded tool, which descriptions are worse at guiding. This is a recognized anti-pattern that relocates the misclassification rather than resolving it.
+도구를 병합하면 눈에 보이는 선택 결정이 하나의 과부하된 도구 안에 숨겨진 모드 결정으로 바뀌며, 설명은 이런 상황을 안내하는 데 더 취약하다. 이는 오분류를 해결하지 않고 위치만 옮기는, 잘 알려진 안티패턴이다.
 
 **D.** Use tool_choice to force flag_style_issue whenever the changed files are formatting or documentation only.
 
 **설명**
 
-Forced tool selection exists to guarantee a required step or execution order, not to substitute for per-issue classification. A file-type heuristic in the harness cannot judge issue categories within mixed diffs and would misfire whenever a formatting change also carries a genuine security implication.
+강제된 도구 선택은 필수 단계나 실행 순서를 보장하기 위해 존재하는 것이며, 이슈별 분류를 대체하기 위한 것이 아니다. 하니스 안의 파일 타입 휴리스틱은 혼합된 diff 안의 이슈 범주를 판단할 수 없으며, 포맷 변경이 실제 보안 함의를 함께 지니는 경우마다 오작동하게 된다.
 
 ### 전반적인 설명
 
-Tool descriptions are the primary selection mechanism, but they are not the only text the model weighs when choosing a tool. Everything in context participates in selection, and the system prompt sits above the tool definitions in influence. A single instruction like "security is the top priority in every review" can create a keyword-level association that pulls borderline findings toward the security tool, no matter how carefully the two descriptions draw their boundaries.
+도구 설명은 주된 선택 메커니즘이지만, 모델이 도구를 선택할 때 고려하는 유일한 텍스트는 아니다. 맥락 안의 모든 것이 선택에 관여하며, 시스템 프롬프트는 영향력에서 도구 정의보다 위에 위치한다. "모든 리뷰에서 보안이 최우선이다"와 같은 단 하나의 지침도, 두 설명이 얼마나 신중하게 경계를 그려놓았든 상관없이 경계선상의 발견 사항을 보안 도구 쪽으로 끌어당기는 키워드 수준의 연관을 만들어낼 수 있다.
 
-The diagnostic logic here is about evidence: two rounds of description improvements with zero movement in the misrouting rate strongly suggests the descriptions are not the failure point. The next place to look is the system prompt, scanning for keyword-sensitive instructions that pair a topic, priority, or category with one tool's territory. Neutralizing that phrasing (for example, instructing the agent to classify each finding by its actual category rather than emphasizing one category) lets the well-written descriptions govern selection again.
+여기서의 진단 논리는 증거에 관한 것이다. 두 차례의 설명 개선에도 잘못된 라우팅 비율이 전혀 움직이지 않았다는 것은 설명이 실패 지점이 아니라는 강력한 신호다. 다음으로 살펴봐야 할 곳은 시스템 프롬프트이며, 특정 주제, 우선순위, 범주를 한 도구의 영역과 짝짓는 키워드 민감성 지침을 찾아야 한다. 그 문구를 중화하면(예를 들어, 하나의 범주를 강조하는 대신 각 발견 사항을 실제 범주에 따라 분류하도록 지시하면) 잘 작성된 설명들이 다시 선택을 주도할 수 있게 된다.
 
-The alternatives each miss this. Collapsing the tools into one with a category parameter buries the same classification decision where descriptions can no longer guide it, a documented anti-pattern for overloaded tools. Forcing a tool with tool_choice is designed to guarantee a specific step or ordering, not to perform per-issue routing; a file-path heuristic cannot classify the content of findings. And a third description rewrite spends effort and tokens on the one component the evidence has already exonerated.
+대안들은 각각 이 지점을 놓치고 있다. 도구들을 범주 파라미터를 가진 하나로 합치는 것은 동일한 분류 결정을 설명이 더 이상 안내할 수 없는 곳에 묻어버리는 것으로, 과부하된 도구에 대해 문서화된 안티패턴이다. tool_choice로 도구를 강제하는 것은 특정 단계나 순서를 보장하기 위해 설계된 것이며, 이슈별 라우팅을 수행하기 위한 것이 아니다. 파일 경로 휴리스틱은 발견 사항의 내용을 분류할 수 없다. 그리고 세 번째 설명 재작성은 증거가 이미 무죄로 판명한 한 가지 요소에 노력과 토큰을 소비하는 것이다.
 
-See Implement tool use for Anthropic's guidance on tool definitions and how surrounding context affects tool selection.
+도구 정의에 대한 Anthropic의 지침과 주변 맥락이 도구 선택에 어떻게 영향을 미치는지에 대해서는 Implement tool use를 참조하라.
 
 ### 도메인
 
@@ -367,33 +367,33 @@ Tool Design & MCP Integration
 
 **설명**
 
-A bare placeholder works only when the variable is actually set; on a machine where it is missing, Claude Code loads the config with a missing-variable warning and leaves the literal ${REVIEW_API_URL} text in the field, breaking the server at connection time. It also makes the fallback depend on a manual step every developer must remember, when the ${VAR:-default} form handles it automatically in the shared file.
+단순 자리표시자는 변수가 실제로 설정되어 있을 때만 동작한다. 변수가 없는 머신에서는 Claude Code가 누락된 변수에 대한 경고와 함께 설정을 로드하고 해당 필드에 ${REVIEW_API_URL}이라는 문자 그대로의 텍스트를 남겨두어, 연결 시점에 서버가 깨진다. 또한 폴백이 모든 개발자가 기억해야 하는 수동 단계에 의존하게 되는데, ${VAR:-default} 형태는 공유 파일 안에서 이를 자동으로 처리해준다.
 
 **B.** Maintain a second .mcp.json with the staging URL hard-coded and have a setup script copy the correct variant into place per environment.
 
 **설명**
 
-Duplicating the configuration file creates drift between the variants and adds a scripted copy step that every environment must run correctly. Environment variable expansion with a default value solves the same problem inside one version-controlled file with no extra machinery.
+설정 파일을 중복시키면 변형본들 사이에 드리프트가 생기고, 모든 환경이 올바르게 실행해야 하는 스크립트 복사 단계가 추가된다. 기본값이 있는 환경 변수 확장은 추가 장치 없이 하나의 버전 관리 파일 안에서 동일한 문제를 해결한다.
 
 **C(정답).** Write the url as ${REVIEW_API_URL:-https://staging.internal/api} so environments without the variable resolve to the staging endpoint.
 
 **설명**
 
-Claude Code supports the ${VAR:-default} expansion syntax in .mcp.json fields such as url: when the variable is set it expands to its value, and when unset it expands to the supplied default. A single checked-in file therefore serves both CI, which exports the production URL, and developer machines, which fall back to staging.
+Claude Code는 .mcp.json의 url과 같은 필드에서 ${VAR:-default} 확장 문법을 지원한다. 변수가 설정되어 있으면 그 값으로 확장되고, 설정되어 있지 않으면 제공된 기본값으로 확장된다. 따라서 커밋된 하나의 파일이, 프로덕션 URL을 export하는 CI와 스테이징으로 폴백하는 개발자 머신 양쪽 모두에 사용될 수 있다.
 
 **D.** Hard-code the CI endpoint in the shared .mcp.json and have each developer define a staging copy of the server in ~/.claude.json.
 
 **설명**
 
-User-scoped configuration in ~/.claude.json is meant for personal and experimental servers, not as a fallback channel for shared team tooling. Every developer would have to maintain a duplicate server definition by hand, and those copies drift from the project file; a placeholder with a default expresses the fallback in one version-controlled file.
+~/.claude.json의 사용자 범위 설정은 개인용, 실험용 서버를 위한 것이며, 팀 공유 도구를 위한 폴백 채널이 아니다. 모든 개발자가 수동으로 중복된 서버 정의를 유지해야 하고, 그 복사본들은 프로젝트 파일로부터 점점 벗어나게 된다. 기본값이 있는 자리표시자는 하나의 버전 관리 파일 안에서 폴백을 표현한다.
 
 ### 전반적인 설명
 
-Claude Code performs environment variable expansion when it reads .mcp.json, and the syntax supports exactly two placeholder forms: ${VAR}, which expands to the value of the variable, and ${VAR:-default}, which expands to the variable when it is set and to the literal default otherwise. Expansion works in the command, args, env, url, and headers fields. The design goal is that one file can be committed to version control and shared across every contributor and CI runner, while machine-specific values (endpoints, paths) and secrets (tokens) stay in each environment rather than in the repository.
+Claude Code는 .mcp.json을 읽을 때 환경 변수 확장을 수행하며, 이 문법은 정확히 두 가지 자리표시자 형태를 지원한다. ${VAR}는 변수의 값으로 확장되고, ${VAR:-default}는 변수가 설정되어 있으면 그 값으로, 아니면 문자 그대로의 기본값으로 확장된다. 확장은 command, args, env, url, headers 필드에서 동작한다. 설계 목표는 하나의 파일을 버전 관리에 커밋하여 모든 기여자와 CI 러너가 공유할 수 있게 하면서, 머신별 값(엔드포인트, 경로)과 비밀 값(토큰)은 저장소가 아니라 각 환경에 남겨두는 것이다.
 
-The ${VAR:-default} form is precisely the mechanism for the situation here: CI exports REVIEW_API_URL and gets the production endpoint, while a developer machine with nothing exported resolves the same placeholder to the staging URL. It is worth internalizing what happens when a plain ${VAR} reference has no value and no default: Claude Code does not fail to parse the file and does not substitute an empty string. It loads the configuration, surfaces a missing-variable warning for that server in claude mcp list, and uses the unexpanded ${VAR} text as-is, which typically breaks that server at connection time. That behavior is why the default syntax, not manual per-developer setup, is the correct way to make a config degrade gracefully.
+${VAR:-default} 형태가 바로 여기서 필요한 메커니즘이다. CI는 REVIEW_API_URL을 export하여 프로덕션 엔드포인트를 얻고, 아무것도 export하지 않은 개발자 머신은 동일한 자리표시자를 스테이징 URL로 해석한다. 값도 기본값도 없는 단순한 ${VAR} 참조에서 무슨 일이 일어나는지 이해해둘 필요가 있다. Claude Code는 파일 파싱에 실패하지도 않고 빈 문자열로 대체하지도 않는다. 설정을 로드하되 claude mcp list에서 해당 서버에 대한 누락된 변수 경고를 표시하고, 확장되지 않은 ${VAR} 텍스트를 그대로 사용하는데, 이는 대체로 연결 시점에 그 서버를 깨뜨린다. 이런 동작 때문에 개발자별 수동 설정이 아니라 기본값 문법이 설정을 우아하게 저하시키는 올바른 방법이 되는 것이다.
 
-The distractors fail in practice: a bare placeholder leaves the fallback dependent on a manual export step that any developer can forget; pushing a duplicate staging server into each developer's ~/.claude.json misuses user-scoped configuration for shared tooling and multiplies the definitions to keep in sync; and keeping two hard-coded file variants swapped by a script reintroduces exactly the configuration drift that placeholder expansion was designed to eliminate. See Connect Claude Code to tools via MCP for the expansion syntax and supported fields.
+오답들은 실제로는 실패한다. 단순 자리표시자는 폴백을 개발자가 잊을 수 있는 수동 export 단계에 의존하게 만든다. 각 개발자의 ~/.claude.json에 중복된 스테이징 서버를 밀어넣는 것은 사용자 범위 설정을 공유 도구용으로 오용하고 동기화해야 할 정의를 늘린다. 스크립트로 교체되는 두 개의 하드코딩된 파일 변형을 유지하는 것은 자리표시자 확장이 제거하고자 설계된 바로 그 설정 드리프트를 다시 끌어들인다. 확장 문법과 지원되는 필드에 대해서는 Connect Claude Code to tools via MCP를 참조하라.
 
 ### 도메인
 
@@ -411,33 +411,33 @@ Tool Design & MCP Integration
 
 **설명**
 
-This is silent error suppression, a documented anti-pattern. The retries stop, but the agent now believes the comment was posted, so review feedback is dropped without anyone knowing and the underlying access problem is never surfaced or fixed.
+이는 오류를 조용히 억누르는 것으로, 문서화된 안티패턴이다. 재시도는 멈추지만, 이제 에이전트는 댓글이 게시되었다고 믿게 되어, 아무도 모르는 사이에 리뷰 피드백이 사라지고 근본적인 접근 권한 문제는 드러나지도 수정되지도 않는다.
 
 **B(정답).** A permission-category error, isRetryable: false, and a message stating the CI token cannot write to fork pull requests.
 
 **설명**
 
-This is correct because a permission failure is non-retryable by nature: no number of retries will grant the token write access. Categorizing the error and flagging it as non-retryable stops the futile retry loop, and the descriptive message lets the agent surface an actionable explanation, such as reporting the issue in the job output, instead of guessing.
+이것이 맞는 이유는, 권한 실패는 본질적으로 재시도할 수 없는 것이기 때문이다. 아무리 재시도해도 토큰에 쓰기 권한이 부여되지는 않는다. 오류를 분류하고 재시도 불가능으로 표시하면 헛된 재시도 루프가 멈추고, 설명이 담긴 메시지는 에이전트가 추측하는 대신 작업 결과에 문제를 보고하는 등 실행 가능한 설명을 제시할 수 있게 해준다.
 
 **C.** The git provider's raw HTTP 403 response body in full so that no diagnostic detail is lost in translation.
 
 **설명**
 
-Raw provider payloads are not the interface the agent needs; they mix internal detail with the actual signal and give no explicit guidance on retryability. The agent may still misinterpret the failure, and the response can expose internals that do not belong in tool results.
+원시 프로바이더 페이로드는 에이전트가 필요로 하는 인터페이스가 아니다. 이는 내부 세부사항을 실제 신호와 섞어놓고 재시도 가능성에 대한 명시적인 안내를 전혀 주지 않는다. 에이전트는 여전히 실패를 잘못 해석할 수 있으며, 응답이 도구 결과에 속하지 않는 내부 정보를 노출할 수도 있다.
 
 **D.** A transient-category error with isRetryable: true so the agent spaces retries with exponential backoff before giving up.
 
 **설명**
 
-This mislabels a permanent access problem as a temporary one. Backoff only helps when a later attempt can succeed; a token that lacks write access will fail every attempt, so this design still wastes pipeline time before ultimately failing.
+이는 영구적인 접근 권한 문제를 일시적인 문제로 잘못 분류하는 것이다. 백오프는 이후의 시도가 성공할 가능성이 있을 때만 도움이 된다. 쓰기 권한이 없는 토큰은 모든 시도에서 실패할 것이므로, 이 설계는 결국 실패하기 전에 여전히 파이프라인 시간을 낭비한다.
 
 ### 전반적인 설명
 
-The core problem with a uniform Operation failed response is that it collapses several failure modes that demand different recovery behaviors into a single indistinguishable signal. A transient outage should be retried; bad input should be corrected; a permission failure, like a CI token that cannot write to fork pull requests, should never be retried, because the condition will not change between attempts. When the tool hides the category, the agent falls back on guessing, which is exactly what produces retry loops that burn the job's time budget.
+균일한 "Operation failed" 응답의 근본적인 문제는, 서로 다른 복구 동작을 요구하는 여러 실패 모드를 구분되지 않는 하나의 신호로 뭉개버린다는 것이다. 일시적인 장애는 재시도해야 하고, 잘못된 입력은 수정해야 하며, 포크 풀 리퀘스트에 쓰기를 할 수 없는 CI 토큰과 같은 권한 실패는 시도 사이에 그 조건이 바뀌지 않으므로 결코 재시도해서는 안 된다. 도구가 그 분류를 숨기면 에이전트는 추측에 의존하게 되며, 이것이 바로 작업의 시간 예산을 갉아먹는 재시도 루프를 만들어내는 원인이다.
 
-Anthropic's guidance is to make tool errors informative and actionable: say what went wrong and what the model should do next, rather than returning a bare failure string. Structured metadata such as an error category and an isRetryable flag turns recovery into a decision the agent can make deterministically from the result itself. For a permission error, isRetryable: false immediately ends the retry loop, and the human-readable message gives the agent something useful to do instead: annotate the pull request run output so a maintainer can fix the token scope. The mental model is that the tool result is the only channel through which the agent perceives the outside world; whatever nuance the tool omits, the agent cannot act on.
+Anthropic의 지침은 도구 오류를 정보성 있고 실행 가능하게 만들라는 것이다. 단순한 실패 문자열을 반환하는 대신 무엇이 잘못되었는지와 모델이 다음에 무엇을 해야 하는지를 말해야 한다. 오류 분류와 isRetryable 플래그 같은 구조화된 메타데이터는 복구를 에이전트가 결과 자체로부터 결정론적으로 내릴 수 있는 판단으로 바꾸어준다. 권한 오류의 경우 isRetryable: false는 즉시 재시도 루프를 종료시키고, 사람이 읽을 수 있는 메시지는 에이전트에게 유지관리자가 토큰 범위를 고칠 수 있도록 풀 리퀘스트 실행 결과에 주석을 남기는 등의 유용한 대안 행동을 제시해준다. 사고 모델은, 도구 결과가 에이전트가 외부 세계를 인지하는 유일한 통로라는 것이다. 도구가 생략하는 뉘앙스가 무엇이든, 에이전트는 그것에 대해 행동할 수 없다.
 
-The alternatives each break this contract in a different way. Marking the failure transient with backoff just slows down a loop that can never succeed. Returning an empty success suppresses the error entirely, so feedback silently disappears and the misconfiguration goes undetected. Dumping the raw HTTP 403 body preserves detail but delivers it in a form with no explicit retryability signal, leaving interpretation to chance. See Handle tool calls and errors for the documented pattern of returning descriptive, recovery-oriented error content with is_error: true.
+각 대안은 이 계약을 서로 다른 방식으로 깨뜨린다. 실패를 일시적이라고 표시하고 백오프를 적용하는 것은 결코 성공할 수 없는 루프를 그저 느리게 만들 뿐이다. 빈 성공을 반환하는 것은 오류를 완전히 억눌러 피드백이 조용히 사라지고 잘못된 설정이 발견되지 않은 채로 남게 된다. 원시 HTTP 403 본문을 그대로 쏟아내는 것은 세부 정보를 보존하지만 재시도 가능성에 대한 명시적인 신호가 없는 형태로 전달하여 해석을 운에 맡기게 된다. is_error: true와 함께 설명적이고 복구 지향적인 오류 내용을 반환하는 문서화된 패턴에 대해서는 Handle tool calls and errors를 참조하라.
 
 ### 도메인
 
@@ -455,35 +455,35 @@ Tool Design & MCP Integration
 
 **설명**
 
-Agents tend to prefer familiar built-in tools when an MCP tool's description gives no reason to choose otherwise. Explicitly naming the unique data and capabilities that Grep cannot match gives the model a selection signal at exactly the moment it decides which tool to call.
+MCP 도구의 설명이 다른 선택을 할 이유를 주지 않으면 에이전트는 익숙한 내장 도구를 선호하는 경향이 있다. Grep이 따라올 수 없는 고유한 데이터와 기능을 명시적으로 언급하면, 모델이 어떤 도구를 호출할지 결정하는 바로 그 순간에 선택 신호를 제공하게 된다.
 
 **B.** Keep the tool description brief and state the routing guidance in the pipeline's system prompt, where the agent reads it every run.
 
 **설명**
 
-Tool descriptions are what the model consults at selection time, so moving the guidance elsewhere weakens the signal where it matters most. System prompt wording can also create unintended associations with tools rather than reliably steering selection.
+도구 설명은 모델이 선택 시점에 참조하는 것이므로, 지침을 다른 곳으로 옮기면 가장 중요한 곳에서의 신호가 약해진다. 시스템 프롬프트 문구는 선택을 안정적으로 유도하기보다 도구와의 의도치 않은 연관을 만들어낼 수도 있다.
 
 **C(정답).** Document the tool's input formats and expected output, with example queries showing the searches it should handle.
 
 **설명**
 
-Descriptions are the primary mechanism the model uses to select tools, and a two-word description leaves the tool's territory undefined. Input formats, output contracts, and example queries make the tool's applicability concrete so the model can match review tasks to it reliably.
+설명은 모델이 도구를 선택할 때 사용하는 주된 메커니즘이며, 두 단어짜리 설명은 도구의 영역을 정의되지 않은 채로 남겨둔다. 입력 형식, 출력 계약, 예시 쿼리는 도구의 적용 가능성을 구체화하여 모델이 리뷰 작업을 그 도구에 신뢰성 있게 매칭할 수 있게 한다.
 
 **D.** Remove Grep from the review agent's allowed tools so indexed search becomes the only way to locate code references.
 
 **설명**
 
-This forces the choice rather than fixing the selection signal, and it breaks legitimate uses of Grep such as scanning the checked-out pull request for local patterns. The tool is being underused because its description is empty, not because the alternative exists.
+이는 선택 신호를 고치는 것이 아니라 선택을 강제하는 것이며, 체크아웃된 풀 리퀘스트에서 로컬 패턴을 스캔하는 것과 같은 Grep의 정당한 사용까지 깨뜨린다. 이 도구가 저평가되고 있는 이유는 대안이 존재해서가 아니라 설명이 비어 있기 때문이다.
 
 ### 전반적인 설명
 
-When a Claude Code agent has both built-in tools and MCP tools with overlapping purposes, it will often default to the built-in tool it knows well, especially when the MCP tool's description gives it nothing to weigh. The tool description is the primary selection mechanism: the model reads descriptions, not implementations, when deciding which tool fits a task. A description like "Searches code" is functionally indistinguishable from what Grep already does, so from the model's perspective there is no reason to prefer the indexed tool.
+Claude Code 에이전트가 목적이 겹치는 내장 도구와 MCP 도구를 모두 가지고 있을 때, 특히 MCP 도구의 설명이 판단할 근거를 전혀 주지 않는 경우 에이전트는 흔히 자신이 잘 아는 내장 도구를 기본으로 선택한다. 도구 설명은 주된 선택 메커니즘이다. 모델은 어떤 도구가 작업에 맞는지 결정할 때 구현이 아니라 설명을 읽는다. "Searches code"와 같은 설명은 Grep이 이미 하는 일과 기능적으로 구별되지 않으므로, 모델의 관점에서는 인덱싱된 도구를 선호할 이유가 전혀 없다.
 
-The fix is to make the description carry the decision. First, state the concrete advantages the MCP tool has over built-in alternatives: cross-repository symbol resolution and attached coverage data are capabilities Grep, which searches only the local checkout's file contents, cannot replicate. Second, document input formats, output shape, and example queries so the model can recognize which review tasks map onto the tool. Together these give the model both a reason to select the tool and a clear picture of when it applies.
+해결책은 설명이 그 결정을 담당하게 만드는 것이다. 첫째, MCP 도구가 내장 대안에 비해 갖는 구체적인 장점을 명시한다. 로컬 체크아웃의 파일 내용만 검색하는 Grep으로는 재현할 수 없는 기능인 크로스 리포지토리 심볼 해석과 첨부된 커버리지 데이터가 그것이다. 둘째, 입력 형식, 출력 형태, 예시 쿼리를 문서화하여 모델이 어떤 리뷰 작업이 그 도구에 대응하는지 인식할 수 있게 한다. 이 둘을 함께 적용하면 모델에게 그 도구를 선택할 이유와 언제 적용되는지에 대한 명확한 그림을 모두 제공하게 된다.
 
-Removing Grep entirely is a blunt architectural move that solves a description problem by deleting capability; the agent still needs local content search for tasks like scanning a pull request diff, and constraining inventory does not teach the model when the indexed tool is appropriate. Relocating the guidance to the system prompt moves the signal away from where selection happens; guidance embedded in the tool definition travels with the tool and is evaluated at the moment of choice, while system prompt wording can even create unintended tool associations.
+Grep을 완전히 제거하는 것은 설명 문제를 기능을 삭제함으로써 해결하려는 무딘 아키텍처적 조치다. 에이전트는 풀 리퀘스트 diff를 스캔하는 작업 같은 데에는 여전히 로컬 콘텐츠 검색이 필요하며, 인벤토리를 제한하는 것은 모델에게 인덱싱된 도구가 언제 적절한지를 가르쳐주지 못한다. 지침을 시스템 프롬프트로 옮기는 것은 선택이 일어나는 곳으로부터 신호를 떨어뜨린다. 도구 정의에 담긴 지침은 그 도구와 함께 이동하여 선택의 순간에 평가되지만, 시스템 프롬프트 문구는 의도치 않은 도구 연관까지 만들어낼 수 있다.
 
-See Anthropic's tool use implementation guidance for description best practices and MCP tools for how servers expose tool definitions to clients.
+설명 작성의 모범 사례에 대해서는 Anthropic의 tool use implementation guidance를 참조하고, 서버가 클라이언트에게 도구 정의를 어떻게 노출하는지에 대해서는 MCP tools를 참조하라.
 
 ### 도메인
 
@@ -501,33 +501,33 @@ Tool Design & MCP Integration
 
 **설명**
 
-This diagnosis is backwards: Glob does not consult .gitignore by default, so it returns ignored files even when the ignore rules are perfectly correct. Editing .gitignore will change what git tracks but will not change what Glob matches.
+이 진단은 방향이 거꾸로 되어 있다. Glob은 기본적으로 .gitignore를 참조하지 않으므로, ignore 규칙이 완벽하게 올바르더라도 무시된 파일을 반환한다. .gitignore를 수정하면 git이 추적하는 대상은 바뀌지만 Glob이 매칭하는 대상은 바뀌지 않는다.
 
 **B.** Replace Glob with Grep for the listing step, since Grep is the tool for locating files by name pattern and it skips ignored paths.
 
 **설명**
 
-Grep does skip gitignored files, but its purpose is searching inside file contents for patterns like function names or error strings, not enumerating files by name. Using it as the primary file-discovery mechanism swaps the tools into each other's territory.
+Grep은 실제로 gitignore된 파일을 건너뛰지만, 그 목적은 함수 이름이나 오류 문자열과 같은 패턴을 파일 내용 안에서 검색하는 것이며, 이름으로 파일을 나열하는 것이 아니다. 이를 주된 파일 디스커버리 메커니즘으로 사용하는 것은 두 도구를 서로의 영역으로 바꿔버리는 것이다.
 
 **C.** Instruct the agent to drop the trailing entries of each result, since Glob orders ignored files after tracked ones.
 
 **설명**
 
-Glob sorts its results by modification time, not by tracked-versus-ignored status, so there is no positional boundary the agent could cut on. Recently regenerated dist/ files would in fact tend to appear early, making this heuristic actively misleading.
+Glob은 결과를 추적 여부/무시 여부가 아니라 수정 시간으로 정렬하므로, 에이전트가 잘라낼 수 있는 위치상의 경계는 존재하지 않는다. 실제로는 최근에 다시 생성된 dist/ 파일들이 목록 앞쪽에 나타나는 경향이 있어, 이 발상은 오히려 적극적으로 오도한다.
 
 **D(정답).** Scope the pattern to source directories, such as config/**/*.yaml, because Glob matches gitignored paths by default.
 
 **설명**
 
-Glob performs pure path pattern matching and does not respect .gitignore by default, so generated files in dist/ are legitimate matches for a repo-wide pattern. Narrowing the pattern to the directories that actually hold source manifests removes the noise at the point where the search is defined.
+Glob은 순수한 경로 패턴 매칭을 수행하며 기본적으로 .gitignore를 존중하지 않으므로, dist/ 안의 생성된 파일들은 저장소 전체를 대상으로 하는 패턴에 대해 정당한 매칭 결과다. 실제로 소스 매니페스트가 존재하는 디렉터리로 패턴을 좁히면, 검색이 정의되는 지점에서 잡음을 제거할 수 있다.
 
 ### 전반적인 설명
 
-The mental model for Glob is that it is a pure path pattern matcher: it walks the file tree and returns every path whose name matches the pattern, with no awareness of what git considers tracked, ignored, or generated. By default it therefore surfaces gitignored artifacts like build output in dist/ alongside real source files. This is a deliberate design choice; an agent sometimes needs to find generated or untracked files, so the tool does not silently filter them. Notably, this default differs from Grep, which skips gitignored files when searching contents, so the two tools can give an agent inconsistent views of the same repository if the difference is not accounted for.
+Glob에 대한 사고 모델은, 이것이 순수한 경로 패턴 매처라는 것이다. 파일 트리를 순회하며 이름이 패턴과 일치하는 모든 경로를 반환하며, git이 추적, 무시, 생성으로 간주하는지는 전혀 인지하지 못한다. 따라서 기본적으로는 dist/의 빌드 출력물 같은 gitignore된 산출물을 실제 소스 파일과 함께 드러낸다. 이는 의도적인 설계 선택이다. 에이전트는 때로 생성된 파일이나 추적되지 않는 파일을 찾아야 하므로, 이 도구는 그것들을 조용히 걸러내지 않는다. 특히 이 기본 동작은 콘텐츠를 검색할 때 gitignore된 파일을 건너뛰는 Grep과 다르다는 점에 주목해야 한다. 이 차이를 감안하지 않으면 두 도구가 같은 저장소에 대해 에이전트에게 서로 다른 그림을 보여줄 수 있다.
 
-Because the tool is doing exactly what it was asked, the fix belongs in the request: scope the pattern to the directories where source manifests actually live, such as config/**/*.yaml, rather than sweeping the whole tree with **/*.yaml. Precise patterns also keep results well under the 100-file cap and reduce irrelevant context entering the review.
+도구는 요청받은 대로 정확히 동작하고 있으므로, 해결책은 요청 쪽에 있다. **/*.yaml로 트리 전체를 훑기보다, 실제로 소스 매니페스트가 존재하는 디렉터리로 패턴을 좁혀야 한다. 예를 들어 config/**/*.yaml처럼. 정밀한 패턴은 또한 결과를 100개 파일 상한 안에 여유 있게 유지하고, 리뷰에 들어가는 무관한 컨텍스트를 줄여준다.
 
-The distractors each rest on a wrong model of the tool. Repairing .gitignore assumes Glob consults it, which it does not by default. Swapping in Grep misassigns roles: Grep searches inside files, and while it does honor ignore rules, it is not the file-discovery primitive. Trimming trailing results assumes an ordering guarantee that does not exist; Glob sorts by modification time, so freshly built artifacts often lead the list rather than trail it. See the Claude Code tools reference for the documented behavior of Glob and Grep.
+오답들은 각각 도구에 대한 잘못된 모델에 근거하고 있다. .gitignore를 고치는 것은 Glob이 그것을 참조한다고 가정하지만, 기본적으로는 그렇지 않다. Grep으로 바꾸는 것은 역할을 잘못 배정하는 것이다. Grep은 파일 내부를 검색하며, ignore 규칙을 존중하기는 하지만 파일 디스커버리의 기본 도구는 아니다. 뒤쪽 결과를 잘라내는 것은 존재하지 않는 정렬 보장을 가정한다. Glob은 수정 시간으로 정렬하므로, 방금 빌드된 산출물이 목록의 끝이 아니라 앞쪽에 오는 경우가 흔하다. Glob과 Grep의 문서화된 동작에 대해서는 Claude Code tools reference를 참조하라.
 
 ### 도메인
 
@@ -545,33 +545,33 @@ Tool Design & MCP Integration
 
 **설명**
 
-This is incorrect. The input_examples field is an optional aid for showing Claude how to structure valid inputs; it is not a prerequisite for strict enforcement. The premise is wrong, and examples of input structure do not resolve the overlap between the two descriptions.
+이는 틀렸다. input_examples 필드는 Claude에게 유효한 입력을 어떻게 구성하는지 보여주는 선택적인 보조 수단이며, 엄격한 강제 적용의 전제 조건이 아니다. 전제 자체가 잘못되었으며, 입력 구조의 예시는 두 설명 사이의 중복을 해결하지 못한다.
 
 **B.** Validate the tool results the pipeline returns to the model against each tool's schema before sending them back to Claude.
 
 **설명**
 
-This is incorrect and reverses the direction of the guarantee. Strict tool use validates the inputs Claude produces when calling a tool, ensuring they match the declared schema. Validating results the harness returns does nothing to change which tool Claude selects.
+이는 틀렸으며 보장의 방향을 뒤바꾼 것이다. 엄격한 도구 사용은 Claude가 도구를 호출할 때 생성하는 입력을 검증하여 선언된 스키마와 일치하도록 보장한다. 하니스가 반환하는 결과를 검증하는 것은 Claude가 어떤 도구를 선택하는지에는 아무런 영향을 주지 않는다.
 
 **C.** Set tool_choice to force a specific named tool on each request, since strict enforcement only applies when selection is forced.
 
 **설명**
 
-This is incorrect. Strict tool use applies to the tool calls Claude generates regardless of whether tool selection is automatic or forced, so the setting was already in effect. Forcing a single tool also removes Claude's ability to route between the two review tools, which the pipeline needs.
+이는 틀렸다. 엄격한 도구 사용은 도구 선택이 자동이든 강제이든 상관없이 Claude가 생성하는 도구 호출에 적용되므로, 이 설정은 이미 적용되어 있었다. 또한 단일 도구를 강제하면 파이프라인이 필요로 하는 두 리뷰 도구 사이를 라우팅하는 Claude의 능력 자체가 사라진다.
 
 **D(정답).** Rewrite both tool descriptions with boundary language stating when to use each tool, keeping strict tool use for schema enforcement.
 
 **설명**
 
-This is correct. Strict tool use enforces that generated inputs conform to the schema and that the named tool exists, which is a syntactic guarantee; it does not influence which of two semantically overlapping tools Claude picks. Selection is driven by the tool descriptions, so differentiating them with clear when-to-use boundaries addresses the actual failure.
+이것이 맞다. 엄격한 도구 사용은 생성된 입력이 스키마를 따르고 명명된 도구가 실제로 존재하는지를 강제하는데, 이는 문법적 보장이다. 의미상으로 겹치는 두 도구 중 Claude가 어느 것을 선택하는지에는 영향을 주지 않는다. 선택은 도구 설명에 의해 좌우되므로, 명확한 사용 시점 경계로 두 설명을 구분하는 것이 실제 실패 원인을 해결한다.
 
 ### 전반적인 설명
 
-This failure is semantic misrouting, not malformed output, and the two problems are fixed by different mechanisms. Strict tool use guarantees that every tool call Claude emits names a real tool from the available set and carries inputs that validate against that tool's input_schema. It closes off failure modes like wrong parameter types, omitted required fields, and invented parameters. What it cannot do is decide, between two tools whose descriptions read almost identically, which one the request actually calls for. In this case the wrong-tool calls were already schema-valid, which is exactly the signature of a selection problem rather than a formatting problem.
+이 실패는 형식이 잘못된 출력이 아니라 의미상의 잘못된 라우팅이며, 이 두 문제는 서로 다른 메커니즘으로 해결된다. 엄격한 도구 사용은 Claude가 내보내는 모든 도구 호출이 사용 가능한 집합 안의 실제 도구를 명명하고, 그 도구의 input_schema에 대해 검증되는 입력을 담고 있음을 보장한다. 이는 잘못된 파라미터 타입, 누락된 필수 필드, 존재하지 않는 파라미터와 같은 실패 모드를 차단한다. 그것이 할 수 없는 일은, 설명이 거의 동일하게 읽히는 두 도구 중 요청이 실제로 무엇을 요구하는지를 결정하는 것이다. 이 경우 잘못된 도구를 호출한 것들도 이미 스키마상으로는 유효했으며, 이는 정확히 형식 문제가 아니라 선택 문제의 특징이다.
 
-The mental model to hold is that Claude routes among tools primarily by reading their descriptions. Anthropic's troubleshooting guidance lists description ambiguity as the likely cause when Claude calls tool A where tool B was wanted, and the documented fix is to sharpen each description so it differentiates the tools by when to use them, not only what they do; detailed descriptions are called out as by far the most important factor in tool performance. So the remedy lives in the tool definitions themselves: give the style tool and the security tool descriptions that carve out non-overlapping territory.
+유지해야 할 사고 모델은, Claude가 주로 설명을 읽음으로써 도구들 사이를 라우팅한다는 것이다. Anthropic의 문제 해결 지침은 Claude가 도구 B를 원했는데 도구 A를 호출하는 경우의 유력한 원인으로 설명의 모호함을 든다. 그리고 문서화된 해결책은 각 설명을 다듬어서, 무엇을 하는지뿐만 아니라 언제 사용해야 하는지로 도구들을 구분하게 만드는 것이다. 상세한 설명은 도구 성능에서 단연 가장 중요한 요소로 지목된다. 따라서 해결책은 도구 정의 자체에 있다. 스타일 도구와 보안 도구에 서로 겹치지 않는 영역을 구획하는 설명을 부여하는 것이다.
 
-The alternative actions rest on misreadings of the feature's boundaries. Strict enforcement is not gated on a forced tool_choice, and forcing one tool would break routing entirely; strict mode constrains model-generated inputs, not the results a harness returns; and input_examples is an optional field for clarifying complex input structure, not a precondition for strict mode. Knowing precisely what each mechanism guarantees, and what it leaves untouched, is what lets an architect apply the right fix to the right failure. See Strict tool use, Troubleshooting tool use, and Implement tool use.
+대안적인 조치들은 이 기능의 경계를 잘못 읽은 것에 근거하고 있다. 엄격한 강제 적용은 강제된 tool_choice에 의해 게이트되지 않으며, 하나의 도구를 강제하면 라우팅 자체가 완전히 깨진다. 엄격 모드는 모델이 생성한 입력을 제약하는 것이며 하니스가 반환하는 결과를 제약하는 것이 아니다. 그리고 input_examples는 복잡한 입력 구조를 명확히 하기 위한 선택적 필드이며 엄격 모드의 전제 조건이 아니다. 각 메커니즘이 정확히 무엇을 보장하고 무엇을 건드리지 않는지를 아는 것이야말로, 아키텍트가 올바른 실패에 올바른 해결책을 적용할 수 있게 해준다. Strict tool use, Troubleshooting tool use, Implement tool use를 참조하라.
 
 ### 도메인
 
