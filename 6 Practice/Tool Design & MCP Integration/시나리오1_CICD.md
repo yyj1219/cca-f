@@ -1,6 +1,6 @@
 # 시나리오1_CICD
 
-## 질문 6
+## 질문 1
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -45,7 +45,7 @@ Tool Design & MCP Integration
 
 
 
-## 질문 28
+## 질문 2
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -89,7 +89,7 @@ Tool Design & MCP Integration
 
 
 
-## 질문 40
+## 질문 3
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -133,7 +133,7 @@ Tool Design & MCP Integration
 
 
 
-## 질문 46
+## 질문 4
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -177,7 +177,7 @@ Tool Design & MCP Integration
 
 
 
-## 질문 53
+## 질문 5
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -223,7 +223,7 @@ Tool Design & MCP Integration
 
 
 
-## 질문 59
+## 질문 6
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -267,7 +267,7 @@ Tool Design & MCP Integration
 
 
 
-## 질문 35
+## 질문 7
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -311,7 +311,7 @@ Tool Design & MCP Integration
 
 
 
-## 질문 42
+## 질문 8
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -357,7 +357,7 @@ Tool Design & MCP Integration
 
 
 
-## 질문 55
+## 질문 9
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -401,7 +401,7 @@ Tool Design & MCP Integration
 
 
 
-## 질문 12
+## 질문 10
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -445,7 +445,7 @@ Tool Design & MCP Integration
 
 
 
-## 질문 27
+## 질문 11
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -491,7 +491,7 @@ Tool Design & MCP Integration
 
 
 
-## 질문 10
+## 질문 12
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -535,7 +535,7 @@ Tool Design & MCP Integration
 
 
 
-## 질문 34
+## 질문 13
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 

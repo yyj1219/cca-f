@@ -1,6 +1,6 @@
 # 시나리오1_CICD
 
-## 질문 11
+## 질문 1
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -44,7 +44,7 @@ Claude Code Configuration & Workflows
 
 
 
-## 질문 34
+## 질문 2
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -89,7 +89,7 @@ Claude Code Configuration & Workflows
 
 
 
-## 질문 37
+## 질문 3
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -133,7 +133,7 @@ Claude Code Configuration & Workflows
 
 
 
-## 질문 21
+## 질문 4
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -179,7 +179,7 @@ Claude Code Configuration & Workflows
 
 
 
-## 질문 48
+## 질문 5
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -223,7 +223,7 @@ Claude Code Configuration & Workflows
 
 
 
-## 질문 60
+## 질문 6
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -266,7 +266,7 @@ The distractors fail on the same misconception in different forms. Thoroughness 
 Claude Code Configuration & Workflows
 
 
-## 질문 1
+## 질문 7
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -310,7 +310,7 @@ Claude Code Configuration & Workflows
 
 
 
-## 질문 51
+## 질문 8
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -354,7 +354,7 @@ Claude Code Configuration & Workflows
 
 
 
-## 질문 60
+## 질문 9
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -397,7 +397,7 @@ The two rejected choices fail on scope and on mechanism. User-level configuratio
 Claude Code Configuration & Workflows
 
 
-## 질문 3
+## 질문 10
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -441,7 +441,7 @@ Claude Code Configuration & Workflows
 
 
 
-## 질문 38
+## 질문 11
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -485,7 +485,7 @@ Claude Code Configuration & Workflows
 
 
 
-## 질문 45
+## 질문 12
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -529,7 +529,7 @@ Claude Code Configuration & Workflows
 
 
 
-## 질문 31
+## 질문 13
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -573,7 +573,7 @@ Claude Code Configuration & Workflows
 
 
 
-## 질문 35
+## 질문 14
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -617,7 +617,7 @@ Claude Code Configuration & Workflows
 
 
 
-## 질문 50
+## 질문 15
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 

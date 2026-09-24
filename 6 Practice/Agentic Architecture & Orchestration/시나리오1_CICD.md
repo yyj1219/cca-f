@@ -1,6 +1,6 @@
 # 시나리오1_CICD
 
-## 질문 2
+## 질문 1
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -46,7 +46,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 13
+## 질문 2
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -90,7 +90,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 14
+## 질문 3
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -134,7 +134,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 47
+## 질문 4
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -176,7 +176,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 4
+## 질문 5
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -220,7 +220,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 8
+## 질문 6
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -264,7 +264,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 31
+## 질문 7
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -308,7 +308,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 54
+## 질문 8
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -354,7 +354,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 17
+## 질문 9
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -398,7 +398,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 20
+## 질문 10
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -442,7 +442,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 40
+## 질문 11
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -486,7 +486,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 58
+## 질문 12
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -532,7 +532,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 2
+## 질문 13
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -576,7 +576,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 6
+## 질문 14
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -664,7 +664,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 17
+## 질문 16
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -708,7 +708,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 14
+## 질문 17
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -752,7 +752,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 17
+## 질문 18
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -794,7 +794,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 40
+## 질문 19
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -838,7 +838,7 @@ Agentic Architecture & Orchestration
 
 
 
-## 질문 55
+## 질문 20
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 

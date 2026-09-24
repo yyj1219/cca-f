@@ -1,6 +1,6 @@
 # 시나리오1_CICD
 
-## 질문 43
+## 질문 1
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -45,7 +45,7 @@ Context Management & Reliability
 
 
 
-## 질문 44
+## 질문 2
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -90,7 +90,7 @@ Context Management & Reliability
 
 
 
-## 질문 5
+## 질문 3
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -136,7 +136,7 @@ Context Management & Reliability
 
 
 
-## 질문 14
+## 질문 4
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -182,7 +182,7 @@ Context Management & Reliability
 
 
 
-## 질문 44
+## 질문 5
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -226,7 +226,7 @@ Context Management & Reliability
 
 
 
-## 질문 50
+## 질문 6
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -270,7 +270,7 @@ Context Management & Reliability
 
 
 
-## 질문 14
+## 질문 7
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -314,7 +314,7 @@ Context Management & Reliability
 
 
 
-## 질문 44
+## 질문 8
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -358,7 +358,7 @@ Context Management & Reliability
 
 
 
-## 질문 6
+## 질문 9
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
@@ -402,7 +402,7 @@ Context Management & Reliability
 
 
 
-## 질문 18
+## 질문 10
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
 
