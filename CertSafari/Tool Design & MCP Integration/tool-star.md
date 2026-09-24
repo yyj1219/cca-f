@@ -16,6 +16,14 @@
 * _surface_ : 표면화하다, 드러내다
 * _typically_ : 일반적으로
 * _coerce_ : 억지로 맞추다
+* _significantly_ : 상당히
+* _influence_ : 영향력
+* _assessment_ : 평가
+* _appropriate_ : 적절한
+* _distinguish_ : 구별하다
+* _worthwhile_ : 해볼 가치가 있는지
+* _occurrence_ : (문자열이나 패턴이) 나타나는 지점
+* _specification_ : 사양
 
 ---
 
@@ -234,13 +242,9 @@ MCP(Model Context Protocol) 시스템에서 에러는 명확히 두 개의 계�
 
 A `cancel_subscription` MCP tool rejects a cancellation because the account is locked in a legal hold, a policy condition that will not change no matter how the request is retried or reformatted. The engineer must choose between labeling this a validation error or a business error. Which choice is correct, and why?
 
-A) Validation error, because any rejection after initial schema checks indicates the input, when checked against account state, does not pass full system validation.
-
-B) Business error, because the legal hold check occurs in a separate service after request validation, so the rejection is a business rule violation, not a schema issue.
+B) Business error, because the legal hold check occurs in a separate service(별도 서비스에서) after request validation(검증 이후에), so the rejection is a business rule violation, not a schema issue. => 문제에서 "검증 이후"나 "별도 서비스"에 대한 내용이 전혀 없다. 문제에 없는 내용을 추정했으므로 오답이다.
 
 C) It is a business error because the request itself is well-formed and the rejection stems from a policy rule about the account's state rather than malformed input.
-
-D) Validation fails because the account ID in the request is the specific field that, when evaluated against the account's legal hold status, causes the rejection.
 
 ---
 
@@ -262,9 +266,7 @@ D) Validation fails because the account ID in the request is the specific field 
 요청 문맥 및 스키마 관점에서 입력값 형태 자체는 정상적이지만, 시스템의 비즈니스 정책(계정 상태가 법적 보류)에 의해 거부된 것이므로 '비즈니스 에러(Business error)'로 분류하는 것이 정확합니다. C번은 입력 데이터의 결함(Malformed input)이 아닌 계정 상태 정책(Policy rule)이 원인임을 명확히 설명합니다.
 
 **오답 분석:**
-- **Option A (오답)**: 시스템 상태 체크 과정에서 거부된다고 해서 이를 유효성 검증(Validation) 에러로 분류하는 것은 에러의 본질(입력 오류 vs 도메인 정책 위반)을 혼동한 설명입니다.
 - **Option B (오답)**: 비즈니스 에러로 분류한 결론은 맞지만, 이유로서 '별도의 서비스에서 실행되기 때문'이라는 구조적/실행 위치 조건은 에러의 개념적 원인 분류 표준이 아닙니다.
-- **Option D (오답)**: 계정 ID 필드가 법적 보류 상태와 평가된다는 이유로 이를 검증 실패(Validation fails)로 규정하는 것은 잘못되었습니다. 필드의 형식적 유효성과 데이터가 가리키는 대상의 상태 정책 위반은 엄격히 구분됩니다.
 
 ---
 
@@ -272,15 +274,13 @@ D) Validation fails because the account ID in the request is the specific field 
 
 **1. 문제 원문**
 
-Claude Code is fixing a bug and wants to reproduce it first by running the project's test suite and capturing the failing stack trace before making any code changes. Which tool should Claude use to run the suite and view its output?
-
-A) Grep, to search the codebase for the word test and treat matching file names as evidence that the suite has already passed
+Claude Code is fixing a bug and wants to reproduce it first by running the project's test suite and capturing the failing stack trace before making any code changes. Which tool should Claude use to **run the suite and view its output**? => 실행과 결과 확인이 목적이다. 목적 달성에 가장 근접한 답을 찾아야 한다.
 
 B) Bash, to invoke the project's test runner command and capture its stdout and stderr, including the stack trace, in the result
 
-C) Read, to open the test runner's configuration file and infer the current pass or fail status of the suite from its settings
+C) Read, to open the test runner's configuration file and infer the current pass or fail status of the suite from its settings => 선택적으로 Read를 할 수도 있겠지만, 문제에서 실행과 결과 확인이 목적이라서 오답. Read는 안전을 위해 Write/Edit에서만 선행되는 것 뿐이다. 헷갈리지 말라.
 
-D) Glob, to list all files matching **/*.test.* and treat the presence of test files as confirmation that the suite runs cleanly
+D) Glob, to list all files matching **/*.test.* and treat the presence of test files as confirmation that the suite runs cleanly => 테스트 파일의 존재 유무는 확인되겠지만, 그게 테스트를 한다는 것과 같은 것은 아니다. 따라서 오답.
 
 ---
 
@@ -291,6 +291,7 @@ D) Glob, to list all files matching **/*.test.* and treat the presence of test f
 **정답 및 해설:**
 
 **핵심 개념**: 
+
 Claude Code 환경에서 `Bash` 도구는 터미널 명령어를 실행하고 그 결과로 나오는 표준 출력(`stdout`)과 표준 에러(`stderr`)를 캡처하는 데 사용됩니다. 외부 명령어(예: `npm test`, `pytest` 등 테스트 러너)를 직접 실행하여 실제 오류 발생 현상 및 스택 트레이스를 확인하기 위해서는 Shell 명령을 실행할 수 있는 `Bash` 도구가 필수적입니다.
 
 **문제 상황 분석:**
@@ -302,7 +303,6 @@ Claude Code 환경에서 `Bash` 도구는 터미널 명령어를 실행하고 �
 `Bash` 도구는 프로젝트에 설정된 테스트 러너 명령어(예: `pytest`, `jest`, `cargo test` 등)를 실제로 실행(invoke)하고, 이 과정에서 출력되는 스택 트레이스를 포함한 `stdout`과 `stderr` 결과를 받아올 수 있는 유일한 도구입니다.
 
 **오답 분석:**
-- **Option A (오답)**: `Grep`은 텍스트 패턴을 검색하는 도구일 뿐, 명령어를 실행하거나 테스트 결과를 얻을 수 없습니다. 또한 파일 이름 존재 여부를 테스트 통과 증거로 간주한다는 설명 역시 부적절합니다.
 - **Option C (오답)**: `Read`는 파일을 읽는 도구입니다. 설정 파일의 내용을 읽는 것만으로는 실제 테스트 실행 결과나 에러 발생 시의 스택 트레이스를 알 수 없습니다.
 - **Option D (오답)**: `Glob`은 패턴에 맞는 파일 목록을 찾는 도구입니다. 테스트 파일이 존재하는지 확인하는 것과 실제 테스트를 실행하여 버그를 재현하는 것은 무관합니다.
 
@@ -312,15 +312,11 @@ Claude Code 환경에서 `Bash` 도구는 터미널 명령어를 실행하고 �
 
 **1. 문제 원문**
 
-A team observes that adding 'If in doubt, use the search tool' to the system prompt caused the model to call `search_web` even when the `lookup_internal_docs` tool was more appropriate. What does this scenario illustrate?
+A team observes that adding 'If in doubt, use the search tool' to the system prompt caused the model to call `search_web` even when the `lookup_internal_docs` tool was more **appropriate(적절한)**. What does this scenario illustrate?
 
-A) System prompts can significantly influence tool selection, and explicit instructions may override the model's assessment of which tool is most appropriate.
+A) System prompts can **significantly(상당히)** **influence(영향력)** tool selection, and explicit instructions may override the model's **assessment(평가)** of which tool is most **appropriate(적절한)**.
 
-B) System prompts have no measurable effect on tool selection; the behavior must be caused by a defect in the model.
-
-C) The word 'search' appearing anywhere in a tool's name always takes absolute priority over any other tool regardless of prompt content.
-
-D) The `lookup_internal_docs` tool must have a malformed JSON schema, since that is the only way a tool can be excluded from selection.
+C) The word 'search' appearing anywhere in a tool's name always takes absolute priority over any other tool regardless of prompt content. => 절대적 우선순위를 갖지는 않는다. 그런 경향이 있는 것과 절대적인 것은 다르다.
 
 ---
 
@@ -331,7 +327,7 @@ D) The `lookup_internal_docs` tool must have a malformed JSON schema, since that
 **정답 및 해설:**
 
 **핵심 개념**: 
-LLM의 도구 선택(Tool Selection) 과정에서 시스템 프롬프트(System Prompt)에 포함된 지시사항은 모델의 의사결정에 결정적인 영향을 미칩니다. 프롬프트에 명시된 지시나 편향(Bias) 문구는 도구의 개별 설명이나 맥락적 적합성에 대한 모델 자체의 가치 평가보다 우선시되어 적용될 수 있습니다.
+LLM의 도구 선택(Tool Selection) 과정에서 시스템 프롬프트(System Prompt)에 포함된 지시사항은 모델의 의사결정에 결정적인 영향을 미칩니다. **프롬프트에 명시된 지시나 편향(Bias) 문구**는 도구의 개별 설명이나 맥락적 적합성에 대한 **모델 자체의 가치 평가보다 우선시되어 적용될 수** 있습니다.
 
 **문제 상황 분석:**
 - 시스템 프롬프트에 'If in doubt, use the search tool(확신이 없으면 검색 도구를 사용하라)'이라는 강한 지시 지침을 추가함.
@@ -342,49 +338,7 @@ LLM의 도구 선택(Tool Selection) 과정에서 시스템 프롬프트(System 
 시스템 프롬프트는 모델의 도구 선택 동작에 강력한 영향을 미치며, 명시적으로 주어진 프롬프트 지침은 모델이 본래 판단했을 최선의 도구 선택 기준보다 우선하여 작용함을 정확히 설명하고 있습니다.
 
 **오답 분석:**
-- **Option B (오답)**: 시스템 프롬프트가 도구 선택에 아무런 영향이 없으며 모델의 결함 때문이라는 주장은 거짓입니다. 프롬프트는 모델의 행동 제어에 핵심적 역할을 합니다.
 - **Option C (오답)**: 'search'라는 단어의 포함 여부만으로 무조건 절대적 우선순위가 정해진다는 것은 프롬프트의 지침(지시어) 역할을 무시한 자의적인 해석입니다.
-- **Option D (오답)**: 도구가 선택에서 제외되는 이유가 JSON 스키마 오류 때문이라는 것은 단정적 오류이며, 이 시나리오는 스키마 결함이 아닌 프롬프트 지시어에 의한 의사결정 편향 현상을 보여줍니다.
-
----
-
-## 37번 문제 (★)
-
-**1. 문제 원문**
-
-A coordinator agent delegates a three-step data migration to a subagent: extract, transform, and load, but the load step fails twice on a database connection reset, a known transient condition, before finally succeeding on the third attempt inside the subagent's own execution. What should the subagent report back to the coordinator?
-
-A) An `isError: true` result describing both connection resets in detail, so the coordinator can decide independently whether the migration should be retried
-
-B) A success result summarizing the completed migration, since the transient failures were resolved locally and never needed to surface above the subagent
-
-C) An escalation asking the coordinator to obtain new database credentials, since two consecutive connection resets indicate the credentials have expired
-
-D) A partial-results payload listing only the extract and transform steps as done, omitting the load step entirely since it initially failed twice
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: B번**
-
-**정답 및 해설:**
-
-**핵심 개념**: 
-계층적 에이전트 구조(Hierarchical Agent Architecture) 및 서브에이전트 패턴에서, 서브에이전트는 위임받은 작업을 자체적으로 관리하고 복구하는 캡슐화(Encapsulation) 책임을 가집니다. 일시적 오류(Transient Fault)가 서브에이전트 내부 재시도 로직을 통해 최종 해결되어 전체 작업이 완수되었다면, 상위 코디네이터에게는 불필요한 오류 메시지 대신 **성공 결과**만 보고하는 것이 올바른 설계입니다.
-
-**문제 상황 분석:**
-- 상위 코디네이터가 서브에이전트에게 3단계 데이터 마이그레이션(추출 $\rightarrow$ 변환 $\rightarrow$ 로드)을 위임함.
-- 마지막 '로드' 단계에서 일시적인 연결 재설정(Transient Condition)으로 2회 실패가 발생했으나, 서브에이전트 내부에서 3번째 시도 만에 최종 성공함.
-- 전체 태스크 관점에서는 3단계가 모두 최종 성공적으로 완료된 상태임.
-
-**B번이 정답인 이유:**
-일시적인 장애는 서브에이전트 수준에서 이미 성공적으로 복구(Resolved locally)되어 전체 마이그레이션 과업이 완성되었으므로, 코디네이터에게는 최종 작업의 성공 결과만 상위로 보고하는 것이 계층적 위임 구조 및 카오스 차단(Fault Containment) 원칙에 부합합니다.
-
-**오답 분석:**
-- **Option A (오답)**: 이미 내부 재시도로 최종 성공했음에도 불구하고 `isError: true`를 반환하면 상위 코디네이터가 불필요하게 전체 태스크를 재시도하거나 에러 처리를 수행하여 중복 작업 및 시스템 혼란을 유발합니다.
-- **Option C (오답)**: 연결 재설정이 일시적 오류(Transient Condition)라고 문제에 명시되어 있고 세 번째에 성공했으므로, 자격 증명 만료로 단정 짓고 자격 증명을 재요청하는 것은 잘못된 진단입니다.
-- **Option D (오답)**: 세 번째 시도에서 '로드' 단계가 최종 성공했음에도 불구하고 처음에 실패했다는 이유로 결과를 누락하거나 부분 성공으로만 보고하는 것은 데이터 상태 불일치를 일으킵니다.
 
 ---
 
@@ -392,15 +346,9 @@ D) A partial-results payload listing only the extract and transform steps as don
 
 **1. 문제 원문**
 
-An MCP server's `create_invoice` tool calls a downstream billing API that returns a 503 while the service is deploying. The tool wraps this in a result with `isError: true` and a text block reading only "Operation failed." The agent retries the same call five times in a row, each time failing the same way, before giving up. What is the most direct cause of the wasted retries?
+An MCP server's `create_invoice` tool calls a downstream billing API that returns a 503(배포 중 일시 장애) while the service is deploying. The tool wraps this in a result with `isError: true` and a text block reading only "Operation failed." The agent retries the same call five times in a row, each time failing the same way, before giving up. What is the most direct cause of the wasted retries?
 
-A) The result carries no structured metadata distinguishing transient from non-retryable failures. The agent thus has no basis for deciding whether retrying is worthwhile.
-
-B) The downstream billing API returned an HTTP status code rather than a JSON-RPC error object, so the MCP client could not parse the response and defaulted to retrying repeatedly.
-
-C) The agent's context window ran out of space to store the error text, so it could not remember that the same request had just failed and therefore repeated the call as if it were a new attempt.
-
-D) The tool set `isError` to true instead of false, which signals to the agent that unlimited retries are the correct response and prevents it from recognizing that the error is transient.
+A) The result carries no structured metadata **distinguishing(구별하는)** transient from non-retryable failures. The agent thus has no **basis(근거)** for deciding whether retrying is **worthwhile(해볼 가치가 있는지)**.
 
 ---
 
@@ -421,26 +369,15 @@ MCP(Model Context Protocol) 및 에이전트 기반 오류 처리에서, 도구�
 **A번이 정답인 이유:**
 반환된 결과에 에러가 일시적(transient)인지 재시도 불가능(non-retryable)한지를 구분해 주는 구조화된 메타데이터가 전혀 포함되어 있지 않기 때문에, 에이전트가 재시도 여부 및 전략을 판단할 근거가 부족하여 무의미한 재시도를 반복한 것이 가장 직접적인 원인입니다.
 
-**오답 분석:**
-- **Option B (오답)**: 다운스트림 HTTP 코드 수신 여부보다, MCP 도구가 클라이언트/에이전트에 래핑하여 전달한 응답 결과의 메타데이터 부재가 원인입니다. MCP 클라이언트의 파싱 오류나 기본 재시도 동작 문제가 아닙니다.
-- **Option C (오답)**: "Operation failed."라는 단문 에러 텍스트 하나로 컨텍스트 윈도우가 가득 차서 이전 실패 기록을 기억하지 못했다는 주장은 현실적이지 않습니다.
-- **Option D (오답)**: 오류가 발생했을 때 `isError`를 `true`로 설정하는 것은 정상입니다. `isError: true` 자체가 무제한 재시도를 의미하거나 일시적 오류 인식을 막는 것은 아닙니다.
-
 ---
 
 ## 46번 문제 (★)
 
 **1. 문제 원문**
 
-A developer wants Claude Code to update a deprecated log statement `logger.warn("legacy-path")` that appears twice in the same file, in two different functions, where only one of the two occurrences should change. Claude issues an Edit call with old_string set to exactly that log statement and the call fails. What is the correct next step?
+A developer wants Claude Code to update a deprecated log statement `logger.warn("legacy-path")` that appears twice in the same file, in two different functions, where only one of the two **occurrences(나타나는 지점들)** should change. Claude issues an Edit call with old_string set to exactly that log statement and the call fails. What is the correct next step?
 
-A) Call Write with only the new log line as content, expecting Write to merge that single line into the correct spot in the existing file
-
-B) Set replace_all to true on the same Edit call so both occurrences update identically, then manually revert whichever one should have stayed
-
-C) Switch to Grep with the multiline flag to rewrite the matching line directly, since Grep can modify file contents once a match is found
-
-D) Widen old_string to include enough surrounding context to uniquely identify the intended occurrence, then retry Edit with that string
+D) Widen old_string to include enough surrounding context to uniquely identify the **intended(의도한)** **occurrence(나타나는 지점)**, then retry Edit with that string
 
 ---
 
@@ -450,8 +387,8 @@ D) Widen old_string to include enough surrounding context to uniquely identify t
 
 **정답 및 해설:**
 
-**핵심 개념**: Claude Code의 Edit 도구 동작 원리 (Uniqueness & Context Matching)
-Claude Code의 `Edit` 도구는 파일 내에서 교체하고자 하는 대상 문자열(`old_string`)이 **단 하나만 존재(Unique)**할 때 안전하게 치환을 수행합니다. 만약 동일한 문자열이 파일 내에 여러 번 등장하는데 어떤 것을 바꿀지 고유하게 식별되지 않으면, 오작동을 방지하기 위해 Edit 호출이 실패합니다.
+**핵심 개념**: 
+Claude Code의 `Edit` 도구는 파일 내에서 교체하고자 하는 대상 문자열(`old_string`)이 **단 하나만 존재(Unique)할 때 안전하게 치환을 수행**합니다. 만약 동일한 문자열이 파일 내에 여러 번 등장하는데 어떤 것을 바꿀지 고유하게 식별되지 않으면, 오작동을 방지하기 위해 Edit 호출이 실패합니다.
 
 **문제 상황 분석:**
 - `logger.warn("legacy-path")` 구문이 동일 파일 내에 2번 존재함
@@ -461,11 +398,6 @@ Claude Code의 `Edit` 도구는 파일 내에서 교체하고자 하는 대상 �
 **D번이 정답인 이유:**
 동일한 문자열이 여러 곳에 존재하여 구분이 불가능할 때는, 변경하고자 하는 위치 주변의 코드(함수 선언부, 이전/다음 줄의 코드 등)를 `old_string`에 함께 포함시켜(**Widen**) 파일 내에서 대상 문자열이 유일(Unique)하게 식별되도록 context를 확장한 뒤 Edit을 재시도해야 합니다.
 
-**오답 분석:**
-- **Option A (오답)**: `Write` 도구는 파일 전체를 덮어쓰는 도구입니다. 단일 줄만 전달한다고 해서 기존 파일의 특정 위치에 자동으로 병합(Merge)해주지 않으며 파일 전체가 손상될 수 있습니다.
-- **Option B (오답)**: 문제가 의도한 바는 2개 중 1개만 변경하는 것인데, `replace_all: true`로 두 곳 모두 바꾼 뒤 수동으로 되돌리는 방식은 비효율적이고 비정상적인 우회 방법입니다.
-- **Option C (오답)**: `Grep`은 파일 내용을 검색(Search)하기 위한 도구일 뿐, 파일의 내용을 직접 수정(Modify)할 수 있는 기능을 가지고 있지 않습니다.
-
 ---
 
 ## 47번 문제 (★)
@@ -474,13 +406,9 @@ Claude Code의 `Edit` 도구는 파일 내에서 교체하고자 하는 대상 �
 
 A legal-document analysis agent has a single `retrieve_clause` tool that can pull arbitrary text ranges from any uploaded file by byte offset, which the model frequently misuses to grab unrelated or malformed spans. The team wants to replace it with a constrained alternative that only ever returns whole, well-defined clauses. Which redesign best follows the pattern of replacing a generic tool with a constrained one?
 
-A) Keep `retrieve_clause` unchanged and add a second agent whose only job is to double-check the byte ranges after retrieval
-
-B) Keep `retrieve_clause` but double the number of example byte-offset calls in its description so the model learns better offsets
+A) Keep `retrieve_clause` unchanged and add a second agent whose only job is to double-check the byte ranges after retrieval => 근본 원인(제네릭한 인터페이스)을 안 고치고 우회한다는 것 때문에 C 보다 부적합하다.
 
 C) Replace `retrieve_clause` with a `get_clause_by_id` tool that only accepts a validated clause identifier from a pre-parsed clause index
-
-D) Give the agent broader access by also adding a `raw_file_read` tool so it can cross-check offsets against the full document
 
 ---
 
@@ -490,8 +418,8 @@ D) Give the agent broader access by also adding a `raw_file_read` tool so it can
 
 **정답 및 해설:**
 
-**핵심 개념**: 제약된 도구 인터페이스 설계 (Constrained Tool Design)
-LLM 기반 에이전트 시스템에서 임의의 인자(예: 임의의 바이트 범위, 자유 형식 SQL 문 등)를 받는 범용적이고 유연한(Generic) 도구는 모델의 예측 불가능한 오용 및 환각을 유발하기 쉽습니다. 이를 미리 정의되고 검증된 구조(구조화된 식별자, 사전 처리된 인덱스)만 허용하는 제약된(Constrained) 도구로 교체하는 것은 에이전트의 신뢰성을 극대화하는 핵심 아키텍처 패턴입니다.
+**핵심 개념**: 
+LLM 기반 에이전트 시스템에서 임의의 인자(예: 임의의 바이트 범위, 자유 형식 SQL 문 등)를 받는 범용적이고 유연한(Generic) 도구는 모델의 예측 불가능한 오용 및 환각을 유발하기 쉽습니다. 이를 미리 정의되고 **검증된 구조(구조화된 식별자, 사전 처리된 인덱스)만 허용하는 제약된(Constrained) 도구로 교체**하는 것은 에이전트의 신뢰성을 극대화하는 핵심 아키텍처 패턴입니다.
 
 **문제 상황 분석:**
 - 기존 `retrieve_clause` 도구는 바이트 오프셋 기반으로 임의의 텍스트 범위를 잘라오도록 되어 있어 generic함
@@ -501,91 +429,6 @@ LLM 기반 에이전트 시스템에서 임의의 인자(예: 임의의 바이�
 **C번이 정답인 이유:**
 바이트 오프셋 지정과 같은 임의의 파라미터 입력을 제거하고, 문서 파싱 단계에서 미리 정제된 조항 인덱스(pre-parsed index)의 유효한 ID만을 입력받는 `get_clause_by_id` 도구로 교체하는 것이 가장 확실하고 구조적인 제약(Constraint)을 거는 방법입니다. 이를 통해 모델은 잘못된 오프셋 계산을 할 여지 자체가 차단됩니다.
 
-**오답 분석:**
-- **Option A (오답)**: 문제가 있는 범용 도구를 그대로 둔 채 교체 검증용 2차 에이전트를 추가하는 것은 시스템 복잡도와 토큰 비용만 증가시킬 뿐, 근본적인 도구 인터페이스의 결함을 해결하지 못합니다.
-- **Option B (오답)**: 도구 설명란에 프롬프트 예시(Few-shot)만 늘리는 방식은 LLM의 바이트 오프셋 실수라는 근본적 한계를 완벽히 통제할 수 없으며, 제약된 도구로의 교체 패턴이 아닙니다.
-- **Option D (오답)**: 원시 파일 읽기 도구(`raw_file_read`)를 추가하여 에이전트에게 더 넓은 권한을 주는 것은 문제의 의도인 '도구 제약(Constrained Tooling)'과 완전히 반대되는 접근입니다.
-
----
-
-## 50번 문제 (★)
-
-**1. 문제 원문**
-
-Claude Code is asked to rename an environment variable from `API_TIMEOUT_MS` to `REQUEST_TIMEOUT_MS` everywhere it is referenced across a codebase of several hundred files, with each occurrence sitting in different surrounding code. Which approach best discovers the full scope of the change before applying it?
-
-A) Run Grep with output mode content and a glob scope to list every file and line referencing API_TIMEOUT_MS, then review that list before editing
-
-B) Run Bash to open every file in an interactive editor, since a variable rename of this kind must be reviewed visually rather than located programmatically
-
-C) Run Write on the project's environment configuration file first, then rely on Claude to infer other affected files from that one change afterward
-
-D) Run Glob with the pattern **/API_TIMEOUT_MS to locate files whose names contain the variable, then edit only those matching files
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: A번**
-
-**정답 및 해설:**
-
-**핵심 개념**: 코드베이스 검색 및 탐색 도구(Grep vs Glob)의 역할 분담  
-Claude Code 도구 생태계에서 `Grep`은 파일 **내부 텍스트 내용(Content)**을 패턴으로 검색할 때 사용하며, `Glob`은 **파일 경로/이름(Filename/Path)** 패턴으로 파일 목록을 찾을 때 사용합니다. 코드 전체에서 특정 변수명이 언급된 위치를 탐색할 때는 `Grep`을 사용하여 영향 범위를 사전에 파악하는 것이 표준적인 접근법입니다.
-
-**문제 상황 분석:**
-- 수백 개의 파일에 걸쳐 환경 변수 `API_TIMEOUT_MS`가 참조되고 있음
-- 각 참조 지점의 주변 코드가 서로 다름
-- 변경 작업(Edit)을 적용하기 전에 영향받는 전체 범위(파일 및 정확한 줄 위치)를 완벽히 파악해야 함
-
-**A번이 정답인 이유:**
-`Grep` 도구에 검색 대상 패턴(`API_TIMEOUT_MS`)과 출력 모드(`content`)를 지정하여 실행하면, 코드베이스 전체에서 해당 변수를 참조하는 모든 파일과 해당 줄(Line) 번호/내용을 수집할 수 있습니다. 이를 통해 변경을 적용하기 전 영향 범위를 명확히 검토(Review)할 수 있으므로 최선의 접근법입니다.
-
-**오답 분석:**
-- **Option B (오답)**: Bash로 대화형 에디터를 여는 것은 에이전트 환경에서 비효율적일 뿐만 아니라 자동화 및 정확한 검색 목적에 맞지 않습니다.
-- **Option C (오답)**: 하나의 파일만 먼저 수정한 뒤 모델의 '추론'에만 의존해 나머지 파일을 찾는 방식은 수백 개 파일 중 일부 참조를 누락(Missing reference)시키는 치명적인 결과를 가져올 수 있습니다.
-- **Option D (오답)**: `Glob`은 **파일 이름** 패턴을 일치시키는 도구입니다. 변수명이 파일 이름에 포함되어 있지 않고 파일 내용 속에 포함되어 있는 일반적인 상황에서는 `Glob`으로 참조 위치를 찾을 수 없습니다.
-
----
-
-## 51번 문제 (★)
-
-**1. 문제 원문**
-
-A team is building an agent that uses manual extended thinking (`thinking: {"type": "enabled"}`) to reason before acting, and they want to force it to always call a tool rather than answer directly. They set `tool_choice` to `{"type": "any"}` while manual extended thinking is enabled, and the request fails. What is the correct explanation and recommended remedy?
-
-A) The request failed because extended thinking disables all `tool_choice` options; to fix this, remove all tools from the request and let the model output its reasoning steps as text before acting.
-
-B) The request failed because `{"type": "any"}` requires at least two tools to be defined; adding a second tool, such as a calculator, resolves the incompatibility with extended thinking.
-
-C) The request failed because `{"type": "any"}` is deprecated; replace it with `{"type": "forced"}` and specify a tool name like `search` to satisfy the forced tool choice requirement.
-
-D) When manual extended thinking is enabled, the `tool_choice` values `{"type": "any"}` and `{"type": "tool", ...}` are not supported; set it to `{"type": "auto"}` or `{"type": "none"}` instead. To force a tool call while still using thinking, migrate to adaptive thinking (supported on newer models), or disable manual extended thinking.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: D번**
-
-**정답 및 해설:**
-
-**핵심 개념**: Anthropic Claude API의 Extended Thinking과 Tool Choice 제한사항  
-Anthropic API에서 수동 확장 사고(Manual Extended Thinking, `thinking: {"type": "enabled"}`) 기능을 사용할 때, 도구 호출을 강제하는 `tool_choice: {"type": "any"}` 또는 특정 도구를 지정하는 `tool_choice: {"type": "tool", "name": "..."}` 옵션은 서로 비호환되어 API 레벨에서 에러를 반환합니다. 수동 사고 모드에서는 `auto` 또는 `none`만 지원됩니다.
-
-**문제 상황 분석:**
-- 개발팀이 사고 과정(Extended Thinking)을 거친 후 반드시 도구를 호출하도록 `tool_choice: {"type": "any"}` 설정
-- 수동 확장 사고(`type: "enabled"`)가 활성화된 상태에서 도구 강제 제약조건(`any` / `tool`)을 함께 적용함
-- 두 파라미터 간의 제약조건 충돌로 인해 API 요청 실패 발생
-
-**D번이 정답인 이유:**
-수동 확장 사고(Manual Extended Thinking)를 사용할 때 Anthropic API 사상 `tool_choice`는 `auto` 및 `none`만 허용됩니다. 따라서 강제 도구 호출(`any`, `tool`)을 적용하면 안 되며, 만약 사고 과정과 도구 강제 호출을 함께 사용해야 한다면 지원하는 적응형 사고(Adaptive Thinking) 모드로 전환하거나 수동 확장 사고 기능을 비활성화해야 합니다.
-
-**오답 분석:**
-- **Option A (오답)**: 확장 사고가 모든 `tool_choice` 옵션을 비활성화하는 것은 아닙니다. `auto` 및 `none` 설정은 정상 지원됩니다.
-- **Option B (오답)**: `{"type": "any"}`는 단 1개의 도구만 정의되어 있어도 올바르게 동작하는 옵션이며, 도구 개수의 문제가 아닙니다.
-- **Option C (오답)**: Anthropic API에서 `{"type": "any"}`는 정상적인 파라미터이며, `{"type": "forced"}`라는 값은 존재하지 않습니다.
-
 ---
 
 ## 53번 문제 (★)
@@ -594,13 +437,9 @@ Anthropic API에서 수동 확장 사고(Manual Extended Thinking, `thinking: {"
 
 Claude needs to reorganize a file by moving several scattered `export` statements into one grouped block near the top. Which tool sequence should Claude use?
 
-A) Issue one `Edit` call per export statement, each targeting a short unique snippet, relying on the accumulated edits to produce the new grouped layout.
-
-B) Call `Glob` for the file's own path to confirm it exists, then call `Edit` with `old_string` set to the whole file's text and `new_string` as the new version.
-
 C) Read the file to load its full contents, then call `Write` with the complete restructured file content back over that same path.
 
-D) Call `Grep` with output mode `content` to retrieve the matching export lines, treating the returned text as already written back to the file.
+D) Call `Grep` with output mode `content` to retrieve the matching export lines, treating the returned text as already ~~written back~~ to the file.
 
 ---
 
@@ -610,7 +449,8 @@ D) Call `Grep` with output mode `content` to retrieve the matching export lines,
 
 **정답 및 해설:**
 
-**핵심 개념**: 파일 대규모 재구성을 위한 `Edit` vs `Write` 도구 선택 기준  
+**핵심 개념**: 
+
 Claude Code 도구 세트에서 `Edit` 도구는 파일의 **일부 구간(부분 수정)**을 고유한 `old_string`을 기반으로 안전하게 치환할 때 적합합니다. 반면 파일 전체에 걸쳐 코드를 대대적으로 이동하거나 레이아웃을 완전히 재구성(Restructure/Reorganize)할 때는, 여러 번의 부분 수정보다 파일 전체 내용을 읽어온 후 **`Write` 도구로 전체 내용을 덮어쓰는 것**이 훨씬 안정적이고 오류를 최소화할 수 있습니다.
 
 **문제 상황 분석:**
@@ -618,51 +458,8 @@ Claude Code 도구 세트에서 `Edit` 도구는 파일의 **일부 구간(부�
 - 파일 전체의 여러 줄이 동시에 삭제 및 이동되는 광범위한 변화가 발생함
 - 이 상황에서 가장 적절하고 효율적인 파일 수정 도구 사용 패턴을 찾아야 함
 
-**C번이 정답인 이유:**
-파일의 전체 구조를 재배치할 때 여러 개의 부분 `Edit`을 연쇄적으로 수행하면 코드 오프셋이 달라지거나 인접 코드가 꼬여 에러가 발생하기 쉽습니다. 따라서 먼저 파일 내용을 읽어온 뒤, 재구성된 전체 코드를 `Write` 도구를 통해 동일한 경로에 통째로 새로 작성(Overwriting)하는 방식이 모범 사례(Best Practice)입니다.
-
 **오답 분석:**
-- **Option A (오답)**: 흩어진 각 구문마다 `Edit`을 여러 번 연속으로 호출하면 중간 과정에서 고유 문자열 일치가 깨지거나 코드가 꼬일 위험이 매우 큽니다.
-- **Option B (오답)**: 단일 파일의 존재 여부를 확인하기 위해 `Glob`을 호출하는 것은 불필요하며, `Edit`의 `old_string`에 파일 전체 텍스트를 넣는 것은 `Edit` 도구의 취지에도 맞지 않으며 `Write` 도구를 사용하는 것이 올바른 방법입니다.
 - **Option D (오답)**: `Grep`은 단순 파일 내용 검색 도구일 뿐, 파일에 데이터를 다시 쓰거나(Write) 수정하는 기능이 전혀 없습니다.
-
----
-
-## 58번 문제 (★)
-
-**1. 문제 원문**
-
-A newly onboarded architect asks Claude Code to trace how a login request flows from the HTTP route handler through to the database call, in a codebase Claude has not explored yet. To build this understanding efficiently while keeping context usage low, what is the best incremental strategy?
-
-A) Start by reading CLAUDE.md or AGENTS.md if they exist to gain high-level architecture context, then use Grep to locate the route handler and its imports, and read files incrementally along the call chain.
-
-B) Use Bash to run a full-text word count across the repository and read the files with the highest counts, on the assumption larger files hold core business logic.
-
-C) Use Read to open every file under the src directory up front, building a complete mental model of the whole codebase before looking for the login flow specifically.
-
-D) Use Glob to list every file in the repository sorted by modification time, then read the twenty most recently modified files on the assumption they relate to login.
-
----
-
-**3. 정답 및 해설 (Answer & Explanation)**
-
-**정답: A번**
-
-**정답 및 해설:**
-
-**핵심 개념**: 컨텍스트 윈도우 효율적 코드 탐색(Context Window Efficient Exploration)
-
-**문제 상황 분석:**
-- 새로운 아키텍트가 아직 Claude가 읽어보지 않은 프로젝트에서 로그인 흐름 추적을 요청함.
-- 목적은 코드베이스를 효율적으로 이해하면서 토큰 사용량을 최소한으로 유지하는 것임.
-- 무작위 파일 열람이나 전체 파일 일괄 로딩을 피하고 필요한 경로만 점진적으로 파악해야 함.
-
-**A번이 정답인 이유:**
-- 프로젝트 설정 문서(`CLAUDE.md` 등)를 먼저 읽어 전체 아키텍처를 파악합니다.
-- `Grep` 도구로 라우트 핸들러 위치를 검색한 뒤 호출 체인을 따라 필요한 파일만 순차적으로 읽어 토큰 소모를 방지합니다.
-
-**오답 분석:**
-- Option A 외 오답들(B, C, D)은 대용량 파일 가정, 전체 파일 일괄 오픈, 무작위 최근 수정 파일 열람 등으로 컨텍스트 낭비 및 비효율성을 초래하므로 오답입니다.
 
 ---
 
@@ -670,15 +467,11 @@ D) Use Glob to list every file in the repository sorted by modification time, th
 
 **1. 문제 원문**
 
-A platform team is designing error responses for a fleet of internal MCP tools. One engineer proposes that every tool failure, regardless of cause, return the same generic text "Operation failed" with `isError: true`, arguing this keeps the interface simple for tool authors. What is the strongest architectural objection to this proposal?
+A platform team is designing error responses for a fleet(다수의 집합, 무리) of internal MCP tools. One engineer proposes that every tool failure, regardless of cause, return the same generic text "Operation failed" with `isError: true`, arguing this keeps the interface simple for tool authors. What is the strongest architectural objection to this proposal?
 
-A) Returning a constant error string for every failure adds metadata overhead that pushes the total block size beyond the MCP protocol's maximum content length, so the server rejects the tool result as non-compliant.
+B) A uniform generic message gives the agent no basis for choosing among retrying, adjusting input, or escalating, so it cannot make an **appropriate(적절한)** recovery decision for each failure.
 
-B) A uniform generic message gives the agent no basis for choosing among retrying, adjusting input, or escalating, so it cannot make an appropriate recovery decision for each failure.
-
-C) Uniform error text prevents the server from ever setting isError:true because the MCP specification requires a unique diagnostic string to accompany the flag for each failure, so the tool cannot activate the error state.
-
-D) The MCP specification requires every isError:true result to include a machine-parseable stack trace, so a generic text response without that structured data violates the protocol and is rejected by the platform.
+C) Uniform error text prevents the server from ever setting isError:true because the MCP **specification(사양)** requires a unique diagnostic string to accompany the flag for each failure, so the tool cannot activate the error state.
 
 ---
 
@@ -687,8 +480,6 @@ D) The MCP specification requires every isError:true result to include a machine
 **정답: B번**
 
 **정답 및 해설:**
-
-**핵심 개념**: AI 에이전트 오류 복구 및 유익한 오류 피드백(AI Agent Error Recovery & Informative Error Feedback)
 
 **문제 상황 분석:**
 - 모든 도구 실패에 동일한 텍스트("Operation failed")를 반환하자고 제안함.

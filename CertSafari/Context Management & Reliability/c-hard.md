@@ -18,6 +18,29 @@
 
 ---
 
+* _ambiguation_ : 모호함
+* _ambiguity_ : 모호
+* _annotaion_ : 주석
+* _citation_ : 인용
+* **_excerpt_ : 발췌**
+* _provenance_ : 기원
+* **_attribution_ : 귀속됨, 귀착시킴**
+* _grounded_ : 기초를 둔
+* **_propagate_ : 전파하다**
+* **_durable_ : 영속성 있는**
+* **_revelance_ : 관련성**
+* _wear out_ : 마모되다, 닳다
+* _breakdown_ : 분해
+* _strata_ : 지충
+* _stratified_ : 계층화된
+* _carry forward_ : 이월하다, 유지하다
+* **_reconciliation_ : 화해, 조정**
+* **_coroboration_ : 보강 증거, 확실하게 함**
+* _calibration_ : 보정
+* _valication_ : 검증
+* _omit_ : 누락
+---
+
 # A. 인간 에스컬레이션 — 명시적 요청 유무와 감정 어조
 
 66 vs 86: 둘 다 "사람 연결해 달라"는 명시적 요청인데 답이 정반대. 68 vs 85: 둘 다 짜증난 고객 + 명시적 요청 없음인데 답이 미묘하게 다름. 92: 정책 침묵 시 에스컬레이션.
