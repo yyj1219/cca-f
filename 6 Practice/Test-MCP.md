@@ -3,51 +3,6 @@
 MCP(Model Context Protocol) 관련 문제 모음. Test1~Test6.md에서 추출.
 
 ### 출처: Test1.md
-## 질문 2
-
-**SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
-
-**QUESTION** : An Agent SDK application pulls data from three MCP servers that return Unix timestamps, ISO 8601 dates, and numeric status codes respectively, and its agent frequently misinterprets these mixed formats when correlating findings. What is the most reliable fix?
-
-**A.** Register a PreToolUse hook that blocks each outgoing data-retrieval call whenever the target server does not return canonical formats.
-
-**설명**
-
-PreToolUse hooks fire before a tool executes and can enforce policy by allowing or blocking the call, but blocking never transforms the data a server returns. Blocking retrievals from heterogeneous servers simply prevents the agent from accessing that data, which intercepts the wrong point in the lifecycle for a result-normalization problem.
-
-**B.** Expose a convert_formats MCP tool and instruct the agent to invoke it after each data-retrieval call it makes.
-
-**설명**
-
-This makes normalization contingent on the model remembering to call the extra tool on every retrieval, which is exactly the kind of probabilistic compliance the problem needs to eliminate. It also adds an extra tool-call loop for every lookup, increasing latency and token cost.
-
-**C(정답).** Register an Agent SDK PostToolUse hook that transforms each tool result into one canonical format before the model processes it.
-
-**설명**
-
-This is correct because an Agent SDK PostToolUse hook intercepts a tool result after execution and applies data transformations before the model processes it. Normalization happens deterministically at a single central point, works even for third-party servers you cannot change, and never depends on the model remembering to translate values.
-
-**D.** Document each server's timestamp and status-code conventions in the system prompt so the model translates the values.
-
-**설명**
-
-Prompt documentation is probabilistic guidance, not enforcement; the model may still misread a Unix timestamp as a numeric code under load or in long contexts. It also adds permanent token overhead to every request without guaranteeing consistent interpretation.
-
-### 전반적인 설명
-
-When an agent consumes data from multiple MCP servers, each server defines its own output conventions: one may emit Unix epoch integers, another ISO 8601 strings, another bare numeric status codes. The model then has to infer, on every turn, which convention applies to which value. That inference is probabilistic, and mixed formats sitting side by side in context is precisely where it breaks down.
-
-The architectural answer is to move normalization out of the model's reasoning and into deterministic code. In the Claude Agent SDK, a PostToolUse hook intercepts a tool result once the tool has run and applies transformations before the model processes it. Code at that point can convert every timestamp to ISO 8601 and every status code to a labeled string, so the model only ever reasons over one canonical format. Because the transformation runs on the result rather than inside the server, it works identically for tools you own and third-party servers you cannot modify, and it lives in one place instead of being scattered across server implementations.
-
-The other approaches each fail on a mechanism-level detail. A PreToolUse hook fires before execution and can allow or block the outgoing call, which is the right primitive for policy enforcement, but it never sees the response; blocking heterogeneous retrievals denies the agent data rather than normalizing it. System prompt documentation and an agent-invoked conversion tool both leave normalization to model compliance, which is greater than 90 percent but not 100 percent, and the tool approach additionally doubles the loop iterations for every retrieval. The general rule: use hooks when a behavior must happen every time, and prompts when flexibility is acceptable.
-
-See the Claude Agent SDK hooks documentation and the MCP tools documentation for details on hook events and tool result handling.
-
-### 도메인
-
-Agentic Architecture & Orchestration
-
-### 출처: Test1.md
 ## 질문 6
 
 **SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
@@ -572,51 +527,6 @@ The alternatives all fail this contract in different ways. Prompt-side code tran
 Tool Design & MCP Integration
 
 ### 출처: Test2.md
-## 질문 14
-
-**SCENARIO** : You are integrating Claude Code into your Continuous Integration/Continuous Deployment (CI/CD) pipeline. The system runs automated code reviews, generates test cases, and provides feedback on pull requests. You need to design prompts that provide actionable feedback and minimize false positives.
-
-**QUESTION** : During automated reviews of large pull requests, each call to the pipeline's fetch_pr_details MCP tool returns 50+ metadata fields, but the review only needs the diff, changed file paths, and author notes. The context window fills before big reviews finish. Which change is most effective?
-
-**A.** Compact the conversation between file reviews so the accumulated tool output is condensed into summaries as the session proceeds.
-
-**설명**
-
-This is incorrect because compaction treats the symptom after the bloat has already entered context, and summarization is lossy: precise details such as file paths and diff hunks can be condensed away. Trimming outputs before they accumulate is the structural fix.
-
-**B(정답).** Add a PostToolUse hook that trims each fetch_pr_details result to the review-relevant fields before it enters context.
-
-**설명**
-
-This is correct because it stops context bloat at its source: verbose tool outputs are reduced to the handful of fields the review actually uses before they ever occupy the window. The full review can then complete without the irrelevant metadata accumulating turn after turn.
-
-**C.** Instruct Claude in the review prompt to disregard any metadata fields that are not relevant to evaluating the code changes.
-
-**설명**
-
-This is incorrect because an instruction to ignore fields does not remove them from the context window; every irrelevant field still consumes tokens on each call. The window fills at the same rate whether or not the model attends to the extra data.
-
-**D.** Raise max_tokens on each request so the model has additional room to work through the accumulated pull request metadata.
-
-**설명**
-
-This is incorrect because max_tokens governs the length of the model's output, not the size of the input context. The verbose tool results still consume the same input tokens, so the window fills just as quickly.
-
-### 전반적인 설명
-
-Tool outputs accumulate in context disproportionately to their relevance: a lookup that returns 50+ fields when only a few matter wastes tokens on every single call, and in an agentic loop those results are re-sent with the full conversation history on each subsequent request. The compounding cost is why the right place to intervene is at the point where results enter context, not after they have accumulated.
-
-A PostToolUse hook is the mechanism designed for exactly this: it intercepts a tool's result after execution and lets your code transform it, keeping only the diff, changed file paths, and author notes before the model ever sees it. This is deterministic (code runs on every call), preserves precision (the retained fields pass through verbatim rather than being paraphrased), and scales with review size because the per-call footprint stays small.
-
-The alternatives fail for distinct reasons. A prompt instruction to ignore irrelevant fields changes attention, not token consumption; the metadata still occupies the window. Mid-session compaction is a relief valve, not a design: it acts only after bloat has entered context, and its summarization can condense away the exact identifiers a code review depends on. Raising max_tokens only expands the response budget; it does nothing about input volume. The general principle for production agents is to shape what enters context at the source, and reserve compaction for situations where accumulation was unavoidable.
-
-See Claude Code hooks reference and Effective context engineering for AI agents.
-
-### 도메인
-
-Context Management & Reliability
-
-### 출처: Test2.md
 ## 질문 24
 
 **SCENARIO** : You are building a customer support resolution agent using the Claude Agent SDK. The agent handles high-ambiguity requests like returns, billing disputes, and account issues. It has access to your backend systems through custom Model Context Protocol (MCP) tools (get_customer, lookup_order, process_refund, escalate_to_human). Your target is 80%+ first-contact resolution while knowing when to escalate.
@@ -744,51 +654,6 @@ The alternatives all leave the oversized inventory in place. Prompt warnings are
 ### 도메인
 
 Tool Design & MCP Integration
-
-### 출처: Test2.md
-## 질문 30
-
-**SCENARIO** : You are building developer productivity tools using the Claude Agent SDK. The agent helps engineers explore unfamiliar codebases, understand legacy systems, generate boilerplate code, and automate repetitive tasks. It uses the built-in tools (Read, Write, Bash, Grep, Glob) and integrates with Model Context Protocol (MCP) servers.
-
-**QUESTION** : An MCP server the agent relies on returns 40+ fields per response when only five are relevant, bloating context and confusing the model. The server is third-party and cannot be changed. Which mechanism trims each result before the model processes it?
-
-**A.** Register a PreToolUse hook that rewrites the outgoing tool call so the server returns only the fields the agent needs.
-
-**설명**
-
-PreToolUse hooks fire before execution and can modify or block the outgoing call, but they cannot touch the result. A third-party server that always returns 40+ fields will still return them regardless of how the request is shaped, so the verbose payload still reaches the model unfiltered.
-
-**B.** Define a separate trim_fields tool that the agent calls after each retrieval to reduce the result to relevant fields.
-
-**설명**
-
-This depends on the model remembering to call the extra tool, adding a loop iteration and a failure mode on every retrieval. Worse, the verbose result has already been appended to context by the time the trimming tool runs, so the context bloat is not avoided.
-
-**C.** Add a system prompt instruction directing the agent to ignore irrelevant fields in that tool's responses when reasoning.
-
-**설명**
-
-Prompt instructions provide only probabilistic compliance, and the full 40-field payload still enters the context window, consuming tokens and diluting attention. The instruction changes how the model tries to read the noise; it does not remove the noise.
-
-**D(정답).** Register a PostToolUse hook that intercepts the tool's result and passes only the relevant fields through to the agent.
-
-**설명**
-
-PostToolUse hooks run after a tool completes successfully and can replace the tool output before Claude sees it. This transforms every result deterministically in code, works for third-party MCP tools you cannot modify, and keeps irrelevant fields out of context entirely.
-
-### 전반적인 설명
-
-The mental model to hold is that everything a tool returns is appended to the conversation history, and that history is the only channel through which the model sees the world. If a tool dumps 40 fields when 5 matter, the other 35 are not merely wasted tokens; they compete for attention and can mislead reasoning. The Agent SDK's hook system exists to give you deterministic, code-level interception points around this flow: PreToolUse fires before a call executes (where you block or rewrite the outgoing request), and PostToolUse fires immediately after a tool completes successfully (where you inspect and reshape the result before the model consumes it).
-
-For this problem, a PostToolUse hook is the designed answer. The hook receives the tool name, the original input, and the tool response, and can return hookSpecificOutput.updatedToolOutput to replace what Claude sees; the replacement must match the tool's output shape. Because the hook runs in your harness rather than in the model, it works identically for third-party MCP servers you cannot modify, and it fires on every call with no reliance on the model's cooperation. Note the boundary: PostToolUse only changes what the model sees, not what happened; the tool has already executed, so side effects are unaffected.
-
-The alternatives each miss the interception point. A PreToolUse hook shapes the request, but a server that unconditionally returns a verbose payload will still return it. A system prompt instruction is probabilistic guidance layered on top of context that is already polluted. A dedicated trimming tool inverts the ordering: the verbose result lands in context first, then the model must remember to clean up after it, adding latency and a per-call failure mode.
-
-See the Agent SDK hooks documentation and the Claude Code hooks reference for the full event schema and output fields.
-
-### 도메인
-
-Agentic Architecture & Orchestration
 
 ### 출처: Test2.md
 ## 질문 33
